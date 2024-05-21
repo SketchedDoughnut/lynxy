@@ -1,1 +1,32 @@
-x
+[build-system]
+requires = [
+    "hatchling"
+]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/lynxy"
+]
+
+[project]
+name = "LYNXY"
+version = "0.0.2"
+authors = [
+  { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
+]
+description = "A LAN package made for easy communication and sending of data across the same network."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+# dependencies = [
+#   "requests"
+# ]
+
+[project.urls]
+Homepage = "https://github.com/SketchedDoughnut/LYNX"
+Issues = "https://github.com/SketchedDoughnut/LYNX/issues"
