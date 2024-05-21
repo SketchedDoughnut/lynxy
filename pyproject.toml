@@ -1,6 +1,7 @@
 [build-system]
 requires = [
-    "hatchling"
+    "hatchling",
+    "requests"
 ]
 build-backend = "hatchling.build"
 
@@ -23,9 +24,9 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
-# dependencies = [
-#   "requests"
-# ]
+dependencies = [
+  "requests"
+]
 
 [project.urls]
 Homepage = "https://github.com/SketchedDoughnut/LYNX"

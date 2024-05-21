@@ -5,5 +5,5 @@ we can do:
     - "import _"
 '''
 
-# extending main lynxy
-from .lynxy import *
+# extending main lynx file
+from .lynx import *
