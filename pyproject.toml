@@ -10,7 +10,7 @@ packages = [
 ]
 
 [project]
-name = "LYNXY"
+name = "lynxy"
 version = "0.0.2"
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
