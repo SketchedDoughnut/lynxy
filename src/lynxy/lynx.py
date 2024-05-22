@@ -1,4 +1,6 @@
 import socket
+import time
+import threading
 
 # file imports
 import valid_ports as v
@@ -11,6 +13,16 @@ server_port = valid_ports[0]
 
 # start client object
 main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+connection_timeout = False
+
+def timeout_connection(timeout_time: int = 15) -> None:
+    global connection_timeout
+    init_time = time.time()
+    while True:
+        new_time = time.time()
+        dif = new_time - init_time
+        if dif >= timeout_time:
+            connection_timeout = True
 
 # connects to server
 def connect_to_server(client: socket.socket):
@@ -24,7 +36,12 @@ def connect_to_server(client: socket.socket):
         print(f'attempt: {attempt_count}')
         try:
             print('trying port:', server_port)
-            client.connect((server_ip, server_port))
+            con_thread = threading.Thread(target=lambda:client.connect((server_ip, server_port)), daemon=True)
+            con_thread.start()
+            threading.Thread(target=lambda:timeout_connection(), daemon=True).start()
+            if timeout_connection == True:
+                con_thread.join(timeout=0)
+                1 + 's'
             break
         except Exception as e:
             # print('error:', e)
