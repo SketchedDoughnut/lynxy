@@ -97,14 +97,17 @@ def check_alive() -> None:
     while True:
         time.sleep(5)
         for por in valid_ports:
-            data = unique_server_instance_dict[port]
-            state = data[0]
-            server_obj = data[1]
-            client_obj = data[2]
-            state = is_socket_closed(client_obj)
-            if state == True:
-                print(f'the client for port {por} is not responsive, so the connection will be terminated.')
-                unique_server_instance_dict[por] = [False, server_obj, client_obj]
+            try:
+                data = unique_server_instance_dict[port]
+                state = data[0]
+                server_obj = data[1]
+                client_obj = data[2]
+                state = is_socket_closed(client_obj)
+                if state == True:
+                    print(f'the client for port {por} is not responsive, so the connection will be terminated.')
+                    unique_server_instance_dict[por] = [False, server_obj, client_obj]
+            except:
+                pass
         
 
 
