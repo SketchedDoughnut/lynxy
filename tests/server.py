@@ -15,7 +15,7 @@ alive_searching_instance = 0
 # create server object, set port
 #main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # port = 11111
-# port_iter = 0
+# port_iter = 0 
 valid_ports = v.valid_ports
 not_inclusive_max_port_amount = len(valid_ports) - 1
 port = valid_ports[0]
