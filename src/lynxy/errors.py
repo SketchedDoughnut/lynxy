@@ -1,2 +1,0 @@
-class connectionTestError(Exception):
-    pass

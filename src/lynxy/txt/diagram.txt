@@ -1,2 +1,12 @@
 __init__.py
     - extends all functions 
+
+
+network diagram
+    - client connects to server
+    - client signs into server with an identifying name, put into a dict and associated with its ip 
+    - client requests someones name, gets ip from server
+    - client attempts to connect to the recieved ip
+    - if succeed, disconnect from server
+    - if fail, report a timeout
+    - severe server connection when exiting
