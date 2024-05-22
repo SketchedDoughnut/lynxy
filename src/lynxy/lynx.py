@@ -76,23 +76,20 @@ def request_by_username(client: socket.socket, username: str) -> tuple:
         target_ip = target_ip.strip().strip("'")
         target_port = target_port.strip()
         target_port = int(target_port)
-        print(f'acquired ip and port, respectively: {target_ip}, {target_port}')
+        print(f'acquired ip and port of {username}, respectively: {target_ip}, {target_port}')
         return (target_ip, target_port)
 
 
 
-
-print('CLIENT1: CONNECTING TO PORT', server_port)
-connect_to_server(main_client)
-submit_username_data(main_client, 'SketchedDoughnut')
-target_ip, target_port = request_by_username(main_client, 'SketchedDoughnut')
-main_client.close()
-
-main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-import time
-time.sleep(3)
-server_port = 12111
-print('CLIENT2: CONNECTING TO PORT', server_port)
-connect_to_server(main_client)
-submit_username_data(main_client, 'Sketched')
-target_ip, target_port = request_by_username(main_client, 'Sketched')
+for port in valid_ports:
+    server_port = port
+    print('CLIENT: CONNECTING TO PORT', server_port)
+    connect_to_server(main_client)
+    #submit_username_data(main_client, 'SketchedDoughnut')
+    #target_ip, target_port = request_by_username(main_client, 'SketchedDoughnut')
+    submit_username_data(main_client, str(server_port))
+    target_ip, target_port = request_by_username(main_client, str(server_port))
+    main_client.close()
+    main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    import time
+    time.sleep(1)

@@ -8,6 +8,7 @@ import valid_ports as v
 
 # set limit for server instances
 INSTANCE_LIMIT = 5
+initial_limit_print = False
 alive_bound_instance = 0
 alive_searching_instance = 0
 
@@ -23,6 +24,8 @@ port = valid_ports[0]
 client_dict = {
     'default': 0
 }
+
+unique_server_instance_dict = {}
 
 # connect to client
 def connect_to_client(server: socket.socket) -> list[socket.socket, str]:
@@ -73,6 +76,32 @@ def connect_to_client(server: socket.socket) -> list[socket.socket, str]:
 #             print(f'username recieved: {username}')
 #             return username
 
+def check_alive(client: socket.socket) -> bool:
+    global unique_server_instance_dict
+    import time
+    time.sleep(5)
+    state = is_socket_closed(client)
+    if state == True:
+        print('socket has been detected as dead, changing state to dead (false)')
+        unique_server_instance_dict[client] = False
+        # client.close()
+    
+
+def is_socket_closed(sock: socket.socket) -> bool:
+    try:
+        # this will try to read bytes without blocking and also without removing them from buffer (peek only)
+        data = sock.recv(16, socket.MSG_DONTWAIT | socket.MSG_PEEK)
+        if len(data) == 0:
+            return True
+    except BlockingIOError:
+        return False  # socket is open and reading from it would block
+    except ConnectionResetError:
+        return True  # socket was closed for some other reason
+    except Exception as e:
+        #logger.exception("unexpected exception when checking if a socket is closed")
+        return False
+    return False
+
 # log username data into client_dict
 def log_username_data(username: str, address: str, c_dict: dict) -> dict:
     c_dict[username] = address
@@ -115,10 +144,12 @@ def answer_request_by_username(client: socket.socket, c_dict: dict, cmd: str) ->
 
 # MAIN MESSAGE HANDLER
 def input_handler(client: socket.socket, client_address: str) -> None:
-    global client_dict
+    global client_dict, alive_bound_instance
     print('----------------------')
     print('INPUT HANDLER STARTED')
     print('----------------------')
+    # print('starting ping thread...')
+    # threading.Thread(target=lambda:check_alive(client), daemon=True).start()
     while True: 
         # passed = False
         # try:
@@ -128,6 +159,14 @@ def input_handler(client: socket.socket, client_address: str) -> None:
         #     print('error listening from client, re-connecting to any ip...')
         #     main_client, client_address = connect_to_client(main_server)
         # if passed == True:
+        # if unique_server_instance_dict[client] == False:
+        #     print('client has been deemed dead, killing')
+        #     client.close()
+        #     alive_bound_instance -= 1
+        #     print('bound count changed to', alive_bound_instance)
+        #     print('searching count is', alive_searching_instance)
+        #     print('current unique dict:', unique_server_instance_dict)
+        #     exit()
         msg = client.recv(1024).decode('utf-8')
         if msg:
             split_msg = msg.split()
@@ -151,25 +190,36 @@ def input_handler(client: socket.socket, client_address: str) -> None:
 
 def start_server_instance(server: socket.socket, instance_at_start: int) -> None:
     print(f'starting a new searching instance with num: {instance_at_start}')
-    global alive_searching_instance, alive_bound_instance
+    global alive_searching_instance, alive_bound_instance, unique_server_instance_dict
     main_client, client_address = connect_to_client(server)
     print('binded to client, decreasing search and increasing bound')
     alive_searching_instance -= 1
     alive_bound_instance += 1
     print('bound is now:', alive_bound_instance)
+    print('logging client address to detect if closed later')
+    unique_server_instance_dict[main_client] = True
     print('transferring to input handler')
     input_handler(main_client, client_address)
 
 
 
 def start_instance_handler() -> None:
-    global alive_searching_instance, alive_bound_instance
+    global alive_searching_instance, alive_bound_instance, initial_limit_print
     while True:
         if alive_searching_instance == 0:
-            print(f'starting instance, searching count is {alive_searching_instance}')
-            alive_searching_instance += 1
-            main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            threading.Thread(target=lambda:start_server_instance(main_server, alive_bound_instance + 1), daemon=True).start()
+            if alive_bound_instance < INSTANCE_LIMIT:
+                initial_limit_print = False
+                print(f'starting instance, searching count is {alive_searching_instance}')
+                alive_searching_instance += 1
+                main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                threading.Thread(target=lambda:start_server_instance(main_server, alive_bound_instance + 1), daemon=True).start()
+            else:
+                if initial_limit_print == False:
+                    import time
+                    time.sleep(3) # time for other things to calm down
+                    print('INSTANCE LIMIT REACHED, NO MORE INSTANCES WILL BE MADE')
+                    print('BOUND COUNT:', alive_bound_instance)
+                    initial_limit_print = True
 
 
 start_instance_handler()
