@@ -1,6 +1,7 @@
 import socket
 import time
 import threading
+import json
 
 # file imports
 import valid_ports as v
@@ -15,6 +16,13 @@ server_port = valid_ports[0]
 main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connection_timeout = False
 
+
+
+
+
+
+
+
 def timeout_connection(timeout_time: int = 5) -> None:
     global connection_timeout
     init_time = time.time()
@@ -23,10 +31,47 @@ def timeout_connection(timeout_time: int = 5) -> None:
         dif = new_time - init_time
         if dif >= timeout_time:
             connection_timeout = True
+            print('timed out')
+            exit()
+
+
+
+
+
+
+
+
+
+# def info_connect() -> dict:
+#     # attempt to connect to the data server object
+#     info_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#     info_client.connect((server_ip, 22222))
+#     active_data = info_client.recv(1024).decode('utf-8')
+
+#     active_data = active_data.strip('{}')
+#     # Split by commas to get individual key-value pairs
+#     pairs = active_data.split(',')
+
+#     # Initialize an empty dictionary to store the parsed data
+#     data_dict = {}
+
+#     # Iterate over each pair and split by colon to get key and value
+#     for pair in pairs:
+#         key, value = pair.split(':')
+#         # Strip spaces and convert key to integer
+#         key = int(key.strip())
+#         # Evaluate value and store it in the dictionary
+#         value = eval(value.strip())
+#         data_dict[key] = value
+
+#     return data_dict
+
+
+
 
 # connects to server
 def connect_to_server(client: socket.socket):
-    global server_port
+    global server_port, connection_timeout
     '''sets up the initial connection to the server, verifies it can send data over'''
     
     # connect to server ip, server port
@@ -36,12 +81,14 @@ def connect_to_server(client: socket.socket):
         print(f'attempt: {attempt_count}')
         try:
             print('trying port:', server_port)
-            con_thread = threading.Thread(target=lambda:client.connect((server_ip, server_port)), daemon=False)
-            con_thread.start()
-            threading.Thread(target=lambda:timeout_connection(), daemon=True).start()
-            if connection_timeout == True:
-                con_thread.join(timeout=0)
-                1 + 's'
+            # con_thread = threading.Thread(target=lambda:client.connect((server_ip, server_port)))
+            # con_thread.start()
+            # tm_thread = threading.Thread(target=lambda:timeout_connection())
+            # tm_thread.start()
+            # if connection_timeout == True:
+            #     print('timed out - main')
+            # if con_thread.is_alive() == False:
+            client.connect((server_ip, server_port))
             break
         except Exception as e:
             # print('error:', e)
@@ -72,12 +119,29 @@ def connect_to_server(client: socket.socket):
             break # breaks out of loop when it recieves
     print('connection made, verified connection')
 
+
+
+
+
+
+
+
+
 def submit_username_data(client: socket.socket, username: str) -> None:
     '''submits username to the server that gets associated with this clients ip address
     NOTE: USERNAME CAN HAVE NO SPACES, ANY SPACES WILL BE REMOVED'''
     msg = f'username {username}'.encode('utf-8')
     client.send(msg)
     print(f'submitted username to server: {username}')
+
+
+
+
+
+
+
+
+
 
 def request_by_username(client: socket.socket, username: str) -> tuple:
     '''requests an address from the server, getting back an ip address and port'''
@@ -97,6 +161,12 @@ def request_by_username(client: socket.socket, username: str) -> tuple:
         return (target_ip, target_port)
 
 
+
+
+
+
+# alive_dict = info_connect()
+# for state in alive_dict:
 
 for port in valid_ports:
     server_port = port

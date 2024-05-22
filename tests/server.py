@@ -26,6 +26,27 @@ client_dict = {
 }
 
 unique_server_instance_dict = {}
+# active_dict = {}
+# for i in range(INSTANCE_LIMIT):
+#     active_dict[i] = False
+
+# def start_info_handler() -> None:
+#     info_port = 22222
+#     while True:
+#         info_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#         print('info server made')
+#         info_server.bind(('', info_port))
+#         print('info server binded to port', info_port)
+#         info_server.listen(5)
+#         print('info server listening')
+#         info_client, info_client_address = info_server.accept()
+#         print('info server accepted from:', info_client_address)
+#         msg = f'{active_dict}'.encode('utf-8')
+#         info_client.send(msg)
+#         print('message sent')
+#         info_client.close()
+#         info_server.close()
+#         print('info client, info_server closed')
 
 # connect to client
 def connect_to_client(server: socket.socket) -> list[socket.socket, str]:
@@ -84,7 +105,7 @@ def check_alive(client: socket.socket) -> bool:
     if state == True:
         print('socket has been detected as dead, changing state to dead (false)')
         unique_server_instance_dict[client] = False
-        # client.close()
+        client.close()
     
 # https://stackoverflow.com/questions/48024720/python-how-to-check-if-socket-is-still-connected
 def is_socket_closed(sock: socket.socket) -> bool:
@@ -203,6 +224,10 @@ def start_server_instance(server: socket.socket, instance_at_start: int) -> None
 
 
 
+
+
+
+
 def start_instance_handler() -> None:
     global alive_searching_instance, alive_bound_instance, initial_limit_print
     while True:
@@ -222,4 +247,9 @@ def start_instance_handler() -> None:
                     initial_limit_print = True
 
 
+
+# start info handler
+# start_info_handler()
+
+# start normal handler
 start_instance_handler()
