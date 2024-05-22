@@ -41,9 +41,9 @@ def submit_username_data(client: socket.socket, username: str) -> None:
     NOTE: USERNAME CAN HAVE NO SPACES, ANY SPACES WILL BE REMOVED'''
     msg = f'username {username}'.encode('utf-8')
     client.send(msg)
-    print('submitted username to server')
+    print(f'submitted username to server: {username}')
 
-def request_by_username(client: socket.socket, username: str) -> str:
+def request_by_username(client: socket.socket, username: str) -> tuple:
     '''requests an address from the server, getting back an ip address and port'''
     msg = f'request_ip_by_user {username}'.encode('utf-8')
     client.send(msg)
@@ -58,10 +58,13 @@ def request_by_username(client: socket.socket, username: str) -> str:
         target_port = target_port.strip()
         target_port = int(target_port)
         print(f'acquired ip and port, respectively: {target_ip}, {target_port}')
+        return (target_ip, target_port)
 
 
 
 
 connect_to_server(main_client)
 submit_username_data(main_client, 'SketchedDoughnut')
-request_by_username(main_client, 'SketchedDoughnut')
+target_ip, target_port = request_by_username(main_client, 'SketchedDoughnut')
+submit_username_data(main_client, 'Test_Username123~!')
+target_ip, target_port = request_by_username(main_client, 'Test_Username123~!')
