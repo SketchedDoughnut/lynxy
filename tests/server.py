@@ -1,8 +1,16 @@
 import socket
+import random
+import threading
+
+# set limit for server instances
+INSTANCE_LIMIT = 5
+alive_bound_instance = 0
+alive_searching_instance = 0
 
 # create server object, set port
-main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-port = 12345
+#main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+port = 11111
+port_iter = 0
 
 # set up client dict, storing name to ip correlation
 client_dict = {
@@ -11,9 +19,16 @@ client_dict = {
 
 # connect to client
 def connect_to_client(server: socket.socket) -> list[socket.socket, str]:
+    global port_iter
     # bind to first incoming ip, and port
-    server.bind(('', port))
-    print(f'server binded to port {port}')
+    #server.bind(('', port))
+    #print(f'server binded to port {port}')
+    n_port = int(int(port) + int(port_iter))
+    print('attempting to bind to port:', n_port)
+    server.bind(('', n_port))
+    print(f'server binded to port {n_port}')
+    print('connected to port, port iter incremented')
+    port_iter += 1
 
     # listen for an incoming connection
     print('server listening for a connection...')
@@ -84,8 +99,8 @@ def answer_request_by_username(client: socket.socket, c_dict: dict, cmd: str) ->
 
 
 # MAIN MESSAGE HANDLER
-def input_handler(client: socket.socket) -> None:
-    global client_dict, main_client, client_address
+def input_handler(client: socket.socket, client_address: str) -> None:
+    global client_dict
     print('----------------------')
     print('INPUT HANDLER STARTED')
     print('----------------------')
@@ -111,13 +126,40 @@ def input_handler(client: socket.socket) -> None:
                 print('-- request_ip_by_user prefix detected')
                 split_msg.remove(prefix)
                 username = "".join(split_msg)
-                answer_request_by_username(main_client, client_dict, username)
+                answer_request_by_username(client, client_dict, username)
 
 
 
 
 
 
-# run
-main_client, client_address = connect_to_client(main_server)
-input_handler(main_client)
+
+def server_instance(server: socket.socket, instance_at_start: int) -> None:
+    print(f'starting a new searching instance with num: {instance_at_start}')
+    global alive_searching_instance, alive_bound_instance
+    main_client, client_address = connect_to_client(server)
+    print('binded to client, decreasing search and increasing bound')
+    alive_searching_instance -= 1
+    alive_bound_instance += 1
+    print('bound is now:', alive_bound_instance)
+    print('transferring to input handler')
+    input_handler(main_client, client_address)
+
+
+
+def start_instance() -> None:
+    global alive_searching_instance, alive_bound_instance
+    while True:
+        if alive_searching_instance == 0:
+            print(f'starting instance, searching count is {alive_searching_instance}')
+            alive_searching_instance += 1
+            main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            threading.Thread(target=lambda:server_instance(main_server, alive_bound_instance + 1), daemon=True).start()
+            #break
+
+
+start_instance()
+
+
+while True:
+    pass

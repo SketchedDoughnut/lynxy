@@ -2,7 +2,8 @@ import socket
 
 # set up server ip, port to connect to
 server_ip = input('enter ip: ')
-server_port = 12345
+server_port = 11111
+
 # start client object
 main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -63,8 +64,17 @@ def request_by_username(client: socket.socket, username: str) -> tuple:
 
 
 
+print('CLIENT1: CONNECTING TO PORT', server_port)
 connect_to_server(main_client)
 submit_username_data(main_client, 'SketchedDoughnut')
 target_ip, target_port = request_by_username(main_client, 'SketchedDoughnut')
-submit_username_data(main_client, 'Test_Username123~!')
-target_ip, target_port = request_by_username(main_client, 'Test_Username123~!')
+main_client.close()
+
+main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+import time
+time.sleep(3)
+server_port = 11112
+print('CLIENT2: CONNECTING TO PORT', server_port)
+connect_to_server(main_client)
+submit_username_data(main_client, 'Sketched')
+target_ip, target_port = request_by_username(main_client, 'Sketched')
