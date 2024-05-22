@@ -86,7 +86,7 @@ def check_alive(client: socket.socket) -> bool:
         unique_server_instance_dict[client] = False
         # client.close()
     
-
+# https://stackoverflow.com/questions/48024720/python-how-to-check-if-socket-is-still-connected
 def is_socket_closed(sock: socket.socket) -> bool:
     try:
         # this will try to read bytes without blocking and also without removing them from buffer (peek only)
