@@ -1,14 +1,20 @@
 import socket
 
+# file imports
+import valid_ports as v
+
 # set up server ip, port to connect to
 server_ip = input('enter ip: ')
-server_port = 11111
+valid_ports = v.valid_ports
+not_inclusive_max_port_amount = len(valid_ports) - 1
+server_port = valid_ports[0]
 
 # start client object
 main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # connects to server
 def connect_to_server(client: socket.socket):
+    global server_port
     '''sets up the initial connection to the server, verifies it can send data over'''
     
     # connect to server ip, server port
@@ -17,14 +23,26 @@ def connect_to_server(client: socket.socket):
     while True:
         print(f'attempt: {attempt_count}')
         try:
+            print('trying port:', server_port)
             client.connect((server_ip, server_port))
-            print('connected to server')
             break
-        except:
+        except Exception as e:
+            # print('error:', e)
+            # exit()
             attempt_count += 1
             if attempt_count > 9:
-                print('connection failed 10 times, exiting')
-                exit()
+                print('failed, moving to next port')
+                if valid_ports.index(server_port) < not_inclusive_max_port_amount:
+                    server_port = valid_ports[valid_ports.index(server_port) + 1]
+                    print('swapped to port', server_port)
+                else:
+                    print('all ports exhausted, exiting')
+                    exit()
+                attempt_count = 0
+            # attempt_count += 1
+            # if attempt_count > 9:
+            #     print('connection failed 10 times, exiting')
+            #     exit()
 
     # loop until get verify back
     while True:
@@ -73,7 +91,7 @@ main_client.close()
 main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 import time
 time.sleep(3)
-server_port = 11112
+server_port = 12111
 print('CLIENT2: CONNECTING TO PORT', server_port)
 connect_to_server(main_client)
 submit_username_data(main_client, 'Sketched')

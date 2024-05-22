@@ -2,6 +2,10 @@ import socket
 import random
 import threading
 
+# file imoprts
+import valid_ports as v
+
+
 # set limit for server instances
 INSTANCE_LIMIT = 5
 alive_bound_instance = 0
@@ -9,8 +13,11 @@ alive_searching_instance = 0
 
 # create server object, set port
 #main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-port = 11111
-port_iter = 0
+# port = 11111
+# port_iter = 0
+valid_ports = v.valid_ports
+not_inclusive_max_port_amount = len(valid_ports) - 1
+port = valid_ports[0]
 
 # set up client dict, storing name to ip correlation
 client_dict = {
@@ -19,16 +26,24 @@ client_dict = {
 
 # connect to client
 def connect_to_client(server: socket.socket) -> list[socket.socket, str]:
-    global port_iter
+    global port
     # bind to first incoming ip, and port
     #server.bind(('', port))
     #print(f'server binded to port {port}')
-    n_port = int(int(port) + int(port_iter))
-    print('attempting to bind to port:', n_port)
-    server.bind(('', n_port))
-    print(f'server binded to port {n_port}')
-    print('connected to port, port iter incremented')
-    port_iter += 1
+    while True:
+        try:
+            print('attempting to bind to port:', port)
+            server.bind(('', port))
+            print(f'server binded to port {port}')
+            break
+        except:
+            if valid_ports.index(port) < not_inclusive_max_port_amount:
+                print('port bind failed, cycling')
+                port = valid_ports[valid_ports.index(port) + 1]
+                print('swapped to port', port)
+            else:
+                print('all ports are being used, cancelling attempt')
+                exit()
 
     # listen for an incoming connection
     print('server listening for a connection...')
@@ -134,7 +149,7 @@ def input_handler(client: socket.socket, client_address: str) -> None:
 
 
 
-def server_instance(server: socket.socket, instance_at_start: int) -> None:
+def start_server_instance(server: socket.socket, instance_at_start: int) -> None:
     print(f'starting a new searching instance with num: {instance_at_start}')
     global alive_searching_instance, alive_bound_instance
     main_client, client_address = connect_to_client(server)
@@ -147,19 +162,14 @@ def server_instance(server: socket.socket, instance_at_start: int) -> None:
 
 
 
-def start_instance() -> None:
+def start_instance_handler() -> None:
     global alive_searching_instance, alive_bound_instance
     while True:
         if alive_searching_instance == 0:
             print(f'starting instance, searching count is {alive_searching_instance}')
             alive_searching_instance += 1
             main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            threading.Thread(target=lambda:server_instance(main_server, alive_bound_instance + 1), daemon=True).start()
-            #break
+            threading.Thread(target=lambda:start_server_instance(main_server, alive_bound_instance + 1), daemon=True).start()
 
 
-start_instance()
-
-
-while True:
-    pass
+start_instance_handler()
