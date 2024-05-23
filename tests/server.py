@@ -1,5 +1,6 @@
 import socket
 import random
+import time
 import threading
 
 valid_ports = [
@@ -33,6 +34,23 @@ client_dict = {
 unique_server_instance_dict = {}
 message_lookup = {}
 
+
+
+
+# def recv_all(client_socket, n): ################################################
+#     # Helper function to receive n bytes or return None if EOF is hit
+#     data = bytearray()
+#     while len(data) < n:
+#         packet = client_socket.recv(n - len(data))
+#         if not packet:
+#             return None
+#         data.extend(packet)
+#     return data
+
+
+
+
+
 # connect to client
 def connect_to_client(server: socket.socket, return_port: bool = False) -> list[socket.socket, str, int]:
     global port
@@ -54,6 +72,7 @@ def connect_to_client(server: socket.socket, return_port: bool = False) -> list[
             else:
                 print('[unbound] all ports are being used, cancelling attempt')
                 exit()
+    print(f'[{local_port}] cycling port ({port}) to local_port ({local_port})')
     port = local_port
 
     # listen for an incoming connection
@@ -64,8 +83,18 @@ def connect_to_client(server: socket.socket, return_port: bool = False) -> list[
     client, addr = server.accept()
     print(f'[{local_port}] connected to client at address {addr}')
 
+
+
+
     # waits for verification message
     msg = client.recv(1024).decode('utf-8')
+    # msg = recv_all(client, 4) ################################################
+    # message_length = int.from_bytes(msg, byteorder='big') ################################################
+    # msg = recv_all(client, message_length).decode('utf-8') ################################################
+
+
+
+
     if 'verify' in msg:
         print(f'[{local_port}] recieved "verify" message, sending "verify_confirm"')
         msg = "verify_confirm".encode('utf-8')
@@ -234,14 +263,14 @@ def input_handler(client: socket.socket, client_address: str, server: socket.soc
     #threading.Thread(target=lambda:log_message(client, server_port), daemon=True).start()
     while True: 
         if unique_server_instance_dict[server_port][0] == False:
-            print(f'[{server_port}]this server on port {server_port} has no active client, and will therefore terminate its process')
-            try:
-                server.shutdown(socket.SHUT_RDWR)
-                client.shutdown(socket.SHUT_RDWR)
-            except:
-                pass
-            server.detach()
-            client.detach()
+            print(f'[{server_port}] this server on port {server_port} has no active client, and will therefore terminate its process')
+            # try:
+            #     server.shutdown(socket.SHUT_RDWR)
+            #     client.shutdown(socket.SHUT_RDWR)
+            # except:
+            #     pass
+            # server.detach()
+            # client.detach()
             server.close()
             client.close()
             alive_bound_instance -= 1
@@ -250,13 +279,13 @@ def input_handler(client: socket.socket, client_address: str, server: socket.soc
             msg = client.recv(1024).decode('utf-8')
         except:
             print(f'[{server_port}] client has been closed on port {server_port}, server instance terminating')
-            try:
-                server.shutdown(socket.SHUT_RDWR)
-                client.shutdown(socket.SHUT_RDWR)
-            except:
-                pass
-            server.detach()
-            client.detach()
+            # try:
+            #     server.shutdown(socket.SHUT_RDWR)
+            #     client.shutdown(socket.SHUT_RDWR)
+            # except:
+            #     pass
+            # server.detach()
+            # client.detach()
             server.close()
             client.close()
             alive_bound_instance -= 1
@@ -292,8 +321,8 @@ def input_handler(client: socket.socket, client_address: str, server: socket.soc
 
 
 def start_server_instance(server: socket.socket, instance_at_start: int) -> None:
-    print(f'[SERVER STARTER] starting a new searching instance with num: {instance_at_start}')
     global alive_searching_instance, alive_bound_instance, unique_server_instance_dict
+    print(f'[SERVER STARTER] starting a new searching instance with num: {instance_at_start}')
     main_client, client_address, server_port = connect_to_client(server, return_port=True)
     print('[SERVER STARTER] binded to client, decreasing search and increasing bound')
     alive_searching_instance -= 1
@@ -305,7 +334,7 @@ def start_server_instance(server: socket.socket, instance_at_start: int) -> None
     unique_server_instance_dict[server_port] = [True, server, main_client]
     # print('logging client address to detect if closed later')
     # unique_server_instance_dict[main_client] = True
-    print('[SERVER STARTER] transferring to input handler')
+    print('[SERVER STARTER] transferring to input handler') 
     input_handler(main_client, client_address, server, server_port)
 
 
@@ -320,14 +349,15 @@ def start_instance_handler() -> None:
         if alive_searching_instance == 0:
             if alive_bound_instance < INSTANCE_LIMIT:
                 initial_limit_print = False
-                print(f'[SERVER HANDLER] starting instance, searching count is {alive_searching_instance}')
+                print(f'[SERVER HANDLER] starting instance, searching count is {alive_searching_instance} (before)')
                 alive_searching_instance += 1
+                print(f'[SERVER HANDLER] starting instance, searching count is {alive_searching_instance} (after)')
+
                 main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                main_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                # main_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # 1
                 threading.Thread(target=lambda:start_server_instance(main_server, alive_bound_instance + 1), daemon=True).start()
             else:
                 if initial_limit_print == False:
-                    import time
                     time.sleep(3) # time for other things to calm down
                     print('[SERVER HANDLER] INSTANCE LIMIT REACHED, NO MORE INSTANCES WILL BE MADE')
                     print('[SERVER HANDLER] BOUND COUNT:', alive_bound_instance)
