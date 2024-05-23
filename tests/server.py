@@ -219,7 +219,7 @@ def input_handler(client: socket.socket, client_address: str, server: socket.soc
             server.close()
             client.close()
             alive_bound_instance -= 1
-            exit()
+            break
         msg = client.recv(1024).decode('utf-8')
         if msg:
             split_msg = msg.split()
@@ -234,6 +234,7 @@ def input_handler(client: socket.socket, client_address: str, server: socket.soc
                 split_msg.remove(prefix)
                 username = "".join(split_msg)
                 answer_request_by_username(client, client_dict, username)
+    exit()
 
 
 
