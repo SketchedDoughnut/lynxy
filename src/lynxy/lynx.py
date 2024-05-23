@@ -99,7 +99,7 @@ def connect_to_server(client: socket.socket):
             # print('error:', e)
             # exit()
             attempt_count += 1
-            if attempt_count > 9:
+            if attempt_count > 4:
                 print('failed, moving to next port')
                 if valid_ports.index(server_port) < not_inclusive_max_port_amount:
                     server_port = valid_ports[valid_ports.index(server_port) + 1]
@@ -116,7 +116,7 @@ def connect_to_server(client: socket.socket):
     # loop until get verify back
     while True:
         msg = "verify"
-        client.send(msg.encode('utf-8')) # send message 
+        client.sendall(msg.encode('utf-8')) # send message 
         print('sent verify message, waiting for return')
         incoming = client.recv(1024).decode('utf-8') # recieve message 
         if incoming == 'verify_confirm': # message to confirm verify = "verify_confirm"
@@ -136,7 +136,7 @@ def submit_username_data(client: socket.socket, username: str) -> None:
     '''submits username to the server that gets associated with this clients ip address
     NOTE: USERNAME CAN HAVE NO SPACES, ANY SPACES WILL BE REMOVED'''
     msg = f'username {username}'.encode('utf-8')
-    client.send(msg)
+    client.sendall(msg)
     print(f'submitted username to server: {username}')
 
 
@@ -151,10 +151,12 @@ def submit_username_data(client: socket.socket, username: str) -> None:
 def request_by_username(client: socket.socket, username: str) -> tuple:
     '''requests an address from the server, getting back an ip address and port'''
     msg = f'request_ip_by_user {username}'.encode('utf-8')
-    client.send(msg)
+    # print('senttoff msg:', msg)
+    client.sendall(msg)
     target_data = client.recv(1024).decode('utf-8')
     if target_data == 'null':
         print('request failed, there is not currently anyone using that username')
+        return ('x', 0)
     else:
         # ????????????????????????????????????????
         target_data = target_data.strip('()')
@@ -174,13 +176,15 @@ def request_by_username(client: socket.socket, username: str) -> tuple:
 # for state in alive_dict:
 
 for port in valid_ports:
+    port = valid_ports[0]
     server_port = port
     print('CLIENT: CONNECTING TO PORT', server_port)
     connect_to_server(main_client)
     #submit_username_data(main_client, 'SketchedDoughnut')
     #target_ip, target_port = request_by_username(main_client, 'SketchedDoughnut')
-    submit_username_data(main_client, str(server_port))
-    target_ip, target_port = request_by_username(main_client, str(server_port))
+    submit_username_data(main_client, 'x')
+    time.sleep(0.25)
+    target_ip, target_port = request_by_username(main_client, 'x')
     main_client.close()
     main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     time.sleep(1)

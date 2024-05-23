@@ -31,7 +31,7 @@ client_dict = {
 }
 
 unique_server_instance_dict = {}
-# active_instance_dict = {}
+message_lookup = {}
 
 # connect to client
 def connect_to_client(server: socket.socket, return_port: bool = False) -> list[socket.socket, str, int]:
@@ -42,35 +42,35 @@ def connect_to_client(server: socket.socket, return_port: bool = False) -> list[
     #print(f'server binded to port {port}')
     while True:
         try:
-            print('attempting to bind to port:', local_port)
+            print(f'[unbound] attempting to bind to port:', local_port)
             server.bind(('', local_port))
-            print(f'server binded to port {local_port}')
+            print(f'[{local_port}] server binded to port {local_port}')
             break
         except:
             if valid_ports.index(local_port) < not_inclusive_max_port_amount:
-                print('port bind failed, cycling')
+                print('[unbound] port bind failed, cycling')
                 local_port = valid_ports[valid_ports.index(local_port) + 1]
-                print('swapped to port', local_port)
+                print('[unbound] swapped to port', local_port)
             else:
-                print('all ports are being used, cancelling attempt')
+                print('[unbound] all ports are being used, cancelling attempt')
                 exit()
     port = local_port
 
     # listen for an incoming connection
-    print('server listening for a connection...')
+    print(f'[{local_port}] server listening for a connection...')
     server.listen(5)
 
     # set client, client address
     client, addr = server.accept()
-    print(f'connected to client at address {addr}')
+    print(f'[{local_port}] connected to client at address {addr}')
 
     # waits for verification message
     msg = client.recv(1024).decode('utf-8')
     if 'verify' in msg:
-        print('recieved "verify" message, sending "verify_confirm"')
+        print(f'[{local_port}] recieved "verify" message, sending "verify_confirm"')
         msg = "verify_confirm".encode('utf-8')
-        client.send(msg)
-        print('message sent')
+        client.sendall(msg)
+        print(f'[{local_port}] message sent')
         if return_port == True:
             return [client, addr, local_port]
         else:
@@ -100,19 +100,22 @@ def check_alive() -> None:
     global unique_server_instance_dict
     import time
     while True:
-        time.sleep(5)
         for por in valid_ports:
             try:
                 data = unique_server_instance_dict[port]
                 state = data[0]
                 server_obj = data[1]
                 client_obj = data[2]
-                state = is_socket_closed(client_obj)
-                if state == True:
-                    print(f'the client for port {por} is not responsive, so the connection will be terminated.')
+                closed = is_socket_closed(client_obj)
+                if closed == True:
+                    print(f'[ALIVE SCANNER] the client for port {por} is not responsive, so the connection will be terminated.')
                     unique_server_instance_dict[por] = [False, server_obj, client_obj]
+                # else:
+                    # print(f'{por} is connected to a client and healthy')
             except:
                 pass
+                # print('not checking this port as they have not signed on yet')
+        time.sleep(5)
         
 
 
@@ -125,9 +128,11 @@ def check_alive() -> None:
 def is_socket_closed(sock: socket.socket) -> bool:
     try:
         # this will try to read bytes without blocking and also without removing them from buffer (peek only)
-        data = sock.recv(16, socket.MSG_DONTWAIT | socket.MSG_PEEK)
+        #data = sock.recv(16, socket.MSG_DONTWAIT | socket.MSG_PEEK)
+        data = sock.recv(16)
         if len(data) == 0:
             return True
+        
     except BlockingIOError:
         return False  # socket is open and reading from it would block
     except ConnectionResetError:
@@ -153,10 +158,12 @@ def is_socket_closed(sock: socket.socket) -> bool:
 
 
 # log username data into client_dict
-def log_username_data(username: str, address: str, c_dict: dict) -> dict:
-    c_dict[username] = address
-    print('logged username and address to client dict')
-    return c_dict
+#def log_username_data(username: str, address: str, c_dict: dict) -> dict:
+def log_username_data(username: str, address: str, po: int) -> None:
+    global client_dict
+    client_dict[username] = address
+    print(f'[{po}] logged username ({username})  and address ({address}) to client dict')
+    #return client_dict
 
 
 
@@ -171,7 +178,7 @@ def log_username_data(username: str, address: str, c_dict: dict) -> dict:
 
 
 
-def answer_request_by_username(client: socket.socket, c_dict: dict, cmd: str) -> None:
+def answer_request_by_username(client: socket.socket, client_addr: str, server_po: int, c_dict: dict, cmd: str) -> None:
     # cmd = client.recv(1024).decode('utf-8')
     # split_cmd = cmd.split()
     if cmd:
@@ -179,25 +186,36 @@ def answer_request_by_username(client: socket.socket, c_dict: dict, cmd: str) ->
         #     split_cmd.remove('request_ip_by_user')
             # username = "".join(split_cmd)
             username = cmd
-            print(f'client requested data associated with "{username}", searching for in client_dict...')
+            print(f'[{server_po}] client requested data associated with "{username}", searching for in client_dict...')
             try:
                 req_details = str(c_dict[username])
-                print(f'data acquired by username: {req_details}')
+                print(f'[{server_po}] data acquired by username: {req_details}')
                 msg = req_details.encode('utf-8')
-                client.send(msg)
-                print('address sent back to client')
+                # client.sendall(msg)
+                client.sendto(msg, client_addr)
+                print(f'[{server_po}] address sent back to client')
             except:
-                print('username does not exist in database, returning None.')
+                print(f'[{server_po}] username does not exist in database, returning None.')
                 msg = 'null'.encode('utf-8')
-                client.send(msg)
+                client.sendall(msg)
 
 
 
 
 
 
-
-
+# def log_message(client: socket.socket, sport: int) -> None:
+#     global message_lookup
+#     client.settimeout(5)
+#     while True:
+#         try:
+#             msg = client.recv(1024).decode('utf-8')
+#             message_lookup[sport] = msg
+#             print('picked up and logged msg')
+#             print('-------------------', msg)
+#         except:
+#             # print('timed out')
+#             pass
 
 
 
@@ -207,33 +225,64 @@ def answer_request_by_username(client: socket.socket, c_dict: dict, cmd: str) ->
 
 # MAIN MESSAGE HANDLER
 def input_handler(client: socket.socket, client_address: str, server: socket.socket, server_port: int) -> None:
-    global client_dict, alive_bound_instance
+    global client_dict, alive_bound_instance #, message_lookup
     print('----------------------')
-    print('INPUT HANDLER STARTED')
+    print(f'[{server_port}] INPUT HANDLER STARTED')
     print('----------------------')
-    print('starting alive check loop...')
-    threading.Thread(target=lambda:check_alive()).start()
+    print(f'[{server_port}] starting alive check loop...')
+    threading.Thread(target=lambda:check_alive(), daemon=True).start()
+    #threading.Thread(target=lambda:log_message(client, server_port), daemon=True).start()
     while True: 
         if unique_server_instance_dict[server_port][0] == False:
-            print(f'this server on port {server_port} has no active client, and will therefore terminate its process')
+            print(f'[{server_port}]this server on port {server_port} has no active client, and will therefore terminate its process')
+            try:
+                server.shutdown(socket.SHUT_RDWR)
+                client.shutdown(socket.SHUT_RDWR)
+            except:
+                pass
+            server.detach()
+            client.detach()
             server.close()
             client.close()
             alive_bound_instance -= 1
             break
-        msg = client.recv(1024).decode('utf-8')
+        try:
+            msg = client.recv(1024).decode('utf-8')
+        except:
+            print(f'[{server_port}] client has been closed on port {server_port}, server instance terminating')
+            try:
+                server.shutdown(socket.SHUT_RDWR)
+                client.shutdown(socket.SHUT_RDWR)
+            except:
+                pass
+            server.detach()
+            client.detach()
+            server.close()
+            client.close()
+            alive_bound_instance -= 1
+            break
+        # try:
+            #msg = message_lookup[server_port]
         if msg:
-            split_msg = msg.split()
+            split_msg = str(msg).split()
+            print('---------------- MSG', msg)
+            print('----------------SPLIT MSG', split_msg)
             prefix = split_msg[0]
             if prefix == 'username':
-                print('-- username prefix detected')
+                print(f'[{server_port}] -- username prefix detected')
                 split_msg.remove(prefix)
                 username = "".join(split_msg)
-                client_dict = log_username_data(username, client_address, client_dict)
+                #client_dict = log_username_data(username, client_address, client_dict)
+                log_username_data(username, client_address, server_port)
+                # message_lookup[server_port] = ''
             elif prefix == 'request_ip_by_user':
-                print('-- request_ip_by_user prefix detected')
+                print(f'[{server_port}] -- request_ip_by_user prefix detected')
                 split_msg.remove(prefix)
                 username = "".join(split_msg)
-                answer_request_by_username(client, client_dict, username)
+                answer_request_by_username(client, client_address, server_port, client_dict, username)
+                # message_lookup[server_port] = ''
+        # except:
+            # pass
     exit()
 
 
@@ -243,19 +292,20 @@ def input_handler(client: socket.socket, client_address: str, server: socket.soc
 
 
 def start_server_instance(server: socket.socket, instance_at_start: int) -> None:
-    print(f'starting a new searching instance with num: {instance_at_start}')
+    print(f'[SERVER STARTER] starting a new searching instance with num: {instance_at_start}')
     global alive_searching_instance, alive_bound_instance, unique_server_instance_dict
     main_client, client_address, server_port = connect_to_client(server, return_port=True)
-    print('binded to client, decreasing search and increasing bound')
+    print('[SERVER STARTER] binded to client, decreasing search and increasing bound')
     alive_searching_instance -= 1
     alive_bound_instance += 1
-    print('bound is now:', alive_bound_instance)
-    print('signing in to active dict with port, logging True and main_client')
+    print('[SERVER STARTER] bound is now:', alive_bound_instance)
+    print('[SERVER STARTER] signing in to active dict with port, logging True and main_client')
+    print(f'[SERVER STARTER] client address, server port: {client_address}, {server_port}')
     # active_instance_dict[server_port] = [True, main_client]
     unique_server_instance_dict[server_port] = [True, server, main_client]
     # print('logging client address to detect if closed later')
     # unique_server_instance_dict[main_client] = True
-    print('transferring to input handler')
+    print('[SERVER STARTER] transferring to input handler')
     input_handler(main_client, client_address, server, server_port)
 
 
@@ -270,16 +320,17 @@ def start_instance_handler() -> None:
         if alive_searching_instance == 0:
             if alive_bound_instance < INSTANCE_LIMIT:
                 initial_limit_print = False
-                print(f'starting instance, searching count is {alive_searching_instance}')
+                print(f'[SERVER HANDLER] starting instance, searching count is {alive_searching_instance}')
                 alive_searching_instance += 1
                 main_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                main_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 threading.Thread(target=lambda:start_server_instance(main_server, alive_bound_instance + 1), daemon=True).start()
             else:
                 if initial_limit_print == False:
                     import time
                     time.sleep(3) # time for other things to calm down
-                    print('INSTANCE LIMIT REACHED, NO MORE INSTANCES WILL BE MADE')
-                    print('BOUND COUNT:', alive_bound_instance)
+                    print('[SERVER HANDLER] INSTANCE LIMIT REACHED, NO MORE INSTANCES WILL BE MADE')
+                    print('[SERVER HANDLER] BOUND COUNT:', alive_bound_instance)
                     initial_limit_print = True
 
 
