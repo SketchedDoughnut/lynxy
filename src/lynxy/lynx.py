@@ -137,8 +137,8 @@ def submit_username_data(client: socket.socket, username: str) -> None:
     '''submits username to the server that gets associated with this clients ip address
     NOTE: USERNAME CAN HAVE NO SPACES, ANY SPACES WILL BE REMOVED'''
     msg = f'username {username}'.encode('utf-8')
-    # message_length = len(msg) # chatty
-    # client.sendall(message_length.to_bytes(4, byteorder='big')) # chatty
+    message_length = len(msg) # chatty
+    client.sendall(message_length.to_bytes(4, byteorder='big')) # chatty
     client.sendall(msg)
     print(f'submitted username to server: {username}')
 
