@@ -17,9 +17,8 @@ server_ip = input('enter ip: ')
 not_inclusive_max_port_amount = len(valid_ports) - 1
 server_port = valid_ports[0]
 
-# start client object
-main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-connection_timeout = False
+# start client timeout
+# connection_timeout = False
 
 
 
@@ -28,16 +27,16 @@ connection_timeout = False
 
 
 
-def timeout_connection(timeout_time: int = 5) -> None:
-    global connection_timeout
-    init_time = time.time()
-    while True:
-        new_time = time.time()
-        dif = new_time - init_time
-        if dif >= timeout_time:
-            connection_timeout = True
-            print('timed out')
-            exit()
+# def timeout_connection(timeout_time: int = 5) -> None:
+#     global connection_timeout
+#     init_time = time.time()
+#     while True:
+#         new_time = time.time()
+#         dif = new_time - init_time
+#         if dif >= timeout_time:
+#             connection_timeout = True
+#             print('timed out')
+#             exit()
 
 
 
@@ -176,20 +175,12 @@ def request_by_username(client: socket.socket, username: str) -> tuple:
 
 
 
-# alive_dict = info_connect()
-# for state in alive_dict:
 
-# for port in valid_ports:
 port = valid_ports[0]
 server_port = port
-print('CLIENT: CONNECTING TO PORT', server_port)
+main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print('CLIENT: CONNECTING TO PORT', port)
 connect_to_server(main_client)
-#submit_username_data(main_client, 'SketchedDoughnut')
-#target_ip, target_port = request_by_username(main_client, 'SketchedDoughnut')
-# submit_username_data(main_client, 'x')
-# time.sleep(0.25)
-# target_ip, target_port = request_by_username(main_client, 'x')
-# main_client.close()
-# main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# main_client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-# time.sleep(1)
+submit_username_data(main_client, 'SketchedDoughnut')
+time.sleep(1) # NECESSARY OR MESSAGES GET SCRAMBLED AND CUT OFF BY EACHOTHER
+target_ip, target_port = request_by_username(main_client, 'SketchedDoughnut')

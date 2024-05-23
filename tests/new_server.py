@@ -29,37 +29,67 @@ client_dict = {
 
 # a dictionary where a port number is associated with [State of living (bool), server_socket, client_socket] NOTE: server_socket is not used
 unique_server_instance_dict = {}
-
+for port in valid_ports:
+    unique_server_instance_dict[port] = [False, 'x', 'x']
 
 
 
 
 
 ### FUNCTIONS
+
+## TOOlS
+# def 
+
+
+
+## CORE FUNCTIONS
 # connect to client
 def connect_to_client(server: socket.socket, return_port: bool = False) -> list:
     # access global
     local_port = default_port
     
-    while True:
-        try:
-            # attempt to bind to socket, if succeed, break out of loop
-            print(f'[unbound] attempting to bind to port:', local_port)
-            server.bind(('', local_port))
-            print(f'[{local_port}] server binded to port {local_port}')
-            break
+    # while True:
+        # try:
+        #     # attempt to bind to socket, if succeed, break out of loop
+        #     print(f'[unbound] attempting to bind to port:', local_port)
+        #     server.bind(('', local_port))
+        #     print(f'[{local_port}] server binded to port {local_port}')
+        #     break
 
-        except:
-            # if socket bind failed, and the current local_port is not at the end of the valid_ports list, then cycle port to the next index in valid_ports
-            if valid_ports.index(local_port) < not_inclusive_max_port_amount:
-                print('[unbound] port bind failed, cycling')
-                local_port = valid_ports[valid_ports.index(local_port) + 1]
-                print('[unbound] swapped to port', local_port)
+        # except:
+        #     # if socket bind failed, and the current local_port is not at the end of the valid_ports list, then cycle port to the next index in valid_ports
+        #     if valid_ports.index(local_port) < not_inclusive_max_port_amount:
+        #         print('[unbound] port bind failed, cycling')
+        #         local_port = valid_ports[valid_ports.index(local_port) + 1]
+        #         print('[unbound] swapped to port', local_port)
             
-            # if all ports are busy, exit client
-            else:
-                print('[unbound] all ports are being used, cancelling attempt')
-                exit()
+        #     # if all ports are busy, exit client
+        #     else:
+        #         print('[unbound] all ports are being used, cancelling attempt')
+        #         exit()
+
+    try:
+        # iterate through valid ports, check if any are not alive in unique_server_instance_dict
+        found_open = False
+        for port in valid_ports:
+            data = unique_server_instance_dict[port]
+            is_alive = data[0]
+            server_obj = data[1]
+            client_obj = data[2]
+            if is_alive == False:
+                found_open = True
+                open_port = port
+                break
+        if found_open == True:
+            print(f'[unbound] open port found: {open_port}')
+            server.bind(('', open_port))
+            print(f'[{open_port}] server binded to port {open_port}')
+        else:
+            print('[unbound] all ports are being used, cancelling attempt')
+            exit()
+    except Exception as e:
+        print(f'[unbound] an error occured when trying to bind to ports: {e}')
 
 
 
@@ -67,12 +97,12 @@ def connect_to_client(server: socket.socket, return_port: bool = False) -> list:
     # default_port = local_port
 
     # listen for an incoming connection
-    print(f'[{local_port}] server listening for a connection...')
+    print(f'[{open_port}] server listening for a connection...')
     server.listen(5)
 
     # set client, client address
     client, client_address = server.accept()
-    print(f'[{local_port}] connected to client at address {client_address}')
+    print(f'[{open_port}] connected to client at address {client_address}')
 
     # waits for verification message
     msg = client.recv(1024).decode('utf-8')
@@ -82,9 +112,9 @@ def connect_to_client(server: socket.socket, return_port: bool = False) -> list:
         print(f'[{local_port}] recieved "verify" message, sending "verify_confirm"')
         msg = "verify_confirm".encode('utf-8')
         client.sendall(msg)
-        print(f'[{local_port}] message sent')
+        print(f'[{local_port}] verify_confirm sent')
         if return_port == True:
-            return [client, client_address , local_port] # if port requested, return client, client_address, and the port used for this instance
+            return [client, client_address , open_port] # if port requested, return client, client_address, and the port used for this instance
         else:
             return [client, client_address] # if no port requested, return client, client_address
         
@@ -125,9 +155,7 @@ def answer_request_by_username(client: socket.socket, client_address: str, port:
 def input_handler(client: socket.socket, client_address: str, server: socket.socket, server_port: int) -> None:
     global client_dict, alive_bound_instance
     # starts
-    print('----------------------')
-    print(f'[{server_port}] INPUT HANDLER STARTED')
-    print('----------------------')
+    print(f'----------------------\n[{server_port}] INPUT HANDLER STARTED\n----------------------')
 
     # starts thread to check for what sockets are alive (disabled, currently) 
     # print(f'[{server_port}] starting alive check loop...') ################################################
@@ -199,7 +227,7 @@ def start_server_instance(instance_at_start: int) -> None:
     # set the client object, the clients address, and the servers binded port from connect_to_client, passing in a server socket
     print(f'[SERVER STARTER] starting a new searching server instance with num: {instance_at_start}')
     client, client_address, server_port = connect_to_client(server, return_port=True)
-    print('[SERVER STARTER] binded to client')
+    print(f'[SERVER STARTER] server instance {instance_at_start} binded to client')
 
     # sign into the dictionary, passing in -> alive or dead (bool, default is True as we are starting), server socket, client_socket
     print(f'[SERVER STARTER] client address, server port: {client_address}, {server_port}')
@@ -243,8 +271,7 @@ def start_instance_handler() -> None:
             else:
                 if initial_limit_print == False:
                     time.sleep(3) # time for other things to calm down
-                    print('[SERVER HANDLER] INSTANCE LIMIT REACHED, NO MORE INSTANCES WILL BE MADE')
-                    print('[SERVER HANDLER] BOUND COUNT:', alive_bound_instance)
+                    print(f'[SERVER HANDLER] INSTANCE LIMIT REACHED, NO MORE INSTANCES WILL BE MADE\n[SERVER HANDLER] BOUND COUNT: {alive_bound_instance}')
                     initial_limit_print = True
 
 
