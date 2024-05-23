@@ -2,8 +2,13 @@ import socket
 import random
 import threading
 
-# file imoprts
-import valid_ports as v
+valid_ports = [
+    11111,
+    12111,
+    11211,
+    11121,
+    11112
+]
 
 
 # set limit for server instances

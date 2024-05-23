@@ -3,12 +3,17 @@ import time
 import threading
 import json
 
-# file imports
-import valid_ports as v
+valid_ports = [
+    11111,
+    12111,
+    11211,
+    11121,
+    11112
+]
 
 # set up server ip, port to connect to
 server_ip = input('enter ip: ')
-valid_ports = v.valid_ports
+# valid_ports = v.valid_ports
 not_inclusive_max_port_amount = len(valid_ports) - 1
 server_port = valid_ports[0]
 
@@ -178,5 +183,4 @@ for port in valid_ports:
     target_ip, target_port = request_by_username(main_client, str(server_port))
     main_client.close()
     main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    import time
     time.sleep(1)
