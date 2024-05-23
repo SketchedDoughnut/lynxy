@@ -116,7 +116,8 @@ def connect_to_client(server: socket.socket, port_override: int = 0, return_port
                     break
             if found_open == True:
                 print(f'[unbound] open port found: {open_port}')
-                server.bind(('', open_port))
+                #server.bind(('', open_port))
+                server.bind(('localhost', open_port))
                 print(f'[{open_port}] server binded to port {open_port}')
             else:
                 print('[unbound] all ports are being used, cancelling attempt')
@@ -124,7 +125,8 @@ def connect_to_client(server: socket.socket, port_override: int = 0, return_port
         else:
             open_port = port_override
             print(f'[unbound] port overrided to: {open_port}')
-            server.bind(('', open_port))
+            #server.bind(('', open_port))
+            server.bind(('localhost', open_port))
             print(f'[{open_port}] server binded to port {open_port}')
     except Exception as e:
         print(f'[unbound] an error occured when trying to bind to ports: {e}')

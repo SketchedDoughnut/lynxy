@@ -92,7 +92,8 @@ def connect_to_server(client: socket.socket):
             # if connection_timeout == True:
             #     print('timed out - main')
             # if con_thread.is_alive() == False:
-            client.connect((server_ip, server_port))
+            #client.connect((server_ip, server_port))
+            client.connect(('localhost', server_port))
             break
         except Exception as e:
             # print('error:', e)
