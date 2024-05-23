@@ -98,7 +98,7 @@ def connect_to_server(client: socket.socket):
             # print('error:', e)
             # exit()
             attempt_count += 1
-            if attempt_count > 4:
+            if attempt_count > 0:
                 print('failed, moving to next port')
                 if valid_ports.index(server_port) < not_inclusive_max_port_amount:
                     server_port = valid_ports[valid_ports.index(server_port) + 1]
@@ -137,8 +137,8 @@ def submit_username_data(client: socket.socket, username: str) -> None:
     '''submits username to the server that gets associated with this clients ip address
     NOTE: USERNAME CAN HAVE NO SPACES, ANY SPACES WILL BE REMOVED'''
     msg = f'username {username}'.encode('utf-8')
-    message_length = len(msg) # chatty
-    client.sendall(message_length.to_bytes(4, byteorder='big')) # chatty
+    # message_length = len(msg) # chatty
+    # client.sendall(message_length.to_bytes(4, byteorder='big')) # chatty
     client.sendall(msg)
     print(f'submitted username to server: {username}')
 
@@ -176,11 +176,13 @@ def request_by_username(client: socket.socket, username: str) -> tuple:
 
 
 
-port = valid_ports[0]
-server_port = port
-main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print('CLIENT: CONNECTING TO PORT', port)
-connect_to_server(main_client)
-submit_username_data(main_client, 'SketchedDoughnut')
-time.sleep(1) # NECESSARY OR MESSAGES GET SCRAMBLED AND CUT OFF BY EACHOTHER
-target_ip, target_port = request_by_username(main_client, 'SketchedDoughnut')
+# port = valid_ports[0]
+for port in valid_ports:
+    server_port = port
+    main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print('CLIENT: CONNECTING TO PORT', port)
+    connect_to_server(main_client)
+    submit_username_data(main_client, 'SketchedDoughnut')
+    time.sleep(1) # NECESSARY OR MESSAGES GET SCRAMBLED AND CUT OFF BY EACHOTHER
+    target_ip, target_port = request_by_username(main_client, 'SketchedDoughnut')
+    time.sleep(1)

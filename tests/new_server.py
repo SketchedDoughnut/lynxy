@@ -251,48 +251,37 @@ def input_handler(client: socket.socket, client_address: str, server: socket.soc
                 answer_request_by_username(client, client_address, server_port, client_dict, username)
 
     # exit if the code broke out of the loop
-    #exit()
+    exit()
 
 
 
 # this function is called on to set up the initial server instance (thread) (ONE OF THE FEW FUNCTIONS WITH GLOBAL ACCESS TO VARS)
 def start_server_instance(instance_at_start: int) -> None:
     global alive_searching_instance, alive_bound_instance, unique_server_instance_dict
+
     # initially make server binded before loop
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # set the client object, the clients address, and the servers binded port from connect_to_client, passing in a server socket
     print(f'[SERVER STARTER-{instance_at_start}] starting a new searching server instance with num: {instance_at_start}')
     client, client_address, server_port = connect_to_client(server, return_port=True)
     print(f'[SERVER STARTER-{instance_at_start}] server instance {instance_at_start} binded to client')
-    initial_start = True
-    
-    # loop made to re-establish the server given it dies
-    while True:
-        # set up the server object
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # main_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) ################################################
 
-        if initial_start == False:
-            # set the client object, the clients address, and the servers binded port from connect_to_client, passing in a server socket
-            print(f'[SERVER STARTER-{instance_at_start}] starting a new searching server instance with num: {instance_at_start}')
-            client, client_address, server_port = connect_to_client(server, port_override=server_port, return_port=True)
-            print(f'[SERVER STARTER-{instance_at_start}] server instance {instance_at_start} binded to client')
+    # sign into the dictionary, passing in -> alive or dead (bool, default is True as we are starting), server socket, client_socket
+    print(f'[SERVER STARTER-{instance_at_start}] client address, server port: {client_address}, {server_port}')
+    unique_server_instance_dict[server_port] = [True, server, client]
+    print(f'[SERVER STARTER-{instance_at_start}] signing in to active dict with port, logging True and main_client')
 
-        # sign into the dictionary, passing in -> alive or dead (bool, default is True as we are starting), server socket, client_socket
-        print(f'[SERVER STARTER-{instance_at_start}] client address, server port: {client_address}, {server_port}')
-        unique_server_instance_dict[server_port] = [True, server, client]
-        print(f'[SERVER STARTER-{instance_at_start}] signing in to active dict with port, logging True and main_client')
+    # lower searching as server instance has found client, increase bound (will trigger a new instance creation)
+    print(f'[SERVER STARTER-{instance_at_start}] decreasing search and increasing bound')
+    alive_searching_instance -= 1
+    alive_bound_instance += 1
+    print(f'[SERVER STARTER-{instance_at_start}] searching is now:', alive_searching_instance)
+    print(f'[SERVER STARTER-{instance_at_start}] bound is now:', alive_bound_instance)
 
-        # lower searching as server instance has found client, increase bound (will trigger a new instance creation)
-        print(f'[SERVER STARTER-{instance_at_start}] decreasing search and increasing bound')
-        alive_searching_instance -= 1
-        alive_bound_instance += 1
-        print(f'[SERVER STARTER-{instance_at_start}] searching is now:', alive_searching_instance)
-        print(f'[SERVER STARTER-{instance_at_start}] bound is now:', alive_bound_instance)
-
-        # start the input handler, this thread has now finished its task
-        print(f'[SERVER STARTER-{instance_at_start}] transferring to input handler') 
-        input_handler(client, client_address, server, server_port)
-        initial_start = False
+    # start the input handler, this thread has now finished its task
+    print(f'[SERVER STARTER-{instance_at_start}] transferring to input handler') 
+    input_handler(client, client_address, server, server_port)
 
 
 
