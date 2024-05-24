@@ -102,17 +102,21 @@ def start_connection() -> None:
     # establish the connection to a port that the server is on
     main_client, PORT = __cycle_port__(main_client)
 
-    # # next, send a send a message to the server
-    # submit_username_data(main_client, 'username SketchedDoughnut')
+    # REMOVE THE BELOW LATER
+    # next, send a send a message to the server
+    submit_username_data(main_client, 'username SketchedDoughnut')
 
-    # # necessary delay
-    # time.sleep(1)
+    # necessary delay
+    time.sleep(1)
 
-    # # next, request username data
-    # request_data(main_client, 'request_by_user SketchedDoughnut')
+    # next, request username data
+    request_username_data(main_client, 'request_by_user SketchedDoughnut')
 
-    # # necessary delay
-    # time.sleep(1)
+    # necessary delay
+    time.sleep(1)
 
-    # # finally, end the session
-    # general_send(main_client, 'end_session')
+    # finally, end the session
+    general_send(main_client, 'end_session')
+
+
+start_connection()
