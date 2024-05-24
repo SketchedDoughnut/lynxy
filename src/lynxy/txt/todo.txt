@@ -7,9 +7,9 @@ THINGS THE USER DOES HAVE ACCESS TO:
 - valid_ports
 - HOST
 - submit_username_data()
-- request_data()
+- request_username_data()
 - general_send()
-- start_client(
+- start_connection()
 
 
     
@@ -28,5 +28,22 @@ WORKFLOW
         - The user sets their username (no spaces)
         - The user submits their username data to the server 
             - submit_username_data(username)
-        - The user requests data assigned to a username from the server
+        - The user requests data assigned to the other players username from the server
             - request_data(username)
+    
+    - TO BE DONE:
+        - The user runs a function to attempt to connect to the other client
+            - if succeeds, closes server connection
+            - if fails after 3 tries, returns failed
+
+- FOR THE SERVER:
+    - WHAT THEY CAN OVERRIDE:
+        - if the user wants, they can override the valid ports (ONLY IF THEY KNOW WHAT THEY ARE DOING)
+        - if the user wants, they can override the default ip (empty) (ONLY IF THEY KNOW WHAT THEY ARE DOING)
+        - if the user wants, they can override the selected port (THIS IS HIGHLY NOT RECOMMENDED)
+
+    - WHAT THEY CAN SET UP:
+        - the user starts the server
+
+    - TO BE DONE:
+        - Add more features to the server?

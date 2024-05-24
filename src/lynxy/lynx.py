@@ -11,7 +11,8 @@ valid_ports = [
     22111,
     12211,
     11221,
-    11122
+    11122,
+    22222
 ]
 
 # define all global vars
@@ -74,7 +75,7 @@ def submit_username_data(client: socket.socket, message: str) -> None:
 
 
 # requests ip and port from server
-def request_data(client: socket.socket, message: str) -> socket.socket:
+def request_username_data(client: socket.socket, message: str) -> socket.socket:
     encoded_message = message.encode('utf-8')
     client.sendall(encoded_message)
     print(f"Sent:     {message}")
