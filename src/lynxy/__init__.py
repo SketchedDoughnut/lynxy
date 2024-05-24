@@ -8,4 +8,4 @@ we can do:
 # extending main lynx file
 # from .lynx import *
 # extends start function from lynx file
-from .lynx import start_client
+from .lynx import *

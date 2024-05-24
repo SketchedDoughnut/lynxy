@@ -22,7 +22,7 @@ main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 ## FUNCTIONS
 # cycles port connection
-def cycle_port(client: socket.socket) -> socket.socket:
+def __cycle_port__(client: socket.socket) -> socket.socket:
     connected = False
     for port in valid_ports:
         try:
@@ -50,24 +50,27 @@ def cycle_port(client: socket.socket) -> socket.socket:
 
 
 # a function to fully recieve the message from server (to try and prevent loss)
-def full_recieve(client: socket.socket) -> str:
-    message_length = len(client.recv(1024).decode('utf-8'))
-    incoming_message = ''
-    local_length = 0
-    while local_length <= message_length:
-        incoming_message += client.recv(1024).decode('utf-8')
-        local_length = len(incoming_message)
-    return incoming_message
+# def full_recieve(client: socket.socket) -> str:
+#     message_length = len(client.recv(1024).decode('utf-8'))
+#     incoming_message = ''
+#     local_length = 0
+#     while local_length <= message_length:
+#         incoming_message += client.recv(1024).decode('utf-8')
+#         local_length = len(incoming_message)
+#     return incoming_message
 
 
 
 # a function for submitting username data to the server
 def submit_username_data(client: socket.socket, message: str) -> None:
+    # local override for package form
+    client = main_client
     encoded_message  = message.encode('utf-8')
     client.sendall(encoded_message)
     print(f"Sent:     {message}")
     incoming_data = client.recv(1024).decode('utf-8')
     print(f"Received: {incoming_data}")
+
 
 
 # requests ip and port from server
@@ -92,21 +95,23 @@ def general_send(client: socket.socket, message: str) -> None:
 
 
 
-def start_client() -> None:
+def start_connection() -> None:
+    global main_client
+    
     # establish the connection to a port that the server is on
-    main_client, PORT = cycle_port(main_client)
+    main_client, PORT = __cycle_port__(main_client)
 
-    # next, send a send a message to the server
-    submit_username_data(main_client, 'username SketchedDoughnut')
+    # # next, send a send a message to the server
+    # submit_username_data(main_client, 'username SketchedDoughnut')
 
-    # necessary delay
-    time.sleep(1)
+    # # necessary delay
+    # time.sleep(1)
 
-    # next, request username data
-    request_data(main_client, 'request_by_user SketchedDoughnut')
+    # # next, request username data
+    # request_data(main_client, 'request_by_user SketchedDoughnut')
 
-    # necessary delay
-    time.sleep(1)
+    # # necessary delay
+    # time.sleep(1)
 
-    # finally, end the session
-    general_send(main_client, 'end_session')
+    # # finally, end the session
+    # general_send(main_client, 'end_session')
