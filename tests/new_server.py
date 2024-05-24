@@ -204,15 +204,15 @@ def input_handler(client: socket.socket, client_address: str, server: socket.soc
     # internal loop
     while True: 
         # see if the current server is supposed to be alive
-        # is_alive = unique_server_instance_dict[server_port][0]
-        # if is_alive == False:
-        #     print(f'[{server_port}] this server on port {server_port} has no active client, and will therefore terminate its process')
-        #     # close client and server if this port is not connected to a client
-        #     server.close()
-        #     client.close()
-        #     # lower how many are considered alive and bound so a new instance can be made 
-        #     alive_bound_instance -= 1
-        #     break
+        is_alive = unique_server_instance_dict[server_port][0]
+        if is_alive == False:
+            print(f'[{server_port}] this server on port {server_port} has no active client, and will therefore terminate its process')
+            # close client and server if this port is not connected to a client
+            server.close()
+            client.close()
+            # lower how many are considered alive and bound so a new instance can be made 
+            alive_bound_instance -= 1
+            break
 
         # try to recieve a message from the client
         try:
@@ -263,6 +263,7 @@ def start_server_instance(instance_at_start: int) -> None:
 
     # initially make server binded before loop
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # server = socket.socket(socket.AF_INET, socket.TCP_NODELAY)
 
     # set the client object, the clients address, and the servers binded port from connect_to_client, passing in a server socket
     print(f'[SERVER STARTER-{instance_at_start}] starting a new searching server instance with num: {instance_at_start}')
