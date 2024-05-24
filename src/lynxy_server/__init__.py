@@ -6,4 +6,4 @@ we can do:
 '''
 
 # extending main lynx file
-from .lynx import *
+from .lynx_server import *

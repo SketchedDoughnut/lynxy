@@ -59,7 +59,7 @@ class myTCPserver(socketserver.BaseRequestHandler):
 
 
 
-def cycle_port() -> None:
+def cycle_start() -> None:
     global PORT
     connected = False
     for port in valid_ports:
@@ -86,9 +86,3 @@ def cycle_port() -> None:
     if connected == False:
         print('Server failed to find an open valid port, exiting')
         exit()
-
-
-
-
-
-cycle_port()
