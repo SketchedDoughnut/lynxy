@@ -1,4 +1,5 @@
 import socketserver
+import socket
 
 client_dict = {
     'default': 0
@@ -20,6 +21,8 @@ valid_ports = [
 HOST = '' # localhost
 PORT = valid_ports[0]
 
+
+
 class myTCPserver(socketserver.BaseRequestHandler):
     def handle(self) -> None:
         global client_dict
@@ -30,23 +33,23 @@ class myTCPserver(socketserver.BaseRequestHandler):
             split_msg.remove(prefix)
             joined_msg = "".join(split_msg)
 
-            print(f"{self.client_address[0]} wrote: {msg}")
+            # print(f"{self.client_address[0]} wrote: {msg}")
 
             if prefix == 'username':
                 client_dict[joined_msg] = self.client_address
-                print(f'{prefix} - logging {self.client_address} to {joined_msg}')
+                print(f'[{self.client_address[0]}] {prefix} - logging {self.client_address} to {joined_msg}')
                 self.request.sendall('logged username, data'.encode('utf-8'))
 
             elif prefix == 'request_by_user':
                 try:
                     self.request.sendall(str(client_dict[joined_msg]).encode('utf-8'))
-                    print(f'{prefix} - return {joined_msg} data: {client_dict[joined_msg]}')
+                    print(f'[{self.client_address[0]}] {prefix} - return {joined_msg} data: {client_dict[joined_msg]}')
                 except:
                     pass
 
             elif msg == 'end_session':
                 self.request.sendall('ending'.encode('utf-8'))
-                print(f'{msg} - ending this instance')
+                print(f'[{self.client_address[0]}] {msg} - ending this instance')
                 print('----------------------------------------------')
                 break
 
