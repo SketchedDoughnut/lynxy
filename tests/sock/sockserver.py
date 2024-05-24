@@ -4,26 +4,87 @@ client_dict = {
     'default': 0
 }
 
+valid_ports = [
+    11111,
+    12111,
+    11211,
+    11121,
+    11112,
+    22111,
+    12211,
+    11221,
+    11122
+]
+
+HOST = '' # localhost
+PORT = valid_ports[0]
 
 class myTCPserver(socketserver.BaseRequestHandler):
     def handle(self) -> None:
         global client_dict
-        msg = bytes(self.request.recv(1024)).decode('utf-8')
-        print(f"{self.client_address[0]} wrote:")
-        print(msg)
-        split_msg = msg.split()
-        if split_msg[0] == 'username':
-            split_msg.remove(split_msg[0])
-            msg = "".join(split_msg)
-            client_dict[msg] = self.client_address
-        elif split_msg[0] == 'request_by_user':
-            split_msg.remove(split_msg[0])
-            msg = "".join(split_msg)
-            self.request.sendall(str(client_dict[msg]).encode('utf-8'))
-        else:
-            self.request.sendall(msg.upper().encode('utf-8'))  # Send response back to the client
+        while True:
+            msg = bytes(self.request.recv(1024)).decode('utf-8')
+            split_msg = msg.split()
+            prefix = split_msg[0]
+            split_msg.remove(prefix)
+            joined_msg = "".join(split_msg)
 
-host = '' # localhost
-port = 11111 
-with socketserver.ThreadingTCPServer((host, port), myTCPserver) as server:
-    server.serve_forever()
+            print(f"{self.client_address[0]} wrote: {msg}")
+
+            if prefix == 'username':
+                client_dict[joined_msg] = self.client_address
+                print(f'{prefix} - logging {self.client_address} to {joined_msg}')
+                self.request.sendall('logged username, data'.encode('utf-8'))
+
+            elif prefix == 'request_by_user':
+                try:
+                    self.request.sendall(str(client_dict[joined_msg]).encode('utf-8'))
+                    print(f'{prefix} - return {joined_msg} data: {client_dict[joined_msg]}')
+                except:
+                    pass
+
+            elif msg == 'end_session':
+                self.request.sendall('ending'.encode('utf-8'))
+                print(f'{msg} - ending this instance')
+                print('----------------------------------------------')
+                break
+
+            else:
+                self.request.sendall(msg.upper().encode('utf-8'))  # Send response back to the client
+
+
+
+
+def cycle_port() -> None:
+    global PORT
+    connected = False
+    for port in valid_ports:
+
+        try:
+            print(f'[PORT CYCLE] Server trying port: {port}')
+            with socketserver.ThreadingTCPServer((HOST, port), myTCPserver) as server:
+                print(f'[PORT CYCLE] Server found port for startup: {port}')
+                print('----------------------------------------------')
+                connected = True
+                PORT = port
+                server.serve_forever()
+                break
+        except IndexError:
+            port = valid_ports[0]
+            print(f'[PORT CYCLE - RESET 1] Server resetting port to: {port}')
+        except:
+            try:
+                print(f'[PORT CYCLE] Server port cycling: {port} -> {valid_ports[valid_ports.index(port) + 1]}')
+            except IndexError:
+                port = valid_ports[0]
+                print(f'[PORT CYCLE - RESET 2] Server resetting port to: {port}')
+    
+    if connected == False:
+        print('Server failed to find an open valid port, exiting')
+        exit()
+
+
+
+
+
+cycle_port()
