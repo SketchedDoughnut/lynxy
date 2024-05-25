@@ -21,7 +21,8 @@ valid_ports = [
 HOST = '' # localhost
 PORT = valid_ports[0]
 
-
+HOST = (socket.gethostbyname(socket.gethostname()))
+print('HOST on:', HOST)
 
 class myTCPserver(socketserver.BaseRequestHandler):
     def handle(self) -> None:

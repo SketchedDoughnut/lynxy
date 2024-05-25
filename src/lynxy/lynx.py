@@ -117,3 +117,4 @@ def start_connection() -> None:
 
     # finally, end the session
     general_send(main_client, 'end_session')
+

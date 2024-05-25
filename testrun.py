@@ -1,6 +1,3 @@
-from src import lynxy
-# or
-from src import lynxy_server
+from src import lynxy_server as server
 
-lynxy_server.cycle_start()
-lynxy.start_connection()
+server.
