@@ -16,3 +16,6 @@ When you do this, it will install both the modules "lynxy" and "lynxy_server". O
 
 # Server setup
 To access server setup, go [**here**](./info/github/lynxy_server.md)
+
+# Client setup
+To access client setup, go [**here**](./info/github/lynxy.md)
