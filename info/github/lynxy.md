@@ -1,7 +1,7 @@
 # Client setup
 To set up the client module, you first need to import it. <br>
 `import lynxy` <br>
-Next, there is some customization that is needed, and it is not optional.
+Next, there is some customization you can do. However, if you want to just start the client, skip to "Starting your client"
 
 ***
 **Configuring your client** <br>
@@ -36,7 +36,7 @@ If you want to enable printing, use the following command: <br>
 
 
 
-# Starting the client
+# Starting your client
 To start your client, all you need to do is call one function, passing in the ip of the server. In this example, we use a loopback address: <br>
 - `lynxy.start_client('127.0.0.1')`
     - You can get the servers IP by seeing what it prints during startup. This number should be distributed to anyone with the code containing the lynxy client code.
