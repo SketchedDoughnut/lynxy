@@ -60,8 +60,12 @@ class myTCPserver(socketserver.BaseRequestHandler):
 
 
 
-def start_connection() -> None:
-    global PORT
+def start_connection(ip_override: str = '') -> None:
+    global HOST, PORT
+    
+    if ip_override:
+        HOST = ip_override
+        
     connected = False
     for port in valid_ports:
 
@@ -74,9 +78,9 @@ def start_connection() -> None:
                 PORT = port
                 server.serve_forever()
                 break
-        except IndexError:
-            port = valid_ports[0]
-            print(f'[PORT CYCLE - RESET 1] Server resetting port to: {port}')
+        # except IndexError:
+        #     port = valid_ports[0]
+        #     print(f'[PORT CYCLE - RESET 1] Server resetting port to: {port}')
         except:
             try:
                 print(f'[PORT CYCLE] Server port cycling: {port} -> {valid_ports[valid_ports.index(port) + 1]}')
