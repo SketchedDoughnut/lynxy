@@ -1,8 +1,8 @@
 # this below code has been contributed to by chat gpt
 import socket
-import time
+# import time
 
-valid_ports = [
+_valid_ports = [
     11111,
     12111,
     11211,
@@ -16,8 +16,8 @@ valid_ports = [
 ]
 
 # define all global vars
-HOST, PORT = '', valid_ports[0] # localhost
-main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+_HOST, _PORT = '', _valid_ports[0] # local_HOST
+_main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # override info
 _ov_ports = []
@@ -61,6 +61,19 @@ def pprint(msg: str) -> None:
     else:
         pass
 
+# function to display current data
+def get_data() -> dict:
+    '''
+    Returns data about the current client in the form of a dictionary
+    '''
+    return {
+        'client info': {
+            'ip': _HOST,
+            'port': _PORT
+        },
+        'sillies': 'sillies :3'
+    }
+
 
 
 
@@ -69,25 +82,25 @@ def pprint(msg: str) -> None:
 # cycles port connection
 def _cycle_port(client: socket.socket) -> socket.socket:
     '''
-    An internal function used to cycle through the ports in valid_ports to try and find a connection
+    An internal function used to cycle through the ports in _valid_ports to try and find a connection
     '''
     connected = False
-    for port in valid_ports:
+    for port in _valid_ports:
         try:
             pprint(f'[PORT CYCLE] Client trying port: {port}')
-            client.connect((HOST, port))
+            client.connect((_HOST, port))
             pprint(f'[PORT CYCLE] Client connected to: {port}')
             pprint('----------------------------------------------')
             connected = True
             break
         except IndexError:
-            port = valid_ports[0]
+            port = _valid_ports[0]
             pprint(f'[PORT CYCLE - RESET 1] Client resetting port to: {port}')
         except:
             try:
-                pprint(f'[PORT CYCLE] Client port cycling: {port} -> {valid_ports[valid_ports.index(port) + 1]}')
+                pprint(f'[PORT CYCLE] Client port cycling: {port} -> {_valid_ports[_valid_ports.index(port) + 1]}')
             except IndexError:
-                port = valid_ports[0]
+                port = _valid_ports[0]
                 pprint(f'[PORT CYCLE - RESET 2] Client resetting port to: {port}')
     if connected == True:
         return client, port
@@ -113,7 +126,7 @@ def submit_username_data(message: str) -> None:
     Submits a username to the server, which the server will associate with your IP and port
     '''
     # local override for package form
-    client = main_client
+    client = _main_client
     encoded_message = message.encode('utf-8')
     client.sendall(encoded_message)
     pprint(f"Sent:     {message}")
@@ -126,7 +139,7 @@ def request_username_data(message: str) -> None:
     requests data associated with a username from the server
     '''
     # local override for package form
-    client = main_client
+    client = _main_client
     encoded_message = message.encode('utf-8')
     client.sendall(encoded_message)
     pprint(f"Sent:     {message}")
@@ -140,7 +153,7 @@ def general_send(message: str) -> None:
     A general tool function for sending messages to the recipient (server, other client, etc)
     '''
     # local override for package form
-    client = main_client
+    client = _main_client
     encoded_message = message.encode('utf-8')
     client.sendall(encoded_message)
     pprint(f"Sent:     {message}")
@@ -154,14 +167,14 @@ def start_client(connection_ip: str) -> None:
     '''
     Starts the connection to the server, taking in an IP
     '''
-    global main_client, valid_ports, PORT, HOST
-    HOST = connection_ip
+    global _main_client, _valid_ports, _PORT, _HOST
+    _HOST = connection_ip
 
     # overrides
     if len(_ov_ports) > 0:
-        valid_ports = _ov_ports
-        PORT = valid_ports[0]
-        pprint(f'[OVERRIDE] Overrided ports to: {valid_ports}')
+        valid__ports = _ov_ports
+        _PORT = _valid_ports[0]
+        pprint(f'[OVERRIDE] Overrided ports to: {_valid_ports}')
     
     # establish the connection to a port that the server is on
-    main_client, PORT = _cycle_port(main_client)
+    _main_client, _PORT = _cycle_port(_main_client)

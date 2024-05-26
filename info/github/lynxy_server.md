@@ -19,6 +19,7 @@ Next, there is some customization you can do. However, if you want to just start
 The server has a couple of parameters that can be overriden. These are: 
 - the ports it attempts to connect to
 - the IP it tries to run on 
+- whether the program prints or not
 
 
 **Overriding ports** <br>
@@ -72,6 +73,10 @@ To start your server, you have a couple of options. Here is the rundown: <br>
 
 # Other functions
 - `lynxy_server.get_data()` -> will return the following data in a dictionary:
-  - if the server is active or not (bool)
-  - the IP the server is binded to (string)
-  - The port the server is binded to (int)
+  - server info
+    - if the server is alive or not (bool)
+    - the ip the server is on (string)
+    - the port the server is on (int)
+  - a dictionary containing client info
+    - example username
+      - (example ip, example port)

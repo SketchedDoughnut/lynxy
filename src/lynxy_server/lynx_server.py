@@ -173,7 +173,8 @@ def no_thread_start_server() -> None:
             with socketserver.ThreadingTCPServer((_HOST, port), __myTCPserver__) as server:
                 pprint(f'[PORT CYCLE] Server found port for startup: {port}')
                 pprint('[SERVER] Server is ready for communication~!')
-                pprint('----------------------------------------------')
+                print(f'Server IP: {_HOST}')
+                print('----------------------------------------------')
                 _connected = True
                 _PORT = port
                 server.serve_forever()
