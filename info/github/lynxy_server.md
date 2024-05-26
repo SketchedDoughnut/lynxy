@@ -37,11 +37,11 @@ The server has a default list of ports it will try to connect to. These ports ar
 
 It cycles through these ports so that if one is not available, it can still launch itself. You can override these ports by running the function below, and passing in a list with one or more ports (in integer form). There is no limit for how many ports you can pass into it. In this example, we use three random ports: <br>
 `lynxy_server.override_ports([12345, 67890, 17390])` <br>
-**NOTE**: YOU MUST HAVE PORTS ON THE CLIENT AND THE SERVER THAT ARE THE SAME, SO THAT THEY CAN FIND EACHOTHER
+**NOTE**: YOU MUST HAVE PORTS ON THE CLIENT AND THE SERVER THAT ARE THE SAME, SO THAT THEY CAN FIND EACH OTHER
 
 
 **Overriding IP** <br>
-The server uses the ipV4 IP of the device it is running on. It is advised to not change this. However, if you want to override the IP, you can use the following function, inputting a string. <br>
+The server uses the ipv4 IP of the device it is running on. It is advised to not change this. However, if you want to override the IP, you can use the following function, inputting a string. <br>
 `lynxy_server.override_ip("123.456.789.0")`
 
 
@@ -66,30 +66,33 @@ If you want to enable printing, use the following command: <br>
 To start your server, you have a couple of options. Here is the rundown: <br>
 - `lynxy_server.start_server()`
   - This option will not block your code, as it will run the server in a seperate thread. This allows for use of functions such as `lynxy_server.get_data()`, and more.
-  - If you disable print and then call on this function, absolutely nothing will be printed. You can get the IP the server is on, the port the server is on, and the session token from `lynxy-server.get_data()`. Alternatively, `lynxy_server.start_server()` returns a tuple containing all of these (in respective order) which you can also use to get data from. Clients will need the IP address to connect to the server, and if you want to remotely control the server then you will also need the session token. Usage of this token is elaborated on more in the client setup page.
+  - If you disable print and then call on this function, absolutely nothing will be printed. You can get the IP the server is on, the port the server is on, and the session token from `lynxy_server.get_data()`. Alternatively, `lynxy_server.start_server()` returns a tuple containing all of these (in respective order) which you can also use to get data from. Clients will need the IP address to connect to the server, and if you want to remotely control the server then you will also need the session token. Usage of this token is elaborated on more in the client setup page.
   - **PLEASE NOTE**: If you use this function, and there is no code continuing after it, the file will finish. This means that the server will get terminated. To prevent this, please include some sort of loop system AFTER calling the function that keeps the file in which you called on this function active, as to not close the server.
 - `lynxy_server.no_thread_start_server()`
-  - This option will block your code, as it is directly running the server. This does not allow for any code to run after this function is called, until the server goes offline. The server will only go offline if it crashes, or if someone remotely shuts it down by authorizing their user, and then commanding the server to shut down. This is explained more in the client setup page.
+  - This option will block your code, as it is directly running the server. This does not allow for any code to run after this function is called, until the server goes offline. The server will only go offline if it crashes, or if someone remotely shuts it down by authorizing their user, and then commanding the server to shut down. This is explained more in the client setup page, and the shutdown feature is explained below.
  
 # Server response key
-The server has a variety of numbers it will return as responses to actions. The key is below. 
-- 555 
-  - the server has been commanded to deny every client that connects to it
+The server has a variety of numbers it will return as responses to actions. Codes from 0 to 99 are status codes. Codes from 100 to 199 is regarding invalid messages from the clients. Codes from 200 to 299 are regarding system settings, set by an authorized client. These include being denied if you do not have the right permissions.
+The key is below. 
 - 0
   - the operation was successful
+- 1
+  - the server failed to do an operation
+- 2
+  - the client requested to end the communication channel with the server
+- 3
+  - the message the the client sent to the server is not connected to any command, and so it did nothing
 - 100
   - the client requested data associated with a username that does not exist
-- 110
+- 101
   - the user tried to authorize themself, but had an invalid auth token
-- 111
+- 102
   - the user has not been authorized, and can not do what they just tried to
-- 999
-  - the client requested to end the communication channel with the server
-- 222
-  - the message the the client sent to the server is not connected to any command, and so it did nothing
+- 200
+  - the server has been commanded to deny every client that connects to it
 
 # Other functions
-- `lynxy_server.get_data()` -> will return the following data in a dictionary:
+- `lynxy_server.get_data()` -> This function will only work if you are using the threaded start function, and will return the following data in a dictionary:
   - server info
     - if the server is alive or not (bool)
     - the ip the server is on (string)
@@ -97,4 +100,4 @@ The server has a variety of numbers it will return as responses to actions. The 
   - client info (dict)
     - example username (str)
       - (example ip, example port) (tuple)
-- `lynxy_server.shutdown_server()` -> will shutdown the server, and return a bool telling you whether it worked or not.
+- `lynxy_server.shutdown_server()` -> will shutdown the server, and return a reponse key telling you whether it worked or not.

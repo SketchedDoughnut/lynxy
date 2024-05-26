@@ -126,9 +126,9 @@ def shutdown_server(do_print: bool = True) -> bool:
         _server.shutdown()
         if do_print == True:
             pprint('[SERVER SHUTDOWN] Shutting down server...')
-        return True
+        return OPERATION_SUCCESS
     except:
-        return False
+        return OPERATION_FAIL
     
 # function to poll shutdown var, if it is enabled then shutdown
 def _poll_shutdown() -> None:
@@ -240,16 +240,17 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
             elif msg == 'shutdown_server':
                 if _verified == True:
                     _shutdown = True
-                    self.request.sendall('shutdown of server requested, raising flag'.encode())
+                    # self.request.sendall('shutdown of server requested, raising flag'.encode())
+                    self.request.sendall(OPERATION_SUCCESS.encode('utf-8'))
                     pprint(f'[{addr}] {msg} - shutdown of server requested, raising flag')
                 else:
-                    self.request.sendall('user not authorized'.encode())
+                    # self.request.sendall('user not authorized'.encode())
                     self.request.sendall(USER_NOT_AUTHORIZED.encode())
 
             # if msg is end_session, end the current session the server and the client have
             elif msg == 'end_session':
                 # self.request.sendall('ending'.encode())
-                self.request.sendall(END_CONNECTION.encode())
+                self.request.sendall(END_SESSION.encode())
                 pprint(f'[{addr}] {msg} - ending this instance')
                 pprint('----------------------------------------------')
                 break
