@@ -3,7 +3,8 @@
 Local (yielding?) Network (eXchange?) (the extra y is cosmetic~)
 
 # **Introduction**
-lynxy, also known as lynx, is a LAN server-client system coded in Python. It allows for easy setup of a server, as well as easy setup for clients on the same network as the server. 
+lynxy, also known as lynx, is a LAN server-client system coded in Python. It allows for easy setup of a server, as well as easy setup for clients on the same network as the server. <br>
+The use of this module is so that if people were to make programs that require a LAN system, they can use what is provided here for that.
 The first section will explain instructions that apply to both, and then we will cover each individual part.
 
 # **General setup**
