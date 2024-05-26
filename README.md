@@ -29,7 +29,7 @@ To set up the server module, you first need to import it. <br></br>
 `import lynxy_server` <br></br>
 Next, there is some customization you can do. However, if you want to just start the server, skip to "Starting your server"
 
-<br></br>
+<!-- <br></br> -->
 <b>Configuring your server</b>
 
 The server has a couple of parameters that can be overriden. These are: 
@@ -39,7 +39,7 @@ The server has a couple of parameters that can be overriden. These are:
 <!-- <br></br> -->
 
 **Overriding ports** <br></br>
-The server has a default list of ports it will try to connect to. These ports are: <br></br>
+The server has a default list of ports it will try to connect to. These ports are:
 1.  11111 
 2.  12111 
 3.  11211 
