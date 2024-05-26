@@ -15,3 +15,7 @@ When you do this, it will install both the modules "lynxy" and "lynxy_server". O
 # Server setup
 To set up the server module, you first need to import it. <br>
 `import lynxy_server`
+
+Next, there is some customization you can do. However, if you want to just start the server, skip to "Starting your server"
+
+**Configuring your server**
