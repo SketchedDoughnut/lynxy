@@ -77,6 +77,6 @@ To start your server, you have a couple of options. Here is the rundown: <br>
     - if the server is alive or not (bool)
     - the ip the server is on (string)
     - the port the server is on (int)
-  - a dictionary containing client info
-    - example username
-      - (example ip, example port)
+  - client info (dict)
+    - example username (str)
+      - (example ip, example port) (tuple)
