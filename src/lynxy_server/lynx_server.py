@@ -2,6 +2,7 @@ import socketserver
 import socket
 import threading
 import time
+import random
 
 # where client data is stored
 _client_dict = {
@@ -103,7 +104,26 @@ def get_data() -> dict:
     }
 
 
-
+## SAFETY FUNCTIONS
+# function to generate an auth token that someone can use to remotely control the server
+def _gen_auth_token() -> str:
+    '''
+    A function that generates an auth token for the user to use to remotely connect and control the server
+    '''
+    lower_alpha = 'abcdefghijklmnopqrstuvwxyz'
+    upper_alpha = lower_alpha.upper()
+    letter_list = [lower_alpha, upper_alpha]
+    token = ''
+    for i in range(6): # length of your sign-in token
+        letter_or_num = random.randint(0, 1)
+        if letter_or_num == 0:
+            letter_type = random.randint(0, 1)
+            letter_range = letter_list[letter_type]
+            letter_index = random.randint(0, len(letter_range) - 1)
+            token += letter_range[letter_index]
+        elif letter_or_num == 1:
+            token += str(random.randint(0, 9))
+    return token
 
 
 # MAIN CLASS
