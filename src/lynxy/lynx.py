@@ -121,31 +121,37 @@ def _cycle_port(client: socket.socket) -> socket.socket:
 #     return incoming_message
 
 # a function for submitting username data to the server
-def submit_username_data(message: str) -> None:
+def submit_username_data(message: str) -> str:
     '''
-    Submits a username to the server, which the server will associate with your IP and port
+    Submits a username to the server, which the server will associate with your IP and port.
+    Returns a message that confirms that the action has happened.
     '''
     # local override for package form
     client = _main_client
-    encoded_message = message.encode('utf-8')
+    # encoded_message = message.encode('utf-8')
+    encoded_message = f'username {message}'.encode('utf-8') # added username prefix by default
     client.sendall(encoded_message)
     pprint(f"Sent:     {message}")
     incoming_data = client.recv(1024).decode('utf-8')
     pprint(f"Received: {incoming_data}")
+    return incoming_data
 
 # requests ip and port from server
-def request_username_data(message: str) -> None:
+def request_username_data(message: str) -> any:
     '''
-    requests data associated with a username from the server
+    requests data associated with a username from the server, and either returns 'None' meaning you entered an invalid username, 
+    or returns the IP and port of the user in a tuple.
     '''
     # local override for package form
     client = _main_client
-    encoded_message = message.encode('utf-8')
+    # encoded_message = message.encode('utf-8')
+    encoded_message = f'request_by_user {message}'.encode('utf-8') # added request_by_user prefix by default
     client.sendall(encoded_message)
     pprint(f"Sent:     {message}")
     # incoming_data = full_recieve(client)
     incoming_data = client.recv(1024).decode('utf-8')
     pprint(f"Received: {incoming_data}")
+    return incoming_data
 
 # a general message sender
 def general_send(message: str) -> None:
