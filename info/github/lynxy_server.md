@@ -36,7 +36,8 @@ The server has a default list of ports it will try to connect to. These ports ar
 10. 22222 
 
 It cycles through these ports so that if one is not available, it can still launch itself. You can override these ports by running the function below, and passing in a list with one or more ports (in integer form). There is no limit for how many ports you can pass into it. In this example, we use three random ports: <br>
-`lynxy_server.override_ports([12345, 67890, 17390])`
+`lynxy_server.override_ports([12345, 67890, 17390])` <br>
+**NOTE**: YOU MUST HAVE PORTS ON THE CLIENT AND THE SERVER THAT ARE THE SAME, SO THAT THEY CAN FIND EACHOTHER
 
 
 **Overriding IP** <br>
