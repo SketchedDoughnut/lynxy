@@ -92,9 +92,12 @@ def get_data() -> dict:
     Returns data about the current server in the form of a dictionary
     '''
     return {
-        'is_alive': _connected,
-        'ip': _HOST,
-        'port': _PORT
+        'server info': {
+            'is_alive': _connected,
+            'ip': _HOST,
+            'port': _PORT
+        },
+        'client info': _client_dict
     }
 
 
@@ -125,6 +128,7 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
                     self.request.sendall(str(_client_dict[joined_msg]).encode('utf-8'))
                     pprint(f'[{self.client_address[0]}] {prefix} - return {joined_msg} data: {_client_dict[joined_msg]}')
                 except:
+                    pprint(f'[{self.client_address[0]}] {prefix} - return {joined_msg} data: None')
                     self.request.sendall('None'.encode('utf-8'))
 
             # if msg is end_session, end the current session the server and the client have
@@ -168,7 +172,7 @@ def no_thread_start_server() -> None:
             pprint(f'[PORT CYCLE] Server trying port: {port}')
             with socketserver.ThreadingTCPServer((_HOST, port), __myTCPserver__) as server:
                 pprint(f'[PORT CYCLE] Server found port for startup: {port}')
-                pprint('[SERVER] Server is ready for communication')
+                pprint('[SERVER] Server is ready for communication~!')
                 pprint('----------------------------------------------')
                 _connected = True
                 _PORT = port
