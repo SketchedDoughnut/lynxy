@@ -21,8 +21,8 @@ valid_ports = [
 HOST = '' # localhost
 PORT = valid_ports[0]
 
+# HOST OVERRIDE
 HOST = (socket.gethostbyname(socket.gethostname()))
-print('HOST on:', HOST)
 
 class myTCPserver(socketserver.BaseRequestHandler):
     def handle(self) -> None:
@@ -87,3 +87,10 @@ def cycle_start() -> None:
     if connected == False:
         print('Server failed to find an open valid port, exiting')
         exit()
+
+
+
+
+
+print('HOST on:', HOST)
+cycle_start()
