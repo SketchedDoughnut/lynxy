@@ -34,9 +34,14 @@ _do_print = True
 
 # status vars
 _connected = False
+_shutdown = False
+_kill_all = False
 
 # server obj for shutting down
 _server = 0
+
+# starting thread object
+_starting_thread = 0
 
 # server token
 _token = 'x'
@@ -108,6 +113,33 @@ def get_data() -> dict:
         'client info': _client_dict
     }
 
+# function for shutting down the server
+def shutdown_server(do_print: bool = True) -> bool:
+    '''
+    A function to shut down the server: returns a bool telling you whether it worked or not.
+    '''
+    global _server
+    try:
+        _server.shutdown()
+        if do_print == True:
+            pprint('[SERVER SHUTDOWN] Shutting down server...')
+        return True
+    except:
+        return False
+    
+# function to poll shutdown var, if it is enabled then shutdown
+def _poll_shutdown() -> None:
+    global _kill_all
+    while True:
+        if _shutdown == True:
+            pprint('[SERVER SHUTDOWN] request to shutdown detected, shutting down server...')
+            shutdown_server(False)
+            pprint('[SERVER SHUTDOWN] Enabling _kill_all...')
+            _kill_all = True
+            pprint('[SERVER SHUTDOWN] Server shut down, exiting...')
+            break
+        time.sleep(5)
+    exit()
 
 ## SAFETY FUNCTIONS
 # function to generate an auth token that someone can use to remotely control the server
@@ -134,7 +166,8 @@ def _gen_auth_token() -> str:
 # MAIN CLASS
 class __myTCPserver__(socketserver.BaseRequestHandler):
     def handle(self) -> None:
-        global _client_dict, _verified
+        global _client_dict, _verified, _shutdown
+
         while True:
             # establish client address
             addr = self.client_address[0]
@@ -147,46 +180,81 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
                 split_msg.remove(prefix)
                 joined_msg = "".join(split_msg)
             except:
-                # self.request.sendall('crash - ending'.encode('utf-8'))
+                # self.request.sendall('crash - ending'.encode())
                 pprint(f'[{self.client_address[0]}] {msg} - crash - ending this instance')
                 pprint('----------------------------------------------')
                 break
+
+            # kill client communication if is true
+            if _kill_all == True:
+                # self.request.sendall('the server has been commanded to kill all client instances'.encode())
+                self.request.sendall('555'.encode())
+                pprint(f'[SERVER SHUTDOWN] Killing this instance, due to _kill_all being True...')
+
 
             # if prefix is username, log their username and their device info (ip, port) associated with it
             if prefix == 'username':
                 _client_dict[joined_msg] = self.client_address
                 pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
-                self.request.sendall('logged username, data'.encode('utf-8'))
+                # self.request.sendall('logged username, data'.encode())
+                self.request.sendall('0'.encode())
 
             # if prefix is request_by_user, attempt to return the data associated with that username. If it does not exist, send back "None"
             elif prefix == 'request_by_user':
                 try:
-                    self.request.sendall(str(_client_dict[joined_msg]).encode('utf-8'))
+                    self.request.sendall(str(_client_dict[joined_msg]).encode())
                     pprint(f'[{addr}] {prefix} - return {joined_msg} data: {_client_dict[joined_msg]}')
                 except:
                     pprint(f'[{addr}] {prefix} - return {joined_msg} data: None')
-                    self.request.sendall('None'.encode('utf-8'))
+                    # self.request.sendall('None'.encode())
+                    self.request.sendall('100'.encode())
 
             # if prefix is auth, check if token is matching, then allow user to use dev features
             elif prefix == 'auth':
                 if joined_msg == _token:
-                    # enable_print()
-                    self.request.sendall('client session authorized'.encode('utf-8'))
+                    _verified = True
+                    self.request.sendall('client session authorized'.encode())
                     pprint(f'[{addr}] {prefix} - authed client')
                 else:
-                    self.request.sendall('invalid auth token'.encode('utf-8'))
+                    # self.request.sendall('invalid auth token'.encode())
+                    self.request.sendall('110'.encode())
+
+            # if msg is clear_client, check if this client is authorized and then clear the client_dict
+            if msg == 'clear_client':
+                if _verified == True:
+                    _client_dict = {
+                        'default': 0
+                    }
+                    self.request.sendall('cleared client dictionary')
+                    pprint(f'[{addr}] {msg} - clearing client_dict')
+                else:
+                    # self.request.sendall('user not authorized'.encode())
+                    self.request.sendall('111'.encode())
+
+
+            # if msg is shutdown_server, check if this client is authorized and then raise the flag to shutdown srever
+            elif msg == 'shutdown_server':
+                if _verified == True:
+                    _shutdown = True
+                    self.request.sendall('shutdown of server requested, raising flag'.encode())
+                    pprint(f'[{addr}] {msg} - shutdown of server requested, raising flag')
+                else:
+                    self.request.sendall('user not authorized'.encode())
+                    self.request.sendall('111'.encode())
 
             # if msg is end_session, end the current session the server and the client have
             elif msg == 'end_session':
-                self.request.sendall('ending'.encode('utf-8'))
+                # self.request.sendall('ending'.encode())
+                self.request.sendall('999'.encode())
                 pprint(f'[{addr}] {msg} - ending this instance')
                 pprint('----------------------------------------------')
                 break
             
             # ignore their message if otherwise
             else:
-                # self.request.sendall(msg.upper().encode('utf-8'))  # Send response back to the client
-                self.request.sendall('invalid command'.encode('utf-8'))
+                # self.request.sendall(msg.upper().encode())  # Send response back to the client
+                # self.request.sendall('invalid command'.encode())
+                self.request.sendall('222'.encode())
                 pass
 
 
@@ -220,6 +288,9 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
             pprint(f'[PORT CYCLE] Server trying port: {port}')
             with socketserver.ThreadingTCPServer((_HOST, port), __myTCPserver__) as _server:
                 pprint(f'[PORT CYCLE] Server found port for startup: {port}')
+                # start server shutdown poll
+                threading.Thread(target=lambda:_poll_shutdown(), daemon=True).start()
+                pprint('[SERVER] Started scan for shutdown requests')
                 if is_threaded: 
                     pprint(f'[SERVER] Server IP: {_HOST}')
                     pprint(f'[SERVER] Control token: {_token}')
@@ -248,25 +319,18 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
     else:
         pprint('[PORT CYCLE - ERROR 1] It is assumed server has been shutdown, ignoring error')
 
-# function for shutting down the server
-def shutdown_server() -> bool:
-    '''
-    A function to shut down the server: returns a bool telling you whether it worked or not.
-    '''
-    global _server
-    try:
-        _server.shutdown()
-        pprint('[SERVER SHUTDOWN] Shutting down server...')
-        return True
-    except:
-        return False
+
+
+
 
 # starts the server via a thread, to let the code calling this function continue running instead of blocking
 def start_server() -> tuple:
+    global _starting_thread
     '''
     Starts the server in a thread, which means this will not block the rest of your code if you have more things done after this function is called. 
     This function also returns the IP that the server is on, as well as the port, in a tuple.
     '''
-    threading.Thread(target=lambda:no_thread_start_server(True), daemon=True).start()
+    _starting_thread = threading.Thread(target=lambda:no_thread_start_server(True), daemon=True)
+    _starting_thread.start()
     time.sleep(0.25) # this is to not get false information if they request data later on 
     return _HOST, _PORT, _token

@@ -69,10 +69,24 @@ To start your server, you have a couple of options. Here is the rundown: <br>
   - If you disable print and then call on this function, absolutely nothing will be printed. You can get the IP the server is on, the port the server is on, and the session token from `lynxy-server.get_data()`. Alternatively, `lynxy_server.start_server()` returns a tuple containing all of these (in respective order) which you can also use to get data from. Clients will need the IP address to connect to the server, and if you want to remotely control the server then you will also need the session token. Usage of this token is elaborated on more in the client setup page.
   - **PLEASE NOTE**: If you use this function, and there is no code continuing after it, the file will finish. This means that the server will get terminated. To prevent this, please include some sort of loop system AFTER calling the function that keeps the file in which you called on this function active, as to not close the server.
 - `lynxy_server.no_thread_start_server()`
-  - This option will block your code, as it is directly running the server. This does not allow for any code to run after this function is called, until the server goes offline. The only way it will go offline is if it crashes (this might be changed in a future update).
+  - This option will block your code, as it is directly running the server. This does not allow for any code to run after this function is called, until the server goes offline. The server will only go offline if it crashes, or if someone remotely shuts it down by authorizing their user, and then commanding the server to shut down. This is explained more in the client setup page.
  
-
-
+# Server response key
+The server has a variety of numbers it will return as responses to actions. The key is below. 
+- 555 
+  - the server has been commanded to deny every client that connects to it
+- 0
+  - the operation was successful
+- 100
+  - the client requested data associated with a username that does not exist
+- 110
+  - the user tried to authorize themself, but had an invalid auth token
+- 110
+  - the user has not been authorized, and can not do what they just tried to
+- 999
+  - the client requested to end the communication channel with the server
+- 222
+  - the message the the client sent to the server is not connected to any command, and so it did nothing
 
 # Other functions
 - `lynxy_server.get_data()` -> will return the following data in a dictionary:
