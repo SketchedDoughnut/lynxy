@@ -65,6 +65,7 @@ If you want to enable printing, use the following command: <br>
 To start your server, you have a couple of options. Here is the rundown: <br>
 - `lynxy_server.start_server()`
   - This option will not block your code, as it will run the server in a seperate thread. This allows for use of functions such as `lynxy_server.get_data()`, and more.
+  - PLEASE NOTE: If you use this function, and there is no code continuing after it, the file will finish. This means that the server will get terminated. To prevent this, please include some sort of loop system that keeps the file calling on this function active, as to not close the server.
 - `lynxy_server.no_thread_start_server()`
   - This option will block your code, as it is directly running the server. This does not allow for any code to run after this function is called, until the server goes offline. The only way it will go offline is if it crashes (this might be changed in a future update).
  
