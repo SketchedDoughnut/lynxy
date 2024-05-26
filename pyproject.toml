@@ -18,7 +18,7 @@ authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
 ]
 description = "A LAN package made for easy communication and sending of data across the same network."
-readme = "PyPi_info.md"
+readme = "info/pypi/PyPi_info.md"
 requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
