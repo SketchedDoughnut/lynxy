@@ -60,7 +60,7 @@ class myTCPserver(socketserver.BaseRequestHandler):
 
 
 
-def cycle_start() -> None:
+def start_connection() -> None:
     global PORT
     connected = False
     for port in valid_ports:
@@ -87,10 +87,3 @@ def cycle_start() -> None:
     if connected == False:
         print('Server failed to find an open valid port, exiting')
         exit()
-
-
-
-
-
-print('HOST on:', HOST)
-cycle_start()

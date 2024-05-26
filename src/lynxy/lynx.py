@@ -62,29 +62,6 @@ def __cycle_port__(client: socket.socket) -> socket.socket:
 
 
 
-# a function for submitting username data to the server
-def submit_username_data(client: socket.socket, message: str) -> None:
-    # local override for package form
-    client = main_client
-    encoded_message  = message.encode('utf-8')
-    client.sendall(encoded_message)
-    print(f"Sent:     {message}")
-    incoming_data = client.recv(1024).decode('utf-8')
-    print(f"Received: {incoming_data}")
-
-
-
-# requests ip and port from server
-def request_username_data(client: socket.socket, message: str) -> socket.socket:
-    encoded_message = message.encode('utf-8')
-    client.sendall(encoded_message)
-    print(f"Sent:     {message}")
-    # incoming_data = full_recieve(client)
-    incoming_data = client.recv(1024).decode('utf-8')
-    print(f"Received: {incoming_data}")
-
-
-
 # a general message sender
 def general_send(client: socket.socket, message: str) -> None:
     encoded_message = message.encode('utf-8')
@@ -96,28 +73,9 @@ def general_send(client: socket.socket, message: str) -> None:
 
 
 
-def start_connection() -> None:
-    global main_client
+def start_connection(connection_ip: str) -> None:
+    global main_client, HOST
+    HOST = connection_ip
     
     # establish the connection to a port that the server is on
     main_client, PORT = __cycle_port__(main_client)
-
-    # REMOVE THE BELOW LATER
-    # next, send a send a message to the server
-    submit_username_data(main_client, 'username SketchedDoughnut')
-
-    # necessary delay
-    time.sleep(1)
-
-    # next, request username data
-    request_username_data(main_client, 'request_by_user SketchedDoughnut')
-
-    # necessary delay
-    time.sleep(1)
-
-    # finally, end the session
-    general_send(main_client, 'end_session')
-
-
-HOST = input('enter ip: ')
-start_connection()
