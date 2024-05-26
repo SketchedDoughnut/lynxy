@@ -169,6 +169,22 @@ def general_send(message: str) -> None:
 
 
 
+
+
+
+# function for shutting down the client
+def shutdown_client() -> bool:
+    '''
+    A function to shut down the client: returns a bool telling you whether it worked or not.
+    '''
+    global _main_client
+    try:
+        _main_client.close()
+        pprint('[CLIENT SHUTDOWN] Shutting down client...')
+        return True
+    except:
+        return False
+
 def start_client(connection_ip: str) -> None:
     '''
     Starts the connection to the server, taking in an IP
@@ -178,7 +194,7 @@ def start_client(connection_ip: str) -> None:
 
     # overrides
     if len(_ov_ports) > 0:
-        valid__ports = _ov_ports
+        _valid_ports = _ov_ports
         _PORT = _valid_ports[0]
         pprint(f'[OVERRIDE] Overrided ports to: {_valid_ports}')
     

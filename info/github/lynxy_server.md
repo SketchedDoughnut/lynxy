@@ -80,3 +80,4 @@ To start your server, you have a couple of options. Here is the rundown: <br>
   - client info (dict)
     - example username (str)
       - (example ip, example port) (tuple)
+- `lynxy_server.shutdown_server()` -> will shutdown the server, and return a bool telling you whether it worked or not.

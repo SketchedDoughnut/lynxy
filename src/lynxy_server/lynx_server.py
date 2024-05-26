@@ -34,6 +34,8 @@ _do_print = True
 # status vars
 _connected = False
 
+# server obj for shutting down
+_server = 0
 
 
 
@@ -110,11 +112,17 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
         global _client_dict
         while True:
             # format incoming message
-            msg = bytes(self.request.recv(1024)).decode('utf-8')
-            split_msg = msg.split()
-            prefix = split_msg[0]
-            split_msg.remove(prefix)
-            joined_msg = "".join(split_msg)
+            try:
+                msg = bytes(self.request.recv(1024)).decode('utf-8')
+                split_msg = msg.split()
+                prefix = split_msg[0]
+                split_msg.remove(prefix)
+                joined_msg = "".join(split_msg)
+            except:
+                # self.request.sendall('crash - ending'.encode('utf-8'))
+                pprint(f'[{self.client_address[0]}] {msg} - crash - ending this instance')
+                pprint('----------------------------------------------')
+                break
 
             # if prefix is username, log their username and their device info (ip, port) associated with it
             if prefix == 'username':
@@ -144,14 +152,13 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
                 pass
 
 
-
 # main function for starting, does not use a thread and will block code
-def no_thread_start_server() -> None:
+def no_thread_start_server(is_threaded: bool = False) -> None:
     '''
     If you want to start the server without it running in a thread, you can call this function. However, this will block your code until the server goes offline.
     This won't happen unless it crashes.
     '''
-    global _HOST, _PORT, _valid_ports, _connected
+    global _HOST, _PORT, _valid_ports, _connected, _server
     ## apply overrides
     # override ip
     if _ov_ip:
@@ -170,14 +177,16 @@ def no_thread_start_server() -> None:
 
         try:
             pprint(f'[PORT CYCLE] Server trying port: {port}')
-            with socketserver.ThreadingTCPServer((_HOST, port), __myTCPserver__) as server:
+            with socketserver.ThreadingTCPServer((_HOST, port), __myTCPserver__) as _server:
                 pprint(f'[PORT CYCLE] Server found port for startup: {port}')
+                if is_threaded: pprint(f'Server IP: {_HOST}')
+                else: print(f'Server IP: {_HOST}')
                 pprint('[SERVER] Server is ready for communication~!')
-                print(f'Server IP: {_HOST}')
-                print('----------------------------------------------')
+                if is_threaded: pprint('----------------------------------------------')
+                else: print('----------------------------------------------')
                 _connected = True
                 _PORT = port
-                server.serve_forever()
+                _server.serve_forever()
                 break
         except:
             try:
@@ -186,15 +195,31 @@ def no_thread_start_server() -> None:
                 port = _valid_ports[0]
                 pprint(f'[PORT CYCLE - RESET 2] Server resetting port to: {port}')
     
-    if connected == False:
-        pprint('Server failed to find an open valid port, exiting')
+    if _connected == False:
+        pprint('[PORT CYCLE - ERROR 0] Server failed to find an open valid port, exiting')
         exit()
+    else:
+        pprint('[PORT CYCLE - ERROR 1] It is assumed server has been shutdown, ignoring error')
 
+# function for shutting down the server
+def shutdown_server() -> bool:
+    '''
+    A function to shut down the server: returns a bool telling you whether it worked or not.
+    '''
+    global _server
+    try:
+        _server.shutdown()
+        pprint('[SERVER SHUTDOWN] Shutting down server...')
+        return True
+    except:
+        return False
 
 # starts the server via a thread, to let the code calling this function continue running instead of blocking
-def start_server() -> None:
+def start_server() -> tuple:
     '''
     Starts the server in a thread, which means this will not block the rest of your code if you have more things done after this function is called. 
+    This function also returns the IP that the server is on, as well as the port, in a tuple.
     '''
-    threading.Thread(target=lambda:no_thread_start_server(), daemon=True).start()
+    threading.Thread(target=lambda:no_thread_start_server(True), daemon=True).start()
     time.sleep(0.25) # this is to not get false information if they request data later on 
+    return _HOST, _PORT

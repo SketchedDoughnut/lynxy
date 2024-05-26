@@ -47,3 +47,4 @@ To start your client, all you need to do is call one function, passing in the ip
 - `lynxy.get_data()` -> Will return the following data in a dictionary:
   - the ip the client is connected to (string)
   - the port the client is connected to (int)
+- `lynxy.shutdown_client()` -> will shutdown the client, and return a bool telling you whether it worked or not. Server-side, there is error handling to account for this.
