@@ -1,8 +1,6 @@
 '''
-this file should extend the functions in here, so instead of doing:
-    - "from _ import _"
-we can do:
-    - "import _"
+This is the lynxy client module. To find documentation, go to the github~!
+- Github: https://github.com/SketchedDoughnut/LYNX
 '''
 
 # extending main lynx file
