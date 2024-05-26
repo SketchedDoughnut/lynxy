@@ -117,13 +117,14 @@ def get_data() -> dict:
     }
 
 # function for shutting down the server
-def shutdown_server(do_print: bool = True) -> bool:
+def freeze_server(do_print: bool = True) -> str:
     '''
     A function to shut down the server: returns a bool telling you whether it worked or not.
     '''
-    global _server
+    global _server, _kill_all
     try:
         _server.shutdown()
+        _kill_all = True
         if do_print == True:
             pprint('[SERVER SHUTDOWN] Shutting down server...')
         return OPERATION_SUCCESS
@@ -136,7 +137,7 @@ def _poll_shutdown() -> None:
     while True:
         if _shutdown == True:
             pprint('[SERVER SHUTDOWN] request to shutdown detected, shutting down server...')
-            shutdown_server(False)
+            freeze_server(False)
             pprint('[SERVER SHUTDOWN] Enabling _kill_all...')
             _kill_all = True
             pprint('[SERVER SHUTDOWN] Server shut down, exiting...')
@@ -193,6 +194,7 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
                 # self.request.sendall('the server has been commanded to kill all client instances'.encode())
                 self.request.sendall(KILL_ALL.encode())
                 pprint(f'[SERVER SHUTDOWN] Killing this instance, due to _kill_all being True...')
+                continue
 
 
             # if prefix is username, log their username and their device info (ip, port) associated with it
@@ -236,8 +238,8 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
                     self.request.sendall(USER_NOT_AUTHORIZED.encode())
 
 
-            # if msg is shutdown_server, check if this client is authorized and then raise the flag to shutdown srever
-            elif msg == 'shutdown_server':
+            # if msg is freeze_server, check if this client is authorized and then raise the flag to shutdown srever
+            elif msg == 'freeze_server':
                 if _verified == True:
                     _shutdown = True
                     # self.request.sendall('shutdown of server requested, raising flag'.encode())
