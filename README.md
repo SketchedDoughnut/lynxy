@@ -6,7 +6,7 @@ Local (yielding?) Network (eXchange?) (the extra y is cosmetic~)
 lynxy, also known as lynx, is a LAN server-client system coded in Python. It allows for easy setup of a server, as well as easy setup for clients on the same network as the server. 
 The first section will explain instructions that apply to both, and then we will cover each individual part.
 
-# **Setup**
+# **General setup**
 Before we do anything, you should first install this module with pip. <br></br>
 `pip install (TBD)`
 `python3 -m pip install (TBD)` <br></br>
@@ -15,4 +15,4 @@ When you do this, it will install both the modules "lynxy" and "lynxy_server". O
 
 
 # Server setup
-To access server setup, go [here](./info/github/lynxy_server.md)
+To access server setup, go [**here**](./info/github/lynxy_server.md)
