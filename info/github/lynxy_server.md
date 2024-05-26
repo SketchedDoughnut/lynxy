@@ -81,7 +81,7 @@ The server has a variety of numbers it will return as responses to actions. The 
   - the client requested data associated with a username that does not exist
 - 110
   - the user tried to authorize themself, but had an invalid auth token
-- 110
+- 111
   - the user has not been authorized, and can not do what they just tried to
 - 999
   - the client requested to end the communication channel with the server
