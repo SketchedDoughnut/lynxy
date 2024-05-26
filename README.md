@@ -40,16 +40,16 @@ The server has a couple of parameters that can be overriden. These are:
 
 **Overriding ports** <br></br>
 The server has a default list of ports it will try to connect to. These ports are: <br></br>
-1.  11111 <br></br>
-2.  12111 <br></br>
-3.  11211 <br></br>
-4.  11121 <br></br>
-5.  11112 <br></br>
-6.  22111 <br></br>
-7.  12211 <br></br>
-8.  11221 <br></br>
-9.  11122 <br></br>
-10. 22222 <br></br>
+1.  11111 
+2.  12111 
+3.  11211 
+4.  11121 
+5.  11112 
+6.  22111 
+7.  12211 
+8.  11221 
+9.  11122 
+10. 22222 
 
 It cycles through these ports so that if one is not available, it can still launch itself. You can override these ports by running the function below, and passing in a list with one or more ports (in integer form). There is no limit for how many ports you can pass into it. In this example, we use three random ports. <br></br>
 `lynxy_server.override_ports([12345, 67890, 17390])`
@@ -60,6 +60,6 @@ It cycles through these ports so that if one is not available, it can still laun
 The server uses the ipV4 IP of the device it is running on. It is advised to not change this. However, if you want to override the IP, you can use the following function, inputting a string. <br></br>
 `lynxy_server.override_ip("123.456.789.0")`
 
-<br></br>
+<!-- <br></br> -->
 
 # Starting the server
