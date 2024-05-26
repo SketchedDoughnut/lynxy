@@ -38,6 +38,10 @@ _connected = False
 # server obj for shutting down
 _server = 0
 
+# server token
+_token = 'x'
+_verified = False
+
 
 
 
@@ -98,7 +102,8 @@ def get_data() -> dict:
         'server info': {
             'is_alive': _connected,
             'ip': _HOST,
-            'port': _PORT
+            'port': _PORT,
+            'token': _token
         },
         'client info': _client_dict
     }
@@ -129,8 +134,11 @@ def _gen_auth_token() -> str:
 # MAIN CLASS
 class __myTCPserver__(socketserver.BaseRequestHandler):
     def handle(self) -> None:
-        global _client_dict
+        global _client_dict, _verified
         while True:
+            # establish client address
+            addr = self.client_address[0]
+
             # format incoming message
             try:
                 msg = bytes(self.request.recv(1024)).decode('utf-8')
@@ -147,28 +155,38 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
             # if prefix is username, log their username and their device info (ip, port) associated with it
             if prefix == 'username':
                 _client_dict[joined_msg] = self.client_address
-                pprint(f'[{self.client_address[0]}] {prefix} - logging {self.client_address} to {joined_msg}')
+                pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
                 self.request.sendall('logged username, data'.encode('utf-8'))
 
             # if prefix is request_by_user, attempt to return the data associated with that username. If it does not exist, send back "None"
             elif prefix == 'request_by_user':
                 try:
                     self.request.sendall(str(_client_dict[joined_msg]).encode('utf-8'))
-                    pprint(f'[{self.client_address[0]}] {prefix} - return {joined_msg} data: {_client_dict[joined_msg]}')
+                    pprint(f'[{addr}] {prefix} - return {joined_msg} data: {_client_dict[joined_msg]}')
                 except:
-                    pprint(f'[{self.client_address[0]}] {prefix} - return {joined_msg} data: None')
+                    pprint(f'[{addr}] {prefix} - return {joined_msg} data: None')
                     self.request.sendall('None'.encode('utf-8'))
+
+            # if prefix is auth, check if token is matching, then allow user to use dev features
+            elif prefix == 'auth':
+                if joined_msg == _token:
+                    # enable_print()
+                    self.request.sendall('client session authorized'.encode('utf-8'))
+                    pprint(f'[{addr}] {prefix} - authed client')
+                else:
+                    self.request.sendall('invalid auth token'.encode('utf-8'))
 
             # if msg is end_session, end the current session the server and the client have
             elif msg == 'end_session':
                 self.request.sendall('ending'.encode('utf-8'))
-                pprint(f'[{self.client_address[0]}] {msg} - ending this instance')
+                pprint(f'[{addr}] {msg} - ending this instance')
                 pprint('----------------------------------------------')
                 break
             
             # ignore their message if otherwise
             else:
                 # self.request.sendall(msg.upper().encode('utf-8'))  # Send response back to the client
+                self.request.sendall('invalid command'.encode('utf-8'))
                 pass
 
 
@@ -178,7 +196,7 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
     If you want to start the server without it running in a thread, you can call this function. However, this will block your code until the server goes offline.
     This won't happen unless it crashes.
     '''
-    global _HOST, _PORT, _valid_ports, _connected, _server
+    global _HOST, _PORT, _valid_ports, _connected, _server, _token
     ## apply overrides
     # override ip
     if _ov_ip:
@@ -190,8 +208,11 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
         pprint(f'[OVERRIDE] Valid ports overrided to: {_valid_ports}')
 
     # pre-loop variables
-    connected = False
+    _connected = False
     
+    # generate unique session token for remote controlling the server
+    _token = _gen_auth_token()
+
     # loop, trying to find a free port
     for port in _valid_ports:
 
@@ -199,11 +220,17 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
             pprint(f'[PORT CYCLE] Server trying port: {port}')
             with socketserver.ThreadingTCPServer((_HOST, port), __myTCPserver__) as _server:
                 pprint(f'[PORT CYCLE] Server found port for startup: {port}')
-                if is_threaded: pprint(f'Server IP: {_HOST}')
-                else: print(f'Server IP: {_HOST}')
+                if is_threaded: 
+                    pprint(f'[SERVER] Server IP: {_HOST}')
+                    pprint(f'[SERVER] Control token: {_token}')
+                else: 
+                    print(f'V[SERVER] Server IP: {_HOST}')
+                    print(f'[SERVER] Control token: {_token}')
                 pprint('[SERVER] Server is ready for communication~!')
-                if is_threaded: pprint('----------------------------------------------')
-                else: print('----------------------------------------------')
+                if is_threaded:
+                    pprint('----------------------------------------------')
+                else: 
+                    print('----------------------------------------------')
                 _connected = True
                 _PORT = port
                 _server.serve_forever()
@@ -242,4 +269,4 @@ def start_server() -> tuple:
     '''
     threading.Thread(target=lambda:no_thread_start_server(True), daemon=True).start()
     time.sleep(0.25) # this is to not get false information if they request data later on 
-    return _HOST, _PORT
+    return _HOST, _PORT, _token
