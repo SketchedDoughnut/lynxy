@@ -71,7 +71,7 @@ To start your server, you have a couple of options. Here is the rundown: <br>
 
 
 # Other functions
-- lynxy_server.get_data() -> will return the following data in a dictionary:
+- `lynxy_server.get_data()` -> will return the following data in a dictionary:
   - if the server is active or not (bool)
   - the IP the server is binded to (string)
   - The port the server is binded to (int)
