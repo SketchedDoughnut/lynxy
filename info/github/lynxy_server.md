@@ -15,13 +15,13 @@ Next, there is some customization you can do. However, if you want to just start
 
 <!-- Instructions on how to configure the server -->
 ***
-**Configuring your server** <br></br>
+**Configuring your server** <br>
 The server has a couple of parameters that can be overriden. These are: 
 - the ports it attempts to connect to
 - the IP it tries to run on 
 
 
-**Overriding ports** <br></br>
+**Overriding ports** <br>
 The server has a default list of ports it will try to connect to. These ports are:
 1.  11111 
 2.  12111 
