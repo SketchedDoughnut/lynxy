@@ -42,7 +42,12 @@
 import lynxy
 
 lynxy.enable_print()
-lynxy.start_client(input('-> '))
+ip = input('-> ')
+lynxy.start_client(ip)
 lynxy.submit_username_data('SketchedDoughnut')
+# lynxy.request_username_data('SketchedDoughnut')
+lynxy.submit_username_data('SketchedDoughnut2')
+lynxy.request_username_data('SketchedDoughnut3') # incorrect username
 lynxy.request_username_data('SketchedDoughnut')
-# lynxy.general_send('end_session')
+lynxy.send_msg('end_session')
+lynxy.shutdown_client()
