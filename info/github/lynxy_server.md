@@ -122,7 +122,7 @@ These functions are elaborated on more in the client setup page, but what you do
     - `lynxy.general_send('clear_client')`
 
 - **freeze_server**
-  - If the user is authorized, this function will freeze the server. This will either make the server not exist for new clients, and/or severe the current connections with the clients. Example usage is below.
+  - If the user is authorized, this function will freeze the server. This will either make the server not exist for new clients, and/or severe the current connections with the clients. This function is intended for use if someone does not have direct access to the computer itself, or if you are running the server with `lynxy_server.no_thread_start_server()`. The reason why is because if you run the server directly instead of via a thread, you would not be able to call on the dedicated function for freezing the server, as your code would be blocked. This is a get-around to that. Example usage is below.
     - `lynxy.general_send('freeze_server')`
 
 - **end_session**
