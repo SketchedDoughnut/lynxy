@@ -97,22 +97,24 @@ The key is below.
 
 
 # Server functions key
-There are set commands that one can send to the server, from the client. They are as follows.
+There are set commands that one can send to the server, from the client. They are as follows. <br>
+**NOTE**: The functions used here are: `lynxy.submit_username_data()`, `lynxy.request_username_data()`, `lynxy.general_send()`.
+These functions are elaborated on more in the client setup page, but what you do need to know is that they all return data.
 
 - **username (name)**
-  - This argument submits a username to the server database. This function will return a status code. Example usage is below.
+  - This argument submits a username to the server database. Example usage is below.
     - `lynxy.submit_username_data('SketchedDoughnut')`
     - `lynxy.general_send('username SketchedDougnut')`
   - **NOTE**: NO SPACES ARE ALLOWED, AND WILL BE REMOVED FROM YOUR USERNAME UPON SUBMISSION
 
 - **request_by_user (name)**
-  - This argument requests the data (data being IP, port) associated with a username that is pre-existing in the servers database. The server will either return the data in a tuple, or will return a status code. Example usage is below.
+  - This argument requests the data (data being IP, port) associated with a username that is pre-existing in the servers database. Example usage is below.
     - `lynxy.request_username_data('SketchedDoughnut')`
     - `lynxy.general_send('request_by_user SketchedDougnut')`
   - **NOTE**: NO SPACES ARE ALLOWED, AND WILL BE REMOVED FROM YOUR USERNAME UPON SUBMISSION
 
 - **auth (token)**
-  - This argument attempts to authorize the client. If the token is equal to the session token generated on the servers start, then the client will be authorized. Like normal, this argument returns a status code. Example usage is below.
+  - This argument attempts to authorize the client. If the token is equal to the session token generated on the servers start, then the client will be authorized. Example usage is below.
     - `lynxy.general_send('auth (token)')`
 
 - **clear_client**
@@ -120,11 +122,11 @@ There are set commands that one can send to the server, from the client. They ar
     - `lynxy.general_send('clear_client')`
 
 - **freeze_server**
-  - If the user is authorized, this function will freeze the server. This will either make the server not exist for new clients, and/or severe the current connections with the clients. This argument returns a status code. Example usage is below.
+  - If the user is authorized, this function will freeze the server. This will either make the server not exist for new clients, and/or severe the current connections with the clients. Example usage is below.
     - `lynxy.general_send('freeze_server')`
 
 - **end_session**
-  - This argument ends the session between the client and the server. This argument returns a status code. Example usage is below.
+  - This argument ends the session between the client and the server. Example usage is below.
     - `lynxy.general_send('end_session')`
 
 

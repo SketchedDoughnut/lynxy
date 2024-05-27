@@ -232,7 +232,8 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
                     _client_dict = {
                         'default': 0
                     }
-                    self.request.sendall('cleared client dictionary')
+                    # self.request.sendall('cleared client dictionary')
+                    self.request.sendall(OPERATION_SUCCESS.encode())
                     pprint(f'[{addr}] {msg} - clearing client_dict')
                 else:
                     # self.request.sendall('user not authorized'.encode())
