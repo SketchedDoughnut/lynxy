@@ -13,7 +13,7 @@ packages = [
 
 [project]
 name = "lynxy"
-version = "0.0.2"
+version = "0.1.1"
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
 ]
