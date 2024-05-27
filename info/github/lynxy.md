@@ -66,13 +66,35 @@ This section is dedicated towards explaining the functions that the lynxy module
   - **ARGS: username: str**
   - **NOTE: Please refrain from using spaces in your username.**
   - This is a function meant for requesting data (ip, port) associated with a username (a username being submitted from ones client using `lynxy.submit_username_data()`). The client will attempt to fetch the data associated with that username. The goal of this function is to use this function to get the data about the other player / client you want to connect to, so you can direct connect to them.
-- `lynxy.general_send()`
-  - **ARGS: message: str**
-  - This is a function meant for general communication to whoever is on the other end. While the first two functions are meant specifically for server communication, this function is meant for communicating with whoever you are connected to (server, another client, etc).
+- `lynxy.send_msg()`
+  - **ARGS: message: str, recieve: bool = False**
+  - This is a function meant for general communication to whoever is on the other end. While the first two functions are meant specifically for server communication, this function is meant for communicating with whoever you are connected to (server, another client, etc). The "recieve" parameter is meant for if you want to immediately recieve a message after sending something to the recipient.
 
 ***
 # Client to server usage
 To find information about how to use the client to communicate with the server, go to the ["Server functions key"](lynxy_server.md#server-functions-key) section of the server setup page!
+
+***
+# Client to client usage
+If you want to communicate to another client using this client, it is easy! Here are the steps.
+- First, end your current session with the server if you have not already.
+  - `lynxy.send_msg('end_session', recieve=True)`
+    - This ends the communication channel with the server gracefully
+  - `lynxy.shutdown_client()`
+    - This can be called without the above function, but it is preferred if you do both. This completely closes the client.
+- Override the ports with a list of one int, that being the port of your target client. In this case, pretend 12345 is our target clients port.
+  - `lynxy.override_ports([12345])`
+- Start the client with your target clients ip. in this example, we use a loopback ip.
+  - `lynxy.start_client('127.0.0.1')`
+- Communicate with the other client!
+  - To send strings,
+    - `lynxy.send_msg(msg)`
+      - if you want to immediately recieve a message back from the other client, set the optional flag of recieve to True.
+        - `lynxy.send_msg(msg, recieve=True)`
+  - To send files,
+    - this feature is not yet available, sorry!
+
+
 
 ***
 # Other functions

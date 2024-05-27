@@ -154,7 +154,7 @@ def request_username_data(message: str) -> any:
     return incoming_data
 
 # a general message sender
-def general_send(message: str) -> str:
+def send_msg(message: str, recieve: bool = False) -> any:
     '''
     A general tool function for sending messages to the recipient (server, other client, etc)
     '''
@@ -164,11 +164,17 @@ def general_send(message: str) -> str:
     client.sendall(encoded_message)
     pprint(f"Sent:     {message}")
     # incoming_data = full_recieve(client)
-    incoming_data = client.recv(1024).decode('utf-8')
-    pprint(f"Received: {incoming_data}")
-    return incoming_data
+    if recieve:
+        incoming_data = client.recv(1024).decode('utf-8')
+        pprint(f"Received: {incoming_data}")
+        return incoming_data
 
-
+# def send_file(file, recieve: bool = False) -> any:
+#     '''
+#     A general tool function for sending files to the recipient (server, other client, etc)
+#     '''
+#     client = _main_client
+#     encoded_file =
 
 
 

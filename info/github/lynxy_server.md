@@ -112,36 +112,36 @@ The key is below.
 ***
 # Server functions key
 There are set commands that one can send to the server, from the client. They are as follows. <br>
-**NOTE**: The functions used here are: `lynxy.submit_username_data()`, `lynxy.request_username_data()`, `lynxy.general_send()`.
+**NOTE**: The functions used here are: `lynxy.submit_username_data()`, `lynxy.request_username_data()`, `lynxy.send_msg()`.
 These functions are elaborated on more in the client setup page, but what you do need to know is that they all return data.
 
 - **username (name)**
   - This argument submits a username to the server database. Example usage is below.
     - `lynxy.submit_username_data('SketchedDoughnut')`
-    - or `lynxy.general_send('username SketchedDougnut')`
+    - or `lynxy.send_msg('username SketchedDougnut', recieve=True)`
   - **NOTE**: NO SPACES ARE ALLOWED, AND WILL BE REMOVED FROM YOUR USERNAME UPON SUBMISSION
 
 - **request_by_user (name)**
   - This argument requests the data (data being IP, port) associated with a username that is pre-existing in the servers database. Example usage is below.
     - `lynxy.request_username_data('SketchedDoughnut')`
-    - or `lynxy.general_send('request_by_user SketchedDougnut')`
+    - or `lynxy.send_msg('request_by_user SketchedDougnut', recieve=True)`
   - **NOTE**: NO SPACES ARE ALLOWED, AND WILL BE REMOVED FROM YOUR USERNAME UPON SUBMISSION
 
 - **auth (token)**
   - This argument attempts to authorize the client. If the token is equal to the session token generated on the servers start, then the client will be authorized. Example usage is below.
-    - `lynxy.general_send('auth (token)')`
+    - `lynxy.send_msg('auth (token)', recieve=True)`
 
 - **clear_client**
   - If the user is authorized, this argument will clear the client dictionary. This is helpful if, for some reason, you would need to reset it. Example usage is below.
-    - `lynxy.general_send('clear_client')`
+    - `lynxy.send_msg('clear_client', recieve=True)`
 
 - **freeze_server**
   - If the user is authorized, this function will freeze the server. This will either make the server not exist for new clients, and/or severe the current connections with the clients. This function is intended for use if someone does not have direct access to the computer itself, or if you are running the server with `lynxy_server.no_thread_start_server()`. The reason why is because if you run the server directly instead of via a thread, you would not be able to call on the dedicated function for freezing the server, as your code would be blocked. This is a get-around to that. Example usage is below.
-    - `lynxy.general_send('freeze_server')`
+    - `lynxy.send_msg('freeze_server', recieve=True)`
 
 - **end_session**
   - This argument ends the session between the client and the server. Example usage is below.
-    - `lynxy.general_send('end_session')`
+    - `lynxy.send_msg('end_session', recieve=True)`
 
 
 
