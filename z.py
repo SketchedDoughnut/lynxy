@@ -5,12 +5,12 @@ from src import lynxy_server as ls
 
 
 # server
-# ls.disable_print()
+ls.disable_print()
 ip, port, auth_token = ls.start_server()
 
 # client
 l.disable_print()
-l.start_client(input('-> '))
+l.start_client(ip)
 l.general_send(f'{auth_token}')
 l.general_send('freeze_server')
 l.general_send(f'auth {auth_token}')
