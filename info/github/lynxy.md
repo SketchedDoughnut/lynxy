@@ -2,6 +2,7 @@
 [Client setup](./lynxy.md#client-setup) <br>
 [Configuring your client](./lynxy.md#configuring-your-client) <br>
 [Starting your client](./lynxy.md#starting-your-client) <br>
+[Function explanations](lynxy.md#function-explanations) <br>
 [Client to server usage](./lynxy.md#client-to-server-usage) <br>
 [Other functions](./lynxy.md#other-functions)
 ***
@@ -48,16 +49,32 @@ If you want to enable printing, use the following command: <br>
 
 
 
-
+***
 # Starting your client
 To start your client, all you need to do is call one function, passing in the ip of the server. In this example, we use a loopback address: <br>
 - `lynxy.start_client('127.0.0.1')`
     - To get the servers ip, please refer to the server setup page, specifically the section named ["Starting the server"](lynxy_server.md#starting-the-server). This IP should be distributed to anyone with the code containing the lynxy client code.
  
- # Client to server usage
- To find information about how to use the client to communicate with the server, go to the ["Server functions key"](lynxy_server.md#server-functions-key) section of the server setup page!
+***
+# Function explanations
+This section is dedicated towards explaining the functions that the lynxy module has.
+- `lynxy.submit_username_data()` 
+  - **ARGS: username: str**
+  - **NOTE: Please refrain from using spaces in your username.**
+  - This is a function meant for submitting username data to the server, to be logged.
+- `lynxy.request_username_data()`
+  - **ARGS: username: str**
+  - **NOTE: Please refrain from using spaces in your username.**
+  - This is a function meant for requesting data (ip, port) associated with a username (a username being submitted from ones client using `lynxy.submit_username_data()`). The client will attempt to fetch the data associated with that username. The goal of this function is to use this function to get the data about the other player / client you want to connect to, so you can direct connect to them.
+- `lynxy.general_send()`
+  - **ARGS: message: str**
+  - This is a function meant for general communication to whoever is on the other end. While the first two functions are meant specifically for server communication, this function is meant for communicating with whoever you are connected to (server, another client, etc).
 
+***
+# Client to server usage
+To find information about how to use the client to communicate with the server, go to the ["Server functions key"](lynxy_server.md#server-functions-key) section of the server setup page!
 
+***
 # Other functions
 - `lynxy.get_data()` -> Will return the following data in a dictionary:
   - the ip the client is connected to (string)

@@ -74,6 +74,7 @@ If you want to enable printing, use the following command: <br>
 
 
 <!-- Instructions on how to start the server -->
+***
 # Starting the server
 To start your server, you have a couple of options. Here is the rundown: <br>
 - `lynxy_server.start_server()`
@@ -83,6 +84,7 @@ To start your server, you have a couple of options. Here is the rundown: <br>
 - `lynxy_server.no_thread_start_server()`
   - This option will block your code, as it is directly running the server. This does not allow for any code to run after this function is called, until the server goes offline. The server will only go offline if it crashes, or if someone remotely shuts it down by authorizing their user, and then commanding the server to shut down. This is explained more in the client setup page, and the shutdown feature is explained below.
  
+***
 # Server response key
 The server has a variety of numbers it will return as responses to actions. Codes from 0 to 99 are status codes. Codes from 100 to 199 is regarding invalid messages from the clients. Codes from 200 to 299 are regarding system settings, set by an authorized client. These include being denied if you do not have the right permissions.
 The key is below. 
@@ -107,7 +109,7 @@ The key is below.
 
 
 
-
+***
 # Server functions key
 There are set commands that one can send to the server, from the client. They are as follows. <br>
 **NOTE**: The functions used here are: `lynxy.submit_username_data()`, `lynxy.request_username_data()`, `lynxy.general_send()`.
@@ -149,7 +151,7 @@ These functions are elaborated on more in the client setup page, but what you do
 
 
 
-
+***
 # Other functions
 - `lynxy_server.get_data()` -> This function will only work if you are using the threaded start function, and will return the following data in a dictionary:
   - server info
