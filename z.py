@@ -42,7 +42,7 @@
 import lynxy
 
 lynxy.enable_print()
-lynxy.start_client(input())
+lynxy.start_client(input('-> '))
 lynxy.submit_username_data('SketchedDoughnut')
 lynxy.request_username_data('SketchedDoughnut')
 # lynxy.general_send('end_session')
