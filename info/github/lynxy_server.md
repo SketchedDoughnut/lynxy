@@ -49,7 +49,7 @@ The server uses the ipv4 IP of the device it is running on. It is advised to not
 If you don't want any console message to be printed, use the following command: <br>
 `lynxy_server.disable_print()` <br>
 If you want to enable printing, use the following command: <br>
-`lynxy_server.enable_print()`
+`lynxy_server.enable_print()` <br>
 **NOTE**: Prints are enabled by default.
 
 

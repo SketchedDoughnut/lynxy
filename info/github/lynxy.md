@@ -31,7 +31,7 @@ It cycles through these ports so that if one is not available, it can still laun
 If you don't want any console message to be printed, use the following command: <br>
 `lynxy.disable_print()` <br>
 If you want to enable printing, use the following command: <br>
-`lynxy.enable_print()`
+`lynxy.enable_print()` <br>
 **NOTE**: Prints are disabled by default.
 
 
