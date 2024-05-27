@@ -175,6 +175,7 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
         while True:
             # establish client address
             addr = self.client_address[0]
+            addr = self.client_address[1]
 
             # format incoming message
             try:
@@ -194,7 +195,7 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
                 # self.request.sendall('the server has been commanded to kill all client instances'.encode())
                 self.request.sendall(KILL_ALL.encode())
                 pprint(f'[SERVER SHUTDOWN] Killing this instance, due to _kill_all being True...')
-                continue
+                break
 
 
             # if prefix is username, log their username and their device info (ip, port) associated with it
@@ -296,7 +297,7 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
             with socketserver.ThreadingTCPServer((_HOST, port), __myTCPserver__) as _server:
                 pprint(f'[PORT CYCLE] Server found port for startup: {port}')
                 # start server shutdown poll
-                threading.Thread(target=lambda:_poll_shutdown(), daemon=True).start()
+                threading.Thread(target=lambda:_poll_shutdown()).start()    # , daemon=True).start()
                 pprint('[SERVER] Started scan for shutdown requests')
                 if is_threaded: 
                     pprint(f'[SERVER] Server IP: {_HOST}')
@@ -337,7 +338,7 @@ def start_server() -> tuple:
     Starts the server in a thread, which means this will not block the rest of your code if you have more things done after this function is called. 
     This function also returns the IP that the server is on, as well as the port, in a tuple.
     '''
-    _starting_thread = threading.Thread(target=lambda:no_thread_start_server(True), daemon=True)
+    _starting_thread = threading.Thread(target=lambda:no_thread_start_server(True)) #, daemon=True)
     _starting_thread.start()
     time.sleep(0.25) # this is to not get false information if they request data later on 
     return _HOST, _PORT, _token
