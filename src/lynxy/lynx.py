@@ -21,7 +21,7 @@ _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # override info
 _ov_ports = []
-_do_print = True
+_do_print = False
 
 
 
