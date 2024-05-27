@@ -129,9 +129,10 @@ def submit_username_data(message: str) -> str:
     # local override for package form
     client = _main_client
     # encoded_message = message.encode('utf-8')
-    encoded_message = f'username {message}'.encode('utf-8') # added username prefix by default
+    message2 = f'username {message}'
+    encoded_message = message2.encode('utf-8') # added username prefix by default
     client.sendall(encoded_message)
-    pprint(f"Sent:     {message}")
+    pprint(f"Sent:     {message2}")
     incoming_data = client.recv(1024).decode('utf-8')
     pprint(f"Received: {incoming_data}")
     return incoming_data
@@ -145,9 +146,10 @@ def request_username_data(message: str) -> any:
     # local override for package form
     client = _main_client
     # encoded_message = message.encode('utf-8')
-    encoded_message = f'request_by_user {message}'.encode('utf-8') # added request_by_user prefix by default
+    message2 = f'request_by_user {message}'
+    encoded_message = message2.encode('utf-8') # added request_by_user prefix by default
     client.sendall(encoded_message)
-    pprint(f"Sent:     {message}")
+    pprint(f"Sent:     {message2}")
     # incoming_data = full_recieve(client)
     incoming_data = client.recv(1024).decode('utf-8')
     pprint(f"Received: {incoming_data}")
