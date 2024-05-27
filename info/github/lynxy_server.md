@@ -1,3 +1,15 @@
+# Table of contents
+[Server setup](./lynxy_server.md#server-setup) <br>
+[Configuring your server](./lynxy_server.md#configuring-your-server) <br>
+[Starting the server](./lynxy_server.md#starting-the-server) <br>
+[Server response key](./lynxy_server.md#server-response-key) <br>
+[Server functions key](./lynxy_server.md#server-functions-key) <br>
+[Other functions](./lynxy_server.md#other-functions) 
+***
+
+
+
+
 # Server setup
 To set up the server module, you first need to import it. <br>
 `import lynxy_server` <br>
@@ -15,7 +27,7 @@ Next, there is some customization you can do. However, if you want to just start
 
 <!-- Instructions on how to configure the server -->
 ***
-**Configuring your server** <br>
+# Configuring your server <br>
 The server has a couple of parameters that can be overriden. These are: 
 - the ports it attempts to connect to
 - the IP it tries to run on 
@@ -104,13 +116,13 @@ These functions are elaborated on more in the client setup page, but what you do
 - **username (name)**
   - This argument submits a username to the server database. Example usage is below.
     - `lynxy.submit_username_data('SketchedDoughnut')`
-    - `lynxy.general_send('username SketchedDougnut')`
+    - or `lynxy.general_send('username SketchedDougnut')`
   - **NOTE**: NO SPACES ARE ALLOWED, AND WILL BE REMOVED FROM YOUR USERNAME UPON SUBMISSION
 
 - **request_by_user (name)**
   - This argument requests the data (data being IP, port) associated with a username that is pre-existing in the servers database. Example usage is below.
     - `lynxy.request_username_data('SketchedDoughnut')`
-    - `lynxy.general_send('request_by_user SketchedDougnut')`
+    - or `lynxy.general_send('request_by_user SketchedDougnut')`
   - **NOTE**: NO SPACES ARE ALLOWED, AND WILL BE REMOVED FROM YOUR USERNAME UPON SUBMISSION
 
 - **auth (token)**
