@@ -22,4 +22,4 @@ To access server setup, go [**here**](./info/github/lynxy_server.md)
 To access client setup, go [**here**](./info/github/lynxy.md)
 
 # Etc
-You can find more info about functions by looking at the descriptions of them in your code editor (ie. VScode)
+You can find more info about functions by looking at the descriptions of them in your code editor.
