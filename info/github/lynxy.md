@@ -2,7 +2,7 @@
 [Client setup](./lynxy.md#client-setup) <br>
 [Configuring your client](./lynxy.md#configuring-your-client) <br>
 [Starting your client](./lynxy.md#starting-your-client) <br>
-[Function explanations](lynxy.md#function-explanations) <br>
+[Client communication function explanations](lynxy.md#client-communication-function-explanations) <br>
 [Client to server usage](./lynxy.md#client-to-server-usage) <br>
 [Other functions](./lynxy.md#other-functions)
 ***
@@ -56,7 +56,7 @@ To start your client, all you need to do is call one function, passing in the ip
     - To get the servers ip, please refer to the server setup page, specifically the section named ["Starting the server"](lynxy_server.md#starting-the-server). This IP should be distributed to anyone with the code containing the lynxy client code.
  
 ***
-# Function explanations
+# Client communication function explanations
 This section is dedicated towards explaining the functions that the lynxy module has.
 - `lynxy.submit_username_data()` 
   - **ARGS: username: str**
