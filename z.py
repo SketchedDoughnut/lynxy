@@ -41,8 +41,8 @@
 
 import lynxy
 
-for i in range(3):
-    lynxy.start_client('x')
-    lynxy.submit_username_data('SketchedDoughnut')
-    lynxy.request_username_data('SketchedDoughnut')
-    lynxy.general_send('end_session')
+lynxy.enable_print()
+lynxy.start_client(input())
+lynxy.submit_username_data('SketchedDoughnut')
+lynxy.request_username_data('SketchedDoughnut')
+# lynxy.general_send('end_session')
