@@ -194,7 +194,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             if _kill_all == True:
                 # self.request.sendall('the server has been commanded to kill all client instances'.encode())
                 self.request.sendall(KILL_ALL.encode())
-                pprint(f'[SERVER SHUTDOWN] Killing this instance, due to _kill_all being True...')
+                pprint(f'[{addr}] Killing this instance, due to _kill_all being True...')
                 break
 
 

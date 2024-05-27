@@ -8,5 +8,10 @@ lynxy.submit_username_data('SketchedDoughnut')
 lynxy.submit_username_data('SketchedDoughnut2')
 lynxy.request_username_data('SketchedDoughnut3') # incorrect username
 lynxy.request_username_data('SketchedDoughnut')
-lynxy.send_msg('end_session')
+# lynxy.send_msg('end_session')
+while True:
+    msg = input('-> ')
+    if msg == 'break':
+        break
+    lynxy.send_msg(msg, recieve=True)
 lynxy.shutdown_client()
