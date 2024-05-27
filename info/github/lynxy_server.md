@@ -149,5 +149,5 @@ These functions are elaborated on more in the client setup page, but what you do
       - (example ip, example port) (tuple)
 - `lynxy_server.freeze_server()` -> will freeze the server, and return a reponse telling you whether it worked or not. Freezing the server means it will render the server unusable, but the file will still be running. This is meant to disable the server until a person can physically access the computer and disable it from there. 
 - `lynxy_server.help()` -> has an optional argument, if it is set to True it will open a link to the Github page for this project. Otherwise, it will return a link to that page.
-- `lynxy_server.license()` -> has an optional argument, if it is set to True it will open a linkt o the license page on the Github for this project. Otherwise, it will return a link to that page.
+- `lynxy_server.license()` -> has an optional argument, if it is set to True it will open a link to the license page on the Github for this project. Otherwise, it will return a link to that page.
 - `lynxy_server.credits()` -> will return a string containing information about the credits for this project.
