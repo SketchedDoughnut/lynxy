@@ -154,7 +154,7 @@ def request_username_data(message: str) -> any:
     return incoming_data
 
 # a general message sender
-def general_send(message: str) -> None:
+def general_send(message: str) -> str:
     '''
     A general tool function for sending messages to the recipient (server, other client, etc)
     '''
@@ -166,7 +166,7 @@ def general_send(message: str) -> None:
     # incoming_data = full_recieve(client)
     incoming_data = client.recv(1024).decode('utf-8')
     pprint(f"Received: {incoming_data}")
-
+    return incoming_data
 
 
 
