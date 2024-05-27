@@ -186,7 +186,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 joined_msg = "".join(split_msg)
             except:
                 # self.request.sendall('crash - ending'.encode())
-                pprint(f'[{self.client_address[0]}] {msg} - crash - ending this instance')
+                pprint(f'[{addr}] - crash - ending this instance')
                 pprint('----------------------------------------------')
                 break
 

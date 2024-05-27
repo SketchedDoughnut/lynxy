@@ -11,6 +11,7 @@ lynxy.start_client(ip)
 # lynxy.send_msg('end_session')
 while True:
     msg = input('-> ')
+    # msg = 't'
     if msg == 'break':
         break
     lynxy.send_msg(msg, recieve=True)
