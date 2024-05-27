@@ -127,9 +127,9 @@ def freeze_server(do_print: bool = True) -> str:
         _kill_all = True
         if do_print == True:
             pprint('[SERVER SHUTDOWN] Shutting down server...')
-        return OPERATION_SUCCESS
+        return OPERATION_SUCCESS.decode()
     except:
-        return OPERATION_FAIL
+        return OPERATION_FAIL.decode()
     
 # function to poll shutdown var, if it is enabled then shutdown
 def _poll_shutdown() -> None:
@@ -193,17 +193,20 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             # kill client communication if is true
             if _kill_all == True:
                 # self.request.sendall('the server has been commanded to kill all client instances'.encode())
-                self.request.sendall(KILL_ALL.encode())
+                self.request.sendall(KILL_ALL)
                 pprint(f'[{addr}] Killing this instance, due to _kill_all being True...')
                 break
 
 
             # if prefix is username, log their username and their device info (ip, port) associated with it
             if prefix == 'username':
-                _client_dict[joined_msg] = self.client_address
-                pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
-                # self.request.sendall('logged username, data'.encode())
-                self.request.sendall(OPERATION_SUCCESS.encode())
+                if joined_msg: # if not empty
+                    _client_dict[joined_msg] = self.client_address
+                    pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
+                    # self.request.sendall('logged username, data'.encode())
+                    self.request.sendall(OPERATION_SUCCESS)
+                else:
+                    self.request.sendall(INVALID_USERNAME_DATA)
 
             # if prefix is request_by_user, attempt to return the data associated with that username. If it does not exist, send back "None"
             elif prefix == 'request_by_user':
@@ -213,18 +216,18 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 except:
                     pprint(f'[{addr}] {prefix} - return {joined_msg} data: None')
                     # self.request.sendall('None'.encode())
-                    self.request.sendall(INVALID_USERNAME_DATA.encode())
+                    self.request.sendall(INVALID_USERNAME_DATA)
 
             # if prefix is auth, check if token is matching, then allow user to use dev features
             elif prefix == 'auth':
                 if joined_msg == _token:
                     _verified = True
                     # self.request.sendall('client session authorized'.encode())
-                    self.request.sendall(OPERATION_SUCCESS.encode('utf-8'))
+                    self.request.sendall(OPERATION_SUCCESS)
                     pprint(f'[{addr}] {prefix} - authed client')
                 else:
                     # self.request.sendall('invalid auth token'.encode())
-                    self.request.sendall(INVALID_AUTH_TOKEN.encode())
+                    self.request.sendall(INVALID_AUTH_TOKEN)
 
             # if msg is clear_client, check if this client is authorized and then clear the client_dict
             elif msg == 'clear_client':
@@ -233,11 +236,11 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                         'default': 0
                     }
                     # self.request.sendall('cleared client dictionary')
-                    self.request.sendall(OPERATION_SUCCESS.encode())
+                    self.request.sendall(OPERATION_SUCCESS)
                     pprint(f'[{addr}] {msg} - clearing client_dict')
                 else:
                     # self.request.sendall('user not authorized'.encode())
-                    self.request.sendall(USER_NOT_AUTHORIZED.encode())
+                    self.request.sendall(USER_NOT_AUTHORIZED)
 
 
             # if msg is freeze_server, check if this client is authorized and then raise the flag to shutdown srever
@@ -245,16 +248,16 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 if _verified == True:
                     _shutdown = True
                     # self.request.sendall('shutdown of server requested, raising flag'.encode())
-                    self.request.sendall(OPERATION_SUCCESS.encode('utf-8'))
+                    self.request.sendall(OPERATION_SUCCESS)
                     pprint(f'[{addr}] {msg} - shutdown of server requested, raising flag')
                 else:
                     # self.request.sendall('user not authorized'.encode())
-                    self.request.sendall(USER_NOT_AUTHORIZED.encode())
+                    self.request.sendall(USER_NOT_AUTHORIZED)
 
             # if msg is end_session, end the current session the server and the client have
             elif msg == 'end_session':
                 # self.request.sendall('ending'.encode())
-                self.request.sendall(END_SESSION.encode())
+                self.request.sendall(END_SESSION)
                 pprint(f'[{addr}] {msg} - ending this instance')
                 pprint('----------------------------------------------')
                 break
@@ -263,7 +266,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             else:
                 # self.request.sendall(msg.upper().encode())  # Send response back to the client
                 # self.request.sendall('invalid command'.encode())
-                self.request.sendall(INVALID_COMMAND.encode())
+                self.request.sendall(INVALID_COMMAND)
                 pass
 
 
