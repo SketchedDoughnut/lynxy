@@ -13,13 +13,14 @@ packages = [
 
 [project]
 name = "lynxy"
-version = "0.1.1"
+version = "0.1.2"
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
 ]
 description = "A LAN package made for easy communication and sending of data across the same network."
 readme = "info/pypi/PyPi_info.md"
-requires-python = ">=3.10"
+# requires-python = ">=3.10" # changing which version it needs
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",
