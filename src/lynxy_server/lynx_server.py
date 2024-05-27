@@ -304,7 +304,7 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
                     pprint(f'[SERVER] Server IP: {_HOST}')
                     pprint(f'[SERVER] Control token: {_token}')
                 else: 
-                    print(f'V[SERVER] Server IP: {_HOST}')
+                    print(f'[SERVER] Server IP: {_HOST}')
                     print(f'[SERVER] Control token: {_token}')
                 pprint('[SERVER] Server is ready for communication~!')
                 if is_threaded:
