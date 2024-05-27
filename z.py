@@ -23,18 +23,26 @@
 # l.general_send('username test')
 
 
-import lynxy_server as ls
+# import lynxy_server as ls
 
-# ls.disable_print()
-ip, port, token = ls.start_server()
+# # ls.disable_print()
+# ip, port, token = ls.start_server()
 
-import lynxy as l
+# import lynxy as l
 
-l.disable_print()
-l.start_client(ip)
-l.submit_username_data('SketchedDoughnut')
-l.request_username_data('SketchedDoughnut')
-l.general_send(f'auth {token}')
-ls.freeze_server()
-l.general_send('ping')
-l.start_client(ip)
+# l.disable_print()
+# l.start_client(ip)
+# l.submit_username_data('SketchedDoughnut')
+# l.request_username_data('SketchedDoughnut')
+# l.general_send(f'auth {token}')
+# ls.freeze_server()
+# l.general_send('ping')
+# l.start_client(ip)
+
+import lynxy
+
+for i in range(3):
+    lynxy.start_client('192.168.68.121')
+    lynxy.submit_username_data('SketchedDoughnut')
+    lynxy.request_username_data('SketchedDoughnut')
+    lynxy.general_send('end_session')
