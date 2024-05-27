@@ -119,7 +119,7 @@ def get_data() -> dict:
 # function for shutting down the server
 def freeze_server(do_print: bool = True) -> str:
     '''
-    A function to shut down the server: returns a bool telling you whether it worked or not.
+    A function to shut down the server: returns a status code.
     '''
     global _server, _kill_all
     try:
@@ -168,7 +168,7 @@ def _gen_auth_token() -> str:
 
 
 # MAIN CLASS
-class __myTCPserver__(socketserver.BaseRequestHandler):
+class _myTCPserver(socketserver.BaseRequestHandler):
     def handle(self) -> None:
         global _client_dict, _verified, _shutdown
 
@@ -271,7 +271,7 @@ class __myTCPserver__(socketserver.BaseRequestHandler):
 def no_thread_start_server(is_threaded: bool = False) -> None:
     '''
     If you want to start the server without it running in a thread, you can call this function. However, this will block your code until the server goes offline.
-    This won't happen unless it crashes.
+    This won't happen unless it crashes, or you remotely raise the shutdown flag (refer to the server setup page of documentation on Github)
     '''
     global _HOST, _PORT, _valid_ports, _connected, _server, _token
     ## apply overrides
@@ -295,7 +295,7 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
 
         try:
             pprint(f'[PORT CYCLE] Server trying port: {port}')
-            with socketserver.ThreadingTCPServer((_HOST, port), __myTCPserver__) as _server:
+            with socketserver.ThreadingTCPServer((_HOST, port), _myTCPserver) as _server:
                 pprint(f'[PORT CYCLE] Server found port for startup: {port}')
                 # start server shutdown poll
                 threading.Thread(target=lambda:_poll_shutdown()).start()    # , daemon=True).start()
@@ -337,7 +337,7 @@ def start_server() -> tuple:
     global _starting_thread
     '''
     Starts the server in a thread, which means this will not block the rest of your code if you have more things done after this function is called. 
-    This function also returns the IP that the server is on, as well as the port, in a tuple.
+    This function also returns the IP that the server is on, the port the server is on, and the authorization token in a tuple.
     '''
     _starting_thread = threading.Thread(target=lambda:no_thread_start_server(True)) #, daemon=True)
     _starting_thread.start()
