@@ -192,35 +192,35 @@ def send_msg(message: str, recieve: bool = True) -> str:
 #     client = _main_client
 #     encoded_file =
 
-def target_client(client_ip: str, client_port: int, mode: str) -> bool:
-    '''
-    Takes in the target clients ip and port, and will attempt to connect to them. If this fails, 
-    then it is possible the other client is not available.
-    This function returns a boolean, telling you whether it worked or not.
-    '''
-    global _HOST, _PORT, _valid_ports
-    global _main_client
-    global _do_print
-    # reset main_client
-    _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # overwrite host
-    _HOST = client_ip
-    # overwrite valid ports list
-    override_ports([client_port])
-    # overwrite port
-    _PORT = _valid_ports[0]
-    # setup other vars
-    save = _do_print
+# def target_client(client_ip: str, client_port: int, mode: str) -> bool:
+#     '''
+#     Takes in the target clients ip and port, and will attempt to connect to them. If this fails, 
+#     then it is possible the other client is not available.
+#     This function returns a boolean, telling you whether it worked or not.
+#     '''
+#     global _HOST, _PORT, _valid_ports
+#     global _main_client
+#     global _do_print
+#     # reset main_client
+#     _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#     # overwrite host
+#     _HOST = client_ip
+#     # overwrite valid ports list
+#     override_ports([client_port])
+#     # overwrite port
+#     _PORT = _valid_ports[0]
+#     # setup other vars
+#     save = _do_print
 
-    for i in range(30):
-        print(f'attempt {i}')
-        disable_print()
-        _main_client, _PORT = _cycle_port(_main_client)
-        _do_print = save
-        if _connected == True:
-            return True
-        time.sleep(1)
-    return False
+#     for i in range(30):
+#         print(f'attempt {i}')
+#         disable_print()
+#         _main_client, _PORT = _cycle_port(_main_client)
+#         _do_print = save
+#         if _connected == True:
+#             return True
+#         time.sleep(1)
+#     return False
 
 
 
