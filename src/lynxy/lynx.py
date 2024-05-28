@@ -198,7 +198,7 @@ def target_client(client_ip: str, client_port: int) -> bool:
     then it is possible the other client is not available.
     This function returns a boolean, telling you whether it worked or not.
     '''
-    global _main_client, _HOST, _PORT, _do_print
+    global _main_client, _HOST, _PORT, _do_print, _valid_ports
 
     # override port list
     override_ports([client_port])
