@@ -186,6 +186,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 joined_msg = "".join(split_msg)
             except:
                 # self.request.sendall('crash - ending'.encode())
+                self.request.sendall(INVALID_MESSAGE)
                 pprint(f'[{addr}] - crash - ending this instance')
                 pprint('----------------------------------------------')
                 break
@@ -206,7 +207,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     # self.request.sendall('logged username, data'.encode())
                     self.request.sendall(OPERATION_SUCCESS)
                 else:
-                    self.request.sendall(INVALID_USERNAME_DATA)
+                    self.request.sendall(INVALID_MESSAGE)
 
             # if prefix is request_by_user, attempt to return the data associated with that username. If it does not exist, send back "None"
             elif prefix == 'request_by_user':

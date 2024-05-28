@@ -104,6 +104,8 @@ The key is below.
   - the user tried to authorize themself, but had an invalid auth token
 - 102
   - the user has not been authorized, and can not do what they just tried to
+- 103
+  - The message is invalid (meaning it is empty or corrupt in some way)
 - 200
   - the server has been commanded to deny every client that connects to it
 
