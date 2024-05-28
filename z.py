@@ -2,7 +2,7 @@ import lynxy
 
 lynxy.enable_print()
 ip = input('-> ')
-lynxy.start_client(ip)
+print('state of connect:', lynxy.start_client(ip))
 while True:
     msg = input('-> ')
     # msg = 't'
