@@ -192,7 +192,7 @@ def send_msg(message: str, recieve: bool = True) -> str:
 #     client = _main_client
 #     encoded_file =
 
-def target_client(client_ip: str, client_port: int) -> bool:
+def target_client(client_ip: str, client_port: int, mode: str) -> bool:
     '''
     Takes in the target clients ip and port, and will attempt to connect to them. If this fails, 
     then it is possible the other client is not available.
@@ -216,17 +216,21 @@ def target_client(client_ip: str, client_port: int) -> bool:
     # what is even going on
     print('HOST SET TO', _HOST)
     print('PORT SET TO', _PORT)
-    print('PORT LIST SET TO', _valid_ports)
+    # print('PORT LIST SET TO', _valid_ports)
 
     # try 30 times, every 1 second, break and return true when succeed
     for i in range(30):
         pprint(f'attempt {i}')
-        disable_print()
-        _main_client, _PORT = _cycle_port(_main_client)
-        print('port returned:', _PORT)
-        _do_print = pre_do
-        if _connected == True:
-            return True
+        try:
+            if mode == 'inbound':
+                _main_client.listen(5)
+                _main_client, addr = _main_client.accept() # addr is not used
+                return True
+            elif mode == 'outbound':
+                _main_client.connect((_HOST, _PORT))
+                return True
+        except:
+            pass
         time.sleep(1)
     return False
 
