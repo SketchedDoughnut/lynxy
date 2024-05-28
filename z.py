@@ -26,14 +26,12 @@
 
 
 from src import lynxy as l
-from src import lynxy_server as ls
 
-# ls.disable_print()
-ip, port, token = ls.start_server()
+ip = input('-> ')
 l.enable_print()
 l.start_client(ip)
-l.submit_username_data('SketchedDoughnut')
-target_ip, target_port = l.request_username_data('SketchedDoughnut')
-l.send_msg('end_session')
+l.submit_username_data('laptop')
+input('-> ')
+i, p = l.request_username_data('SketchedDoughnut')
 l.shutdown_client()
-print(l.target_client(target_ip, target_port))
+print(l.target_client(i, p))
