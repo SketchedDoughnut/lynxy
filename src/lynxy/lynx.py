@@ -121,13 +121,14 @@ def _cycle_port(client: socket.socket) -> socket.socket:
 #     return incoming_message
 
 # a function for submitting username data to the server
-def submit_username_data(message: str) -> str:
+def submit_username_data(username: str) -> str:
     '''
     Submits a username to the server, which the server will associate with your IP and port.
     Returns a message that confirms that the action has happened.
     '''
     # local override for package form
     client = _main_client
+    message = username
     # encoded_message = message.encode('utf-8')
     message2 = f'username {message}'
     encoded_message = message2.encode('utf-8') # added username prefix by default
@@ -138,13 +139,14 @@ def submit_username_data(message: str) -> str:
     return incoming_data
 
 # requests ip and port from server
-def request_username_data(message: str) -> any:
+def request_username_data(username: str) -> str:
     '''
-    requests data associated with a username from the server, and either returns 'None' meaning you entered an invalid username, 
-    or returns the IP and port of the user in a tuple.
+    requests data associated with a username from the server, and either returns a status code, meaning you entered an invalid username, 
+    or returns the IP and port of the user in a list.
     '''
     # local override for package form
     client = _main_client
+    message = username
     # encoded_message = message.encode('utf-8')
     message2 = f'request_by_user {message}'
     encoded_message = message2.encode('utf-8') # added request_by_user prefix by default
@@ -153,10 +155,19 @@ def request_username_data(message: str) -> any:
     # incoming_data = full_recieve(client)
     incoming_data = client.recv(1024).decode('utf-8')
     pprint(f"Received: {incoming_data}")
+    if incoming_data == '100':
+        return incoming_data
+
+    # parse into list
+    address_str = incoming_data.strip('()')
+    ip_str, port_str = address_str.split(',')
+    ip_str = ip_str.strip().strip("'")
+    port_int = int(port_str.strip())
+    incoming_data = [ip_str, port_int]
     return incoming_data
 
 # a general message sender
-def send_msg(message: str, recieve: bool = False) -> any:
+def send_msg(message: str, recieve: bool = True) -> str:
     '''
     A general tool function for sending messages to the recipient (server, other client, etc)
     '''

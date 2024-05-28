@@ -177,6 +177,13 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             addr = self.client_address[0]
             addr = self.client_address[1]
 
+            # kill client communication if is true (will kill before msg)
+            if _kill_all == True:
+                # self.request.sendall('the server has been commanded to kill all client instances'.encode())
+                self.request.sendall(KILL_ALL)
+                pprint(f'[{addr}] Killing this instance, due to _kill_all being True...')
+                break
+
             # format incoming message
             try:
                 msg = bytes(self.request.recv(1024)).decode('utf-8')
@@ -192,14 +199,6 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     pprint(f'[{addr}] - crash - ending this instance')
                     pprint('----------------------------------------------')
                     break
-            
-            # kill client communication if is true
-            if _kill_all == True:
-                # self.request.sendall('the server has been commanded to kill all client instances'.encode())
-                self.request.sendall(KILL_ALL)
-                pprint(f'[{addr}] Killing this instance, due to _kill_all being True...')
-                break
-
 
             # if prefix is username, log their username and their device info (ip, port) associated with it
             if prefix == 'username':
