@@ -31,5 +31,5 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/SketchedDoughnut/LYNX"
-Issues = "https://github.com/SketchedDoughnut/LYNX/issues"
+Homepage = "https://github.com/SketchedDoughnut/lynxy"
+Issues = "https://github.com/SketchedDoughnut/lynxy/issues"
