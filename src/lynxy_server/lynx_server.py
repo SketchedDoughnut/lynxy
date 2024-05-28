@@ -185,12 +185,14 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 split_msg.remove(prefix)
                 joined_msg = "".join(split_msg)
             except:
-                # self.request.sendall('crash - ending'.encode())
-                self.request.sendall(INVALID_MESSAGE)
-                pprint(f'[{addr}] - crash - ending this instance')
-                pprint('----------------------------------------------')
-                break
-
+                try:
+                    self.request.sendall(INVALID_MESSAGE) # try to send message telling them what they gave is invalid
+                    continue
+                except Exception as e:
+                    pprint(f'[{addr}] - crash - ending this instance')
+                    pprint('----------------------------------------------')
+                    break
+            
             # kill client communication if is true
             if _kill_all == True:
                 # self.request.sendall('the server has been commanded to kill all client instances'.encode())

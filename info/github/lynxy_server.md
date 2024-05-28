@@ -90,14 +90,16 @@ To start your server, you have a couple of options. Here is the rundown: <br>
 # Server response key
 The server has a variety of numbers it will return as responses to actions. Codes from 0 to 99 are status codes. Codes from 100 to 199 is regarding invalid messages from the clients. Codes from 200 to 299 are regarding system settings, set by an authorized client. These include being denied if you do not have the right permissions.
 The key is below. 
-- 0
+- 000
   - the operation was successful
-- 1
+- 001
   - the server failed to do an operation
-- 2
+- 002
   - the client requested to end the communication channel with the server
-- 3
+- 003
   - the message the the client sent to the server is not connected to any command, and so it did nothing
+- 004
+  - The session between the server and client crashed
 - 100
   - the client requested data associated with a username that does not exist
 - 101
