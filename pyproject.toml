@@ -13,7 +13,7 @@ packages = [
 
 [project]
 name = "lynxy"
-# version = "0.1.10" # middle number 1 is currently for test pypi
+# version = "0.1.10" # test pypi release
 version = "0.0.4" # pypi release 
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
