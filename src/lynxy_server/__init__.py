@@ -1,6 +1,6 @@
 '''
 This is the lynxy server module. To find documentation, go to the github~!
-- Github: https://github.com/SketchedDoughnut/LYNX
+- Github: https://github.com/SketchedDoughnut//lynxy
 '''
 
 # extending main lynx file
@@ -12,9 +12,9 @@ def help(open_tab: bool = False) -> str:
     '''
     if open_tab == True:
         import webbrowser
-        webbrowser.open_new_tab('https://github.com/SketchedDoughnut/LYNX')
+        webbrowser.open_new_tab('https://github.com/SketchedDoughnut/lynxy')
     else:
-        return 'https://github.com/SketchedDoughnut/LYNX'
+        return 'https://github.com/SketchedDoughnut/lynxy'
     
 def license(open_tab: bool = False) -> str:
     '''
@@ -22,9 +22,9 @@ def license(open_tab: bool = False) -> str:
     '''
     if open_tab == True:
         import webbrowser
-        webbrowser.open_new_tab('https://github.com/SketchedDoughnut/LYNX/blob/master/LICENSE')
+        webbrowser.open_new_tab('https://github.com/SketchedDoughnut/lynxy/blob/master/LICENSE')
     else:
-        return 'https://github.com/SketchedDoughnut/LYNX/blob/master/LICENSE'
+        return 'https://github.com/SketchedDoughnut/lynxy/blob/master/LICENSE'
     
 def credits() -> str:
     '''
