@@ -198,44 +198,26 @@ def target_client(client_ip: str, client_port: int, mode: str) -> bool:
     then it is possible the other client is not available.
     This function returns a boolean, telling you whether it worked or not.
     '''
-    global _main_client, _HOST, _PORT, _do_print, _valid_ports
-
-    # override port list
-    override_ports([client_port])
-    # overrides
-    if len(_ov_ports) > 0:
-        _valid_ports = _ov_ports
-        _PORT = _valid_ports[0]
-    
-    # override host with client target ip
+    global _HOST, _PORT, _valid_ports
+    global _main_client
+    global _do_print
+    # reset main_client
+    _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # overwrite host
     _HOST = client_ip
+    # overwrite valid ports list
+    override_ports([client_port])
+    # overwrite port
+    _PORT = _valid_ports[0]
+    # setup other vars
+    save = _do_print
 
-    # pre-cycle print to save their preference
-    pre_do = _do_print
-
-    # what is even going on
-    print('HOST SET TO', _HOST)
-    print('PORT SET TO', _PORT)
-    # print('PORT LIST SET TO', _valid_ports)
-
-    # try 30 times, every 1 second, break and return true when succeed
     for i in range(30):
-        pprint(f'attempt {i}')
-        try:
-            if mode == 'inbound':
-                print('inbound')
-                _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                _main_client.listen(5)
-                _main_client2, addr = _main_client.accept() # addr is not used
-                _main_client = _main_client2
-                return True
-            elif mode == 'outbound':
-                print('outbound')
-                _main_client.connect((_HOST, _PORT))
-                return True
-        except Exception as e:
-            print(e)
-            pass
+        disable_print()
+        _main_client, _PORT = _cycle_port(_main_client)
+        _do_print = save
+        if _connected == True:
+            return True
         time.sleep(1)
     return False
 

@@ -10,35 +10,3 @@
 #         break
 #     lynxy.send_msg(msg, recieve=True)
 # lynxy.shutdown_client()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from src import lynxy as l
-
-ip = input('-> ')
-l.enable_print()
-l.start_client(ip)
-l.submit_username_data('1')
-input('-> ')
-data = l.request_username_data('2')
-i = data[0]
-p = data[1]
-mode = 'inbound'
-print(i)
-print(p)
-print(mode)
-l.shutdown_client()
-input('-> ')
-print(l.target_client(i, p, mode))
