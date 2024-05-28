@@ -35,8 +35,10 @@ input('-> ')
 data = l.request_username_data('2')
 i = data[0]
 p = data[1]
+mode = 'inbound'
 print(i)
 print(p)
+print(mode)
 l.shutdown_client()
 input('-> ')
-print(l.target_client(i, p, 'inbound'))
+print(l.target_client(i, p, mode))

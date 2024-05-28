@@ -223,11 +223,13 @@ def target_client(client_ip: str, client_port: int, mode: str) -> bool:
         pprint(f'attempt {i}')
         try:
             if mode == 'inbound':
+                print('inbound')
                 _main_client.listen(5)
                 _main_client2, addr = _main_client.accept() # addr is not used
                 _main_client = _main_client2
                 return True
             elif mode == 'outbound':
+                print('outbound')
                 _main_client.connect((_HOST, _PORT))
                 return True
         except:
