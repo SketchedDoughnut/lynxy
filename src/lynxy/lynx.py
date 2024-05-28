@@ -206,13 +206,17 @@ def target_client(client_ip: str, client_port: int) -> bool:
     if len(_ov_ports) > 0:
         _valid_ports = _ov_ports
         _PORT = _valid_ports[0]
-        pprint(f'[OVERRIDE] Overrided ports to: {_valid_ports}')
     
     # override host with client target ip
     _HOST = client_ip
 
     # pre-cycle print to save their preference
     pre_do = _do_print
+
+    # what is even going on
+    print('HOST SET TO', _HOST)
+    print('PORT SET TO', _PORT)
+    print('PORT LIST SET TO', _valid_ports)
 
     # try 30 times, every 1 second, break and return true when succeed
     for i in range(30):
