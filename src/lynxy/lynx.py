@@ -213,6 +213,7 @@ def target_client(client_ip: str, client_port: int, mode: str) -> bool:
     save = _do_print
 
     for i in range(30):
+        print(f'attempt {i}')
         disable_print()
         _main_client, _PORT = _cycle_port(_main_client)
         _do_print = save
