@@ -59,16 +59,16 @@ To start your client, all you need to do is call one function, passing in the ip
 # Client communication function explanations
 This section is dedicated towards explaining the functions that the lynxy module has.
 - `lynxy.submit_username_data()` 
-  - **ARGS: username: str -> recieves string from server**
+  - **ARGS: username: str -> returns string from server**
   - **NOTE: Please refrain from using spaces in your username.**
   - This is a function meant for submitting username data to the server, to be logged.
 - `lynxy.request_username_data()`
-  - **ARGS: username: str -> recieves string from server**
+  - **ARGS: username: str -> returns list from server**
   - **NOTE: Please refrain from using spaces in your username.**
-  - This is a function meant for requesting data (ip, port) associated with a username (a username being submitted from ones client using `lynxy.submit_username_data()`). The client will attempt to fetch the data associated with that username. The goal of this function is to use this function to get the data about the other player / client you want to connect to, so you can direct connect to them. 
+  - This is a function meant for requesting data (ip, port) associated with a username (a username being submitted from ones client using `lynxy.submit_username_data()`). The client will attempt to fetch the data associated with that username. The goal of this function is to use this function to get the data about the other player / client you want to connect to, so you can direct connect to them. It returns a list, with list[0] being the ip and list[1] being the port.
 - `lynxy.send_msg()`
-  - **ARGS: message: str, recieve: bool = True -> recieves string from server**
-  - This is a function meant for general communication to whoever is on the other end. While the first two functions are meant specifically for server communication, this function is meant for communicating with whoever you are connected to (server, another client, etc). When communicating with the server, the recieve argument needs to be True (it is, be default). However, when communicating with another client, this can be toggled on or off depending on what your intent is.
+  - **ARGS: message: str, recieve: bool = True -> returns string from server**
+  - This is a function meant for general communication to whoever is on the other end. While the first two functions are meant specifically for server communication, this function is meant for communicating with whoever you are connected to (server, another client, etc). When communicating with the server, the recieve argument needs to be True (it is, by default). However, when communicating with another client, this can be toggled on or off depending on what your intent is.
 
 ***
 # Client to server usage

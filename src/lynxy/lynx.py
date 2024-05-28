@@ -1,6 +1,6 @@
 # this below code has been contributed to by chat gpt
 import socket
-# import time
+import time
 
 _valid_ports = [
     11111,
@@ -23,7 +23,8 @@ _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 _ov_ports = []
 _do_print = False
 
-
+# status vars
+_connected = False
 
 
 
@@ -81,17 +82,18 @@ def get_data() -> dict:
 ## FUNCTIONS - operations
 # cycles port connection
 def _cycle_port(client: socket.socket) -> socket.socket:
+    global _connected
     '''
     An internal function used to cycle through the ports in _valid_ports to try and find a connection
     '''
-    connected = False
+    _connected = False
     for port in _valid_ports:
         try:
             pprint(f'[PORT CYCLE] Client trying port: {port}')
             client.connect((_HOST, port))
             pprint(f'[PORT CYCLE] Client connected to: {port}')
             pprint('----------------------------------------------')
-            connected = True
+            _connected = True
             break
         except IndexError:
             port = _valid_ports[0]
@@ -102,11 +104,12 @@ def _cycle_port(client: socket.socket) -> socket.socket:
             except IndexError:
                 port = _valid_ports[0]
                 pprint(f'[PORT CYCLE - RESET 2] Client resetting port to: {port}')
-    if connected == True:
+    if _connected == True:
         return client, port
     else:
         pprint('[PORT CYCLE] the client can not find a open valid server port, exiting')
-        exit()
+        # exit()
+        return client, _PORT
 
 
 
@@ -139,7 +142,7 @@ def submit_username_data(username: str) -> str:
     return incoming_data
 
 # requests ip and port from server
-def request_username_data(username: str) -> str:
+def request_username_data(username: str) -> any:
     '''
     requests data associated with a username from the server, and either returns a status code, meaning you entered an invalid username, 
     or returns the IP and port of the user in a list.
@@ -188,6 +191,27 @@ def send_msg(message: str, recieve: bool = True) -> str:
 #     '''
 #     client = _main_client
 #     encoded_file =
+
+def target_client(client_ip: str, client_port: int) -> bool:
+    '''
+    Takes in the target clients ip and port, and will attempt to connect to them. If this fails, 
+    then it is possible the other client is not available.
+    This function returns a boolean, telling you whether it worked or not.
+    '''
+    global _main_client, _HOST, _PORT, _do_print
+    override_ports([client_port])    
+    _HOST = client_ip
+
+    pre_do = _do_print
+    for i in range(30):
+        pprint(f'attempt {i}')
+        disable_print()
+        _main_client, _PORT = _cycle_port(_main_client)
+        _do_print = pre_do
+        if _connected == True:
+            return True
+        time.sleep(1)
+    return False
 
 
 
