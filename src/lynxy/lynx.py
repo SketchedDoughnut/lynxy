@@ -81,13 +81,15 @@ def get_data() -> dict:
 
 ## FUNCTIONS - operations
 # cycles port connection
-def _cycle_port(client: socket.socket) -> socket.socket:
+def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
     global _connected
     '''
     An internal function used to cycle through the ports in _valid_ports to try and find a connection
     '''
     _connected = False
+    out_port = 0
     for port in _valid_ports:
+        out_port = port
         try:
             pprint(f'[PORT CYCLE] Client trying port: {port}')
             client.connect((_HOST, port))
@@ -105,11 +107,10 @@ def _cycle_port(client: socket.socket) -> socket.socket:
                 port = _valid_ports[0]
                 pprint(f'[PORT CYCLE - RESET 2] Client resetting port to: {port}')
     if _connected == True:
-        return client, port
-    else:
+        return client, out_port, True
+    elif _connected == False:
         pprint('[PORT CYCLE] the client can not find a open valid server port, exiting')
-        # exit()
-        return client, _PORT
+        return client, _PORT, False
 
 
 
@@ -237,9 +238,10 @@ def shutdown_client() -> bool:
     except:
         return False
 
-def start_client(connection_ip: str) -> None:
+def start_client(connection_ip: str) -> bool:
     '''
-    Starts the connection to the server, taking in an IP
+    Starts the connection to the server, taking in an IP. 
+    This function returns a bool, telling you whether it worked or not.
     '''
     global _main_client, _valid_ports, _PORT, _HOST
     _HOST = connection_ip
@@ -251,4 +253,5 @@ def start_client(connection_ip: str) -> None:
         pprint(f'[OVERRIDE] Overrided ports to: {_valid_ports}')
     
     # establish the connection to a port that the server is on
-    _main_client, _PORT = _cycle_port(_main_client)
+    _main_client, _PORT, state = _cycle_port(_main_client)
+    return state

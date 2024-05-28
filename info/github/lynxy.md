@@ -53,6 +53,7 @@ If you want to enable printing, use the following command: <br>
 # Starting your client
 To start your client, all you need to do is call one function, passing in the ip of the server. In this example, we use a loopback address: <br>
 - `lynxy.start_client('127.0.0.1')`
+  **ARGS: None -> returns bool on status of connection**
     - To get the servers ip, please refer to the server setup page, specifically the section named ["Starting the server"](lynxy_server.md#starting-the-server). This IP should be distributed to anyone with the code containing the lynxy client code.
  
 ***
