@@ -30,8 +30,13 @@ from src import lynxy as l
 ip = input('-> ')
 l.enable_print()
 l.start_client(ip)
-l.submit_username_data('laptop')
+l.submit_username_data('SketchedDoughnut')
 input('-> ')
-i, p = l.request_username_data('SketchedDoughnut')
+data = l.request_username_data('laptop')
+i = data[0]
+p = data[1]
+print(i)
+print(p)
 l.shutdown_client()
+input('-> ')
 print(l.target_client(i, p))

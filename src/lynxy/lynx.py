@@ -199,14 +199,27 @@ def target_client(client_ip: str, client_port: int) -> bool:
     This function returns a boolean, telling you whether it worked or not.
     '''
     global _main_client, _HOST, _PORT, _do_print
-    override_ports([client_port])    
+
+    # override port list
+    override_ports([client_port])
+    # overrides
+    if len(_ov_ports) > 0:
+        _valid_ports = _ov_ports
+        _PORT = _valid_ports[0]
+        pprint(f'[OVERRIDE] Overrided ports to: {_valid_ports}')
+    
+    # override host with client target ip
     _HOST = client_ip
 
+    # pre-cycle print to save their preference
     pre_do = _do_print
+
+    # try 30 times, every 1 second, break and return true when succeed
     for i in range(30):
         pprint(f'attempt {i}')
         disable_print()
         _main_client, _PORT = _cycle_port(_main_client)
+        print('port returned:', _PORT)
         _do_print = pre_do
         if _connected == True:
             return True
