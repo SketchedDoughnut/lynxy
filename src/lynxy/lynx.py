@@ -224,7 +224,8 @@ def target_client(client_ip: str, client_port: int, mode: str) -> bool:
         try:
             if mode == 'inbound':
                 _main_client.listen(5)
-                _main_client, addr = _main_client.accept() # addr is not used
+                _main_client2, addr = _main_client.accept() # addr is not used
+                _main_client = _main_client2
                 return True
             elif mode == 'outbound':
                 _main_client.connect((_HOST, _PORT))
