@@ -67,11 +67,14 @@ If you want to enable printing, use the following command: <br>
 
 **Overriding other features** <br>
 There are a couple of other things you can ovverride. These are variables you can set. You can change all of them directly. For example, `(var) = True`, or `(var) = False`.
-- `limit_username`
+
+`limit_username`
   - This boolean decides whether or not the server will limit the client to only being able to submit a single username to the server.
-- `overwrite_usernames`
+
+`overwrite_usernames`
   - This boolean decides whether the client can override a username that already exists in the database.
-- `clear_dead_usernames`
+
+`clear_dead_usernames`
   - This boolean decides whether the server will clear usernames (and the data associated with them) from the database when the client disconnects / crashes.
 
 

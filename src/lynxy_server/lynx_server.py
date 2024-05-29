@@ -113,7 +113,6 @@ def _remove_dead(username: str):
         except:
             pass 
 
-
 # function to display current data
 def get_data() -> dict:
     '''
