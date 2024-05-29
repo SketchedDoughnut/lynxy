@@ -1,3 +1,3 @@
 limit_username = True
-overwrite_usernames = False
+overwrite_usernames = True
 clear_dead_usernames = True
