@@ -8,3 +8,7 @@ l.enable_print()
 l.start_client(ip)
 l.submit_username_data('SketchedDoughnut')
 l.submit_username_data('SketchedDoughnut')
+import time
+time.sleep(5)
+l.start_client(ip)
+l.request_username_data('SketchedDoughnut')
