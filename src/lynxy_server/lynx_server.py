@@ -6,6 +6,7 @@ import random
 
 # file imports
 from .responses import *
+from .toggles import *
 
 # where client data is stored
 _client_dict = {
@@ -172,6 +173,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
     def handle(self) -> None:
         global _client_dict, _verified, _shutdown
 
+        saved_username = ''
         while True:
             # establish client address
             addr = self.client_address[0]
@@ -203,10 +205,48 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             # if prefix is username, log their username and their device info (ip, port) associated with it
             if prefix == 'username':
                 if joined_msg: # if not empty
-                    _client_dict[joined_msg] = self.client_address
-                    pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
-                    # self.request.sendall('logged username, data'.encode())
-                    self.request.sendall(OPERATION_SUCCESS)
+
+                    # if they have not already inputted a username and the username limit is not on,
+                    if limit_username == True: # if username limit is enabled
+                        if saved_username: # if they have already submtited a username,
+                            self.request.sendall(ALREADY_REGISTERED_USERNAME) # tell them they have already registered a username
+                            continue # start next loop iteration
+                        else: # else, they have not submitted a username
+                            if overwrite_usernames == True: # if they want to overwrite usernames
+                                pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
+                                _client_dict[joined_msg] = self.client_address # write username regardless
+                                self.request.sendall(OPERATION_SUCCESS) # send back success
+                                continue # start next loop iteration
+                            else: # if they do not want to overwrite usernames
+                                try: # see if the entry exists
+                                    _client_dict[joined_msg] # try to access entry
+                                    self.request.sendall(USERNAME_EXISTS) # if entry exists, no error, returns exists
+                                    continue # start next loop iteration
+                                except KeyError: # fails since no key exists
+                                    _client_dict[joined_msg] = self.client_address # set username since it does not exist
+                                    pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
+                                    saved_username = joined_msg
+                                    self.request.sendall(OPERATION_SUCCESS)
+                    else:
+                        if overwrite_usernames == True:
+                            pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
+                            _client_dict[joined_msg] = self.client_address # write username regardless
+                            self.request.sendall(OPERATION_SUCCESS) # send back success
+                            continue # start next loop iteration
+                        else:
+                            try: # see if the entry exists
+                                _client_dict[joined_msg] # try to access entry
+                                self.request.sendall(USERNAME_EXISTS) # if entry exists, no error, returns exists
+                                continue # start next loop iteration
+                            except KeyError: # fails since no key exists
+                                _client_dict[joined_msg] = self.client_address # set username since it does not exist
+                                pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
+                                saved_username = joined_msg
+                                self.request.sendall(OPERATION_SUCCESS)
+
+                        # pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
+                        # # self.request.sendall('logged username, data'.encode())
+                        # self.request.sendall(OPERATION_SUCCESS)
                 else:
                     self.request.sendall(INVALID_MESSAGE)
 
