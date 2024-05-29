@@ -228,7 +228,8 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                             if overwrite_usernames == True: # if they want to overwrite usernames
                                 pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
                                 # _client_dict[joined_msg] = self.client_address # write username regardless
-                                _log_user_data(joined_msg, (self.client_address, self.request))
+                                # _log_user_data(joined_msg, (self.client_address, self.request))
+                                _log_user_data(joined_msg, self.client_address)
                                 saved_username = joined_msg
                                 self.request.sendall(OPERATION_SUCCESS) # send back success
                                 continue # start next loop iteration

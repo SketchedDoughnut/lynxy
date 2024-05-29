@@ -21,5 +21,11 @@ for i in range(1, t, 1):
 result = l.start_client(ip)
 if result:
     l.request_username_data(username)
+    l.submit_username_data(username)
 
 print(ls.get_data())
+
+# from socket import socket, AF_INET, SOCK_STREAM
+
+# s = socket(AF_INET, SOCK_STREAM)
+# s.sendto()
