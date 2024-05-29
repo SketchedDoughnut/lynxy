@@ -102,6 +102,10 @@ def pprint(msg: str) -> None:
     else:
         pass
 
+def _log_user_data(username: str, addr: tuple) -> None:
+    global _client_dict
+    _client_dict[username] = addr
+
 # function to display current data
 def get_data() -> dict:
     '''
@@ -184,6 +188,11 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 # self.request.sendall('the server has been commanded to kill all client instances'.encode())
                 self.request.sendall(KILL_ALL)
                 pprint(f'[{addr}] Killing this instance, due to _kill_all being True...')
+                if clear_dead_usernames:
+                    try:
+                        del _client_dict[saved_username]
+                    except:
+                        pass # usernames does not exist in the dictionary
                 break
 
             # format incoming message
@@ -199,6 +208,11 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     continue
                 except Exception as e:
                     pprint(f'[{addr}] - crash - ending this instance')
+                    if clear_dead_usernames:
+                        try:
+                            del _client_dict[saved_username]
+                        except:
+                            pass # usernames does not exist in the dictionary
                     pprint('----------------------------------------------')
                     break
 
@@ -214,7 +228,9 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                         else: # else, they have not submitted a username
                             if overwrite_usernames == True: # if they want to overwrite usernames
                                 pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
-                                _client_dict[joined_msg] = self.client_address # write username regardless
+                                # _client_dict[joined_msg] = self.client_address # write username regardless
+                                _log_user_data(joined_msg, self.client_address)
+                                saved_username = joined_msg
                                 self.request.sendall(OPERATION_SUCCESS) # send back success
                                 continue # start next loop iteration
                             else: # if they do not want to overwrite usernames
@@ -223,14 +239,17 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                                     self.request.sendall(USERNAME_EXISTS) # if entry exists, no error, returns exists
                                     continue # start next loop iteration
                                 except KeyError: # fails since no key exists
-                                    _client_dict[joined_msg] = self.client_address # set username since it does not exist
+                                    # _client_dict[joined_msg] = self.client_address # set username since it does not exist
+                                    _log_user_data(joined_msg, self.client_address)
                                     pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
                                     saved_username = joined_msg
                                     self.request.sendall(OPERATION_SUCCESS)
                     else:
                         if overwrite_usernames == True:
                             pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
-                            _client_dict[joined_msg] = self.client_address # write username regardless
+                            # _client_dict[joined_msg] = self.client_address # write username regardless
+                            _log_user_data(joined_msg, self.client_address)
+                            saved_username = joined_msg
                             self.request.sendall(OPERATION_SUCCESS) # send back success
                             continue # start next loop iteration
                         else:
@@ -239,8 +258,9 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                                 self.request.sendall(USERNAME_EXISTS) # if entry exists, no error, returns exists
                                 continue # start next loop iteration
                             except KeyError: # fails since no key exists
-                                _client_dict[joined_msg] = self.client_address # set username since it does not exist
+                                # _client_dict[joined_msg] = self.client_address # set username since it does not exist
                                 pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
+                                _log_user_data(joined_msg, self.client_address)
                                 saved_username = joined_msg
                                 self.request.sendall(OPERATION_SUCCESS)
 
@@ -301,6 +321,11 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 # self.request.sendall('ending'.encode())
                 self.request.sendall(END_SESSION)
                 pprint(f'[{addr}] {msg} - ending this instance')
+                if clear_dead_usernames == True:
+                    try:
+                        del _client_dict[saved_username]
+                    except:
+                        pass # usernames does not exist in the dictionary
                 pprint('----------------------------------------------')
                 break
             

@@ -65,6 +65,14 @@ If you want to enable printing, use the following command: <br>
 **NOTE**: Prints are enabled by default.
 
 
+**Overriding other features** <br>
+There are a couple of other things you can ovverride. These are variables you can set. You can change all of them directly. For example, `(var) = True`, or `(var) = False`.
+- `limit_username`
+  - This boolean decides whether or not the server will limit the client to only being able to submit a single username to the server.
+- `overwrite_usernames`
+  - This boolean decides whether the client can override a username that already exists in the database.
+- `clear_dead_usernames`
+  - This boolean decides whether the server will clear usernames (and the data associated with them) from the database when the client disconnects / crashes.
 
 
 
@@ -77,7 +85,7 @@ If you want to enable printing, use the following command: <br>
 ***
 # Starting the server
 To start your server, you have a couple of options. Here is the rundown: <br>
-- `lynxy_server.start_server()`
+- `ip, port, token = lynxy_server.start_server()`
   - This option will not block your code, as it will run the server in a seperate thread. This allows for use of functions such as `lynxy_server.get_data()`, and more.
   - If you disable print and then call on this function, absolutely nothing will be printed. You can get the IP the server is on, the port the server is on, and the session token from `lynxy_server.get_data()`. Alternatively, `lynxy_server.start_server()` returns a tuple containing all of these (in respective order) which you can also use to get data from. Clients will need the IP address to connect to the server, and if you want to remotely control the server then you will also need the session token. Usage of this token is elaborated on more in the client setup page.
   - **PLEASE NOTE**: If you use this function, and there is no code continuing after it, the file will finish. This means that the server will get terminated. To prevent this, please include some sort of loop system AFTER calling the function that keeps the file in which you called on this function active, as to not close the server.
@@ -108,6 +116,10 @@ The key is below.
   - the user has not been authorized, and can not do what they just tried to
 - 103
   - The message is invalid (meaning it is empty or corrupt in some way)
+- 104:
+  - You have already registered a username on the server for this client instance
+- 105:
+  - The username you are trying to submit to the database has already been submitted
 - 200
   - the server has been commanded to deny every client that connects to it
 
