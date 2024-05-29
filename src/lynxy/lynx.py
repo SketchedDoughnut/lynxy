@@ -250,6 +250,9 @@ def start_client(connection_ip: str) -> bool:
     global _main_client, _valid_ports, _PORT, _HOST
     _HOST = connection_ip
 
+    # reset _main_client
+    _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     # overrides
     if len(_ov_ports) > 0:
         _valid_ports = _ov_ports

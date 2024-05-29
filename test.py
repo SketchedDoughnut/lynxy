@@ -10,10 +10,14 @@ l.start_client(ip)
 l.submit_username_data(username)
 l.submit_username_data(username)
 l.shutdown_client()
-exit()
+# exit()
 import time
-time.sleep(2.5)
 print('Restarting...')
-time.sleep(2.5)
-l.start_client(ip)
-l.request_username_data(username)
+# t = 60 * 4
+t = 5
+for i in range(1, t, 1):
+    print(f'{i}/{t}')
+    time.sleep(1)
+result = l.start_client(ip)
+if result:
+    l.request_username_data(username)
