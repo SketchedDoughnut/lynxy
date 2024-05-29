@@ -232,6 +232,10 @@ def shutdown_client() -> bool:
     '''
     global _main_client
     try:
+        send_msg('end_session')
+    except:
+        pass
+    try:
         _main_client.close()
         pprint('[CLIENT SHUTDOWN] Shutting down client...')
         return True

@@ -106,6 +106,14 @@ def _log_user_data(username: str, addr: tuple) -> None:
     global _client_dict
     _client_dict[username] = addr
 
+def _remove_dead(username: str):
+    if clear_dead_usernames:
+        try:
+            del _client_dict[username]
+        except:
+            pass 
+
+
 # function to display current data
 def get_data() -> dict:
     '''
@@ -188,11 +196,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 # self.request.sendall('the server has been commanded to kill all client instances'.encode())
                 self.request.sendall(KILL_ALL)
                 pprint(f'[{addr}] Killing this instance, due to _kill_all being True...')
-                if clear_dead_usernames:
-                    try:
-                        del _client_dict[saved_username]
-                    except:
-                        pass # usernames does not exist in the dictionary
+                _remove_dead(saved_username)
                 break
 
             # format incoming message
@@ -208,11 +212,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     continue
                 except Exception as e:
                     pprint(f'[{addr}] - crash - ending this instance')
-                    if clear_dead_usernames:
-                        try:
-                            del _client_dict[saved_username]
-                        except:
-                            pass # usernames does not exist in the dictionary
+                    _remove_dead(saved_username)
                     pprint('----------------------------------------------')
                     break
 
@@ -321,16 +321,8 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 # self.request.sendall('ending'.encode())
                 self.request.sendall(END_SESSION)
                 pprint(f'[{addr}] {msg} - ending this instance')
-                print("CHECKING CLEAR")
-                if clear_dead_usernames:
-                    print("IS TRUE")
-                    try:
-                        del _client_dict[saved_username]
-                        print("DID DEL")
-                    except Exception as e:
-                        print("FAIL DEL")
-                        print(e)
-                        pass # usernames does not exist in the dictionary
+                # print("CHECKING CLEAR")
+                _remove_dead(saved_username)
                 pprint('----------------------------------------------')
                 break
             
