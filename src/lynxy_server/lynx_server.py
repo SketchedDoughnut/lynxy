@@ -321,10 +321,15 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 # self.request.sendall('ending'.encode())
                 self.request.sendall(END_SESSION)
                 pprint(f'[{addr}] {msg} - ending this instance')
-                if clear_dead_usernames == True:
+                print("CHECKING CLEAR")
+                if clear_dead_usernames:
+                    print("IS TRUE")
                     try:
                         del _client_dict[saved_username]
-                    except:
+                        print("DID DEL")
+                    except Exception as e:
+                        print("FAIL DEL")
+                        print(e)
                         pass # usernames does not exist in the dictionary
                 pprint('----------------------------------------------')
                 break
