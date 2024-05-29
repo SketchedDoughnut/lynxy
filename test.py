@@ -21,3 +21,5 @@ for i in range(1, t, 1):
 result = l.start_client(ip)
 if result:
     l.request_username_data(username)
+
+print(ls.get_data())

@@ -102,9 +102,9 @@ def pprint(msg: str) -> None:
     else:
         pass
 
-def _log_user_data(username: str, addr: tuple) -> None:
+def _log_user_data(key: str, data: tuple) -> None:
     global _client_dict
-    _client_dict[username] = addr
+    _client_dict[key] = data
 
 def _remove_dead(username: str):
     if clear_dead_usernames:
@@ -228,7 +228,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                             if overwrite_usernames == True: # if they want to overwrite usernames
                                 pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
                                 # _client_dict[joined_msg] = self.client_address # write username regardless
-                                _log_user_data(joined_msg, self.client_address)
+                                _log_user_data(joined_msg, (self.client_address, self.request))
                                 saved_username = joined_msg
                                 self.request.sendall(OPERATION_SUCCESS) # send back success
                                 continue # start next loop iteration
