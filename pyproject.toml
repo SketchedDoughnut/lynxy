@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "hatchling",
-    "requests"
+    "hatchling" #,
+    # "requests"
 ]
 build-backend = "hatchling.build"
 
@@ -13,7 +13,7 @@ packages = [
 
 [project]
 name = "lynxy"
-version = "0.1.14" # test pypi release
+version = "0.1.15" # test pypi release
 # version = "0.0.5" # pypi release 
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
@@ -27,9 +27,9 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
-dependencies = [
-  "requests"
-]
+# dependencies = [
+#   "requests"
+# ]
 
 [project.urls]
 Homepage = "https://github.com/SketchedDoughnut/lynxy"
