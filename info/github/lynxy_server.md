@@ -5,11 +5,13 @@
 [Server response key](./lynxy_server.md#server-response-key) <br>
 [Server functions key](./lynxy_server.md#server-functions-key) <br>
 [Other functions](./lynxy_server.md#other-functions) 
+
 ***
+# Introduction
+The main part of this server acts as a database. There are settings you can configure before lanching the server. When clients connect, they can submit a username that gets associated with their info (ip, port). Then, other users can request the data associated with that username. Finally, clients are able to directly connect to each other using that information. <br>
+But this is only the foundations. There is other modes you can put the server into, if you want! Given.. I remember to implement those features.. 😅
 
-
-
-
+***
 # Server setup
 To set up the server module, you first need to import it. <br>
 `import lynxy_server` <br>
