@@ -32,7 +32,7 @@ The server has a couple of parameters that can be overriden. These are:
 - the ports it attempts to connect to
 - the IP it tries to run on 
 - whether the program prints or not
-
+<br><br>
 
 **Overriding ports** <br>
 The server has a default list of ports it will try to connect to. These ports are:
@@ -50,12 +50,12 @@ The server has a default list of ports it will try to connect to. These ports ar
 It cycles through these ports so that if one is not available, it can still launch itself. You can override these ports by running the function below, and passing in a list with one or more ports (in integer form). There is no limit for how many ports you can pass into it. In this example, we use three random ports: <br>
 `lynxy_server.override_ports([12345, 67890, 17390])` <br>
 **NOTE**: YOU MUST HAVE PORTS ON THE CLIENT AND THE SERVER THAT ARE THE SAME, SO THAT THEY CAN FIND EACH OTHER
-
+<br><br>
 
 **Overriding IP** <br>
 The server uses the ipv4 IP of the device it is running on. It is advised to not change this. However, if you want to override the IP, you can use the following function, inputting a string. <br>
 `lynxy_server.override_ip("123.456.789.0")`
-
+<br><br>
 
 **Overriding prints** <br>
 If you don't want any console message to be printed, use the following command: <br>
@@ -63,7 +63,22 @@ If you don't want any console message to be printed, use the following command: 
 If you want to enable printing, use the following command: <br>
 `lynxy_server.enable_print()` <br>
 **NOTE**: Prints are enabled by default.
+<br><br>
 
+**Creating custom functions** <br>
+The server has the ability to execute a custom function, if you choose to create one. The server's code to communicate with the client runs in a while loop, only exiting when the client disconnects, there is an issue, or the server is remotely told to by an authorized user. When creating your own function, there are some rules you need to follow.
+- Your function HAS to take two inputs, both strings. One is the message the server recieves, and the other is the address of the client. Additionally, your function must return a string telling the server what to do once your function is done. There are 4 possibilities.
+  - "exit"
+    - will make the server severe its current connection with the client
+  - "continue"
+    - will make the loop restart again
+  - "break"
+    - will break out of the current loop
+  - anything else
+    - nothing will happen
+- Example function
+  - `def foo(message: str, addr: str) -> str` 
+<br><br>
 
 **Overriding other features** <br>
 There are a couple of other things you can ovverride. These are variables you can set. You can change all of them directly. For example, `(var) = True`, or `(var) = False`.

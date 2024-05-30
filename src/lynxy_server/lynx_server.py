@@ -51,8 +51,10 @@ _starting_thread = 0
 _token = 'x'
 _verified = False
 
-
-
+# function data
+_do_custom_function = False
+_init_custom_function = 0
+_custom_function = 0
 
 
 
@@ -112,6 +114,13 @@ def _remove_dead(username: str):
             del _client_dict[username]
         except:
             pass 
+
+from typing import Callable
+def load_function(loop_function: Callable) -> None:
+    global _do_custom_function, _custom_function
+    _do_custom_function = True
+    _custom_function = loop_function
+
 
 # function to display current data
 def get_data() -> dict:
@@ -214,6 +223,18 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     _remove_dead(saved_username)
                     pprint('----------------------------------------------')
                     break
+            
+            if _do_custom_function:
+                result = _custom_function(msg, self.client_address)
+                if result == 'continue':
+                    continue
+                elif result == 'break':
+                    _remove_dead(saved_username)
+                    break
+                elif result == 'exit':
+                    _remove_dead(saved_username)
+                else:
+                    pass
 
             # if prefix is username, log their username and their device info (ip, port) associated with it
             if prefix == 'username':
