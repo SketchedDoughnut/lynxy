@@ -204,6 +204,8 @@ def _distributor() -> None:
     global _data_queue
     while True:
         for message in _data_queue:
+            # temp delay
+            time.sleep(3)
             for client in _listener_list:
                 encoded = message.encode()
                 client.sendall(encoded)
@@ -363,12 +365,12 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     self.request.sendall(INVALID_AUTH_TOKEN)
 
             # if msg is listener, add their socket to the listening list and ignore any more messages from them
-            elif msg == 'listener':
-                if not is_listener:
-                    _listener_list.append(self.request)
-                    is_listener = True
-                    threading.Thread(target=lambda:_loopback_input(self.request)).start()
-                    self.request.sendall(OPERATION_SUCCESS)
+            # elif msg == 'listener':
+            #     if not is_listener:
+            #         _listener_list.append(self.request)
+            #         is_listener = True
+            #         threading.Thread(target=lambda:_loopback_input(self.request)).start()
+            #         self.request.sendall(OPERATION_SUCCESS)
 
 
             # if msg is clear_client, check if this client is authorized and then clear the client_dict
@@ -448,7 +450,7 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
                 threading.Thread(target=lambda:_poll_shutdown()).start()    # , daemon=True).start()
                 pprint('[SERVER] Started scan for shutdown requests')
                 # start distributor thread
-                threading.Thread(target=lambda:_distributor()).start()
+                #threading.Thread(target=lambda:_distributor()).start()
                 pprint('[SERVER] STarted distributor thread')
                 if is_threaded: 
                     pprint(f'[SERVER] Server IP: {_HOST}')
