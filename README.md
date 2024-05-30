@@ -23,4 +23,5 @@ To access server setup, go [**here**](./info/github/lynxy_server.md)
 To access client setup, go [**here**](./info/github/lynxy.md)
 
 # Etc
-You can find more info about functions by looking at the descriptions of them in your code editor.
+You can find the testing releases [**here**](https://test.pypi.org/project/lynxy/). <br>
+To install, run `pip install -i https://test.pypi.org/simple/ lynxy` or `python3 -m pip install -i https://test.pypi.org/simple/ lynxy`
