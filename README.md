@@ -24,5 +24,6 @@ To access client setup, go [**here**](./info/github/lynxy.md)
 
 # Etc
 You can find the testing releases [**here**](https://test.pypi.org/project/lynxy/). <br>
-To install, run `pip install -i https://test.pypi.org/simple/ lynxy` <br>
+To install, run <br><br>
+`pip install -i https://test.pypi.org/simple/ lynxy` <br>
 or `python3 -m pip install -i https://test.pypi.org/simple/ lynxy`
