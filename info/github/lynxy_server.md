@@ -63,7 +63,7 @@ If you don't want any console message to be printed, use the following command: 
 If you want to enable printing, use the following command: <br>
 `lynxy_server.enable_print()` <br>
 **NOTE**: Prints are enabled by default.
-<br><br>
+<!-- <br><br>
 
 **Creating custom functions** <br>
 The server has the ability to execute a custom function, if you choose to create one. The server's code to communicate with the client runs in a while loop, only exiting when the client disconnects, there is an issue, or the server is remotely told to by an authorized user. When creating your own function, there are some rules you need to follow.
@@ -77,8 +77,8 @@ The server has the ability to execute a custom function, if you choose to create
   - anything else
     - nothing will happen
 - Example function
-  - `def foo(message: str, addr: str) -> str` 
-<br><br>
+  - `def foo(message: str, addr: str) -> str`  -->
+<br>
 
 **Overriding other features** <br>
 There are a couple of other things you can ovverride. These are variables you can set. You can change all of them directly. For example, `(var) = True`, or `(var) = False`.

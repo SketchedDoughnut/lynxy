@@ -13,6 +13,10 @@ _client_dict = {
     'default': 0
 }
 
+# where listener clients are stored
+_listener_list = []
+_data_queue = []
+
 # all valid ports it will attempt to connect to
 _valid_ports = [
     11111,
@@ -115,11 +119,11 @@ def _remove_dead(username: str):
         except:
             pass 
 
-from typing import Callable
-def load_function(loop_function: Callable) -> None:
-    global _do_custom_function, _custom_function
-    _do_custom_function = True
-    _custom_function = loop_function
+# from typing import Callable
+# def load_function(loop_function: Callable) -> None:
+#     global _do_custom_function, _custom_function
+#     _do_custom_function = True
+#     _custom_function = loop_function
 
 
 # function to display current data
@@ -134,7 +138,9 @@ def get_data() -> dict:
             'port': _PORT,
             'token': _token
         },
-        'client info': _client_dict
+        'client info': _client_dict,
+        'listener info': _listener_list,
+        'message_queue': _data_queue
     }
 
 # function for shutting down the server
@@ -187,12 +193,18 @@ def _gen_auth_token() -> str:
             token += str(random.randint(0, 9))
     return token
 
+def _loopback_input(client: socket.socket) -> None:
+    while True:
+        msg = client.recv(1024).decode()
+        client.sendall(OPERATION_SUCCESS)
+        _data_queue.append(msg)
 
 # MAIN CLASS
 class _myTCPserver(socketserver.BaseRequestHandler):
     def handle(self) -> None:
         global _client_dict, _verified, _shutdown
 
+        is_listener = False
         saved_username = ''
         while True:
             # establish client address
@@ -208,33 +220,39 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 break
 
             # format incoming message
-            try:
-                msg = bytes(self.request.recv(1024)).decode('utf-8')
-                split_msg = msg.split()
-                prefix = split_msg[0]
-                split_msg.remove(prefix)
-                joined_msg = "".join(split_msg)
-            except:
+            if not is_listener:
                 try:
-                    self.request.sendall(INVALID_MESSAGE) # try to send message telling them what they gave is invalid
-                    continue
-                except Exception as e:
-                    pprint(f'[{addr}] - crash - ending this instance')
-                    _remove_dead(saved_username)
-                    pprint('----------------------------------------------')
-                    break
+                    msg = bytes(self.request.recv(1024)).decode('utf-8')
+                    split_msg = msg.split()
+                    prefix = split_msg[0]
+                    split_msg.remove(prefix)
+                    joined_msg = "".join(split_msg)
+                except:
+                    try:
+                        if not is_listener:
+                            self.request.sendall(INVALID_MESSAGE) # try to send message telling them what they gave is invalid
+                            continue
+                        else:
+                            pass
+                    except Exception as e:
+                        pprint(f'[{addr}] - crash - ending this instance')
+                        _remove_dead(saved_username)
+                        pprint('----------------------------------------------')
+                        break
             
-            if _do_custom_function:
-                result = _custom_function(msg, self.client_address)
-                if result == 'continue':
-                    continue
-                elif result == 'break':
-                    _remove_dead(saved_username)
-                    break
-                elif result == 'exit':
-                    _remove_dead(saved_username)
-                else:
-                    pass
+            if is_listener:
+                pass
+            # if _do_custom_function:
+            #     result = _custom_function(msg, self.client_address)
+            #     if result == 'continue':
+            #         continue
+            #     elif result == 'break':
+            #         _remove_dead(saved_username)
+            #         break
+            #     elif result == 'exit':
+            #         _remove_dead(saved_username)
+            #     else:
+            #         pass
 
             # if prefix is username, log their username and their device info (ip, port) associated with it
             if prefix == 'username':
@@ -311,6 +329,15 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 else:
                     # self.request.sendall('invalid auth token'.encode())
                     self.request.sendall(INVALID_AUTH_TOKEN)
+
+            # if msg is listener, add their socket to the listening list and ignore any more messages from them
+            elif msg == 'listener':
+                if not is_listener:
+                    _listener_list.append(self.request)
+                    is_listener = True
+                    threading.Thread(target=lambda:_loopback_input(self.request)).start()
+                    self.request.sendall(OPERATION_SUCCESS)
+
 
             # if msg is clear_client, check if this client is authorized and then clear the client_dict
             elif msg == 'clear_client':
