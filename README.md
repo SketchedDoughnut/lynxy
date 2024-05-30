@@ -9,9 +9,9 @@ This project is also named after my ~ windy ~ friend :3 <br>
 The first section will explain instructions that apply to both, and then we will cover each individual part.
 
 # **General setup**
-Before we do anything, you should first install this module with pip. <br></br>
-`pip install lynxy` <br>
-or `python3 -m pip install lynxy` <br> <br>
+Before we do anything, you should first install this module with pip.
+- `pip install lynxy`
+- `python3 -m pip install lynxy`
 When you do this, it will install both the modules "lynxy" and "lynxy_server". Once this is done, you are ready to read the instructions on the following sections about setting up your client, server, or both.
 
 
@@ -25,6 +25,6 @@ To access client setup, go [**here**](./info/github/lynxy.md)
 # Etc
 You can find official releases [**here**](https://pypi.org/project/lynxy/) <br>
 You can find the testing releases [**here**](https://test.pypi.org/project/lynxy/). <br>
-- To install, run the following. <br>
+- To install, run the following.
   - `pip install -i https://test.pypi.org/simple/ lynxy` <br>
   - `python3 -m pip install -i https://test.pypi.org/simple/ lynxy`
