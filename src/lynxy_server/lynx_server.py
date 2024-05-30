@@ -364,6 +364,11 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     # self.request.sendall('invalid auth token'.encode())
                     self.request.sendall(INVALID_AUTH_TOKEN)
 
+            elif msg == 'help':
+                msg = 'Commands: username, request_by_user, auth, help, clear_client (auth only), freeze_server (auth only)'
+                encoded = msg.encode()
+                self.request.sendall(encoded)
+                
             # if msg is listener, add their socket to the listening list and ignore any more messages from them
             # elif msg == 'listener':
             #     if not is_listener:
