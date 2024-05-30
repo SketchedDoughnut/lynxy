@@ -75,7 +75,7 @@ This section is dedicated towards explaining the functions that the lynxy module
 # Client to server usage
 To find information about how to use the client to communicate with the server, go to the ["Server functions key"](lynxy_server.md#server-functions-key) section of the server setup page!
 
-***
+<!-- ***
 # Client to client usage
 If you want to communicate to another client using this client, it is easy! Here are the steps.
 - First, end your current session with the server if you have not already.
@@ -93,7 +93,7 @@ If you want to communicate to another client using this client, it is easy! Here
       - if you want to immediately recieve a message back from the other client, set the optional flag of recieve to True.
         - `lynxy.send_msg(msg, recieve=True)`
   - To send files,
-    - this feature is not yet available, sorry!
+    - this feature is not yet available, sorry! -->
 
 
 
