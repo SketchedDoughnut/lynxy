@@ -3,6 +3,7 @@ import socket
 import threading
 import time
 import random
+import sys
 
 # file imports
 from .responses import *
@@ -196,8 +197,19 @@ def _gen_auth_token() -> str:
 def _loopback_input(client: socket.socket) -> None:
     while True:
         msg = client.recv(1024).decode()
-        client.sendall(OPERATION_SUCCESS)
+        # client.sendall(OPERATION_SUCCESS)
         _data_queue.append(msg)
+
+def _distributor() -> None:
+    global _data_queue
+    while True:
+        for message in _data_queue:
+            for client in _listener_list:
+                encoded = message.encode()
+                client.sendall(encoded)
+            # print(f'sent {message} to {client}')
+            print('size:', sys.getsizeof(encoded))
+            _data_queue.remove(message)
 
 # MAIN CLASS
 class _myTCPserver(socketserver.BaseRequestHandler):
@@ -205,6 +217,8 @@ class _myTCPserver(socketserver.BaseRequestHandler):
         global _client_dict, _verified, _shutdown
 
         is_listener = False
+        local_data_queue = []
+        local_data_save = []
         saved_username = ''
         while True:
             # establish client address
@@ -241,7 +255,25 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                         break
             
             if is_listener:
-                pass
+                # if len(_data_queue) > len(local_data_queue): # if there is a difference in the lists
+                #     dif = len(_data_queue) - len(local_data_queue)
+                #     for i in range(dif): # for amount of difference
+                #         local_data_queue.append(_data_queue[-1]) # add all different objects to local data queue
+                #         print('adding dif:', _data_queue[-1])
+                #     print('local queue:', local_data_queue)
+                #     # exit()
+                #     for item in local_data_queue: # for each msg, encode 
+                #         item = item.encode()
+                #         for client in _listener_list: # for each client, send encoded message
+                #             print('sending to client:', client)
+                #             client.sendall(item)
+                #         local_data_save.append(item.decode()) # save to local data save
+                #         local_data_queue.pop(0) # remove most recent
+                #         print('data save:', local_data_save)
+                #         print('data queue:', local_data_queue)
+                #     local_data_queue = []
+                continue
+
             # if _do_custom_function:
             #     result = _custom_function(msg, self.client_address)
             #     if result == 'continue':
@@ -415,6 +447,9 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
                 # start server shutdown poll
                 threading.Thread(target=lambda:_poll_shutdown()).start()    # , daemon=True).start()
                 pprint('[SERVER] Started scan for shutdown requests')
+                # start distributor thread
+                threading.Thread(target=lambda:_distributor()).start()
+                pprint('[SERVER] STarted distributor thread')
                 if is_threaded: 
                     pprint(f'[SERVER] Server IP: {_HOST}')
                     pprint(f'[SERVER] Control token: {_token}')
