@@ -5,11 +5,9 @@
 [Client communication function explanations](lynxy.md#client-communication-function-explanations) <br>
 [Client to server usage](./lynxy.md#client-to-server-usage) <br>
 [Other functions](./lynxy.md#other-functions)
+
+
 ***
-
-
-
-
 # Client setup
 To set up the client module, you first need to import it. <br>
 `import lynxy` <br>
