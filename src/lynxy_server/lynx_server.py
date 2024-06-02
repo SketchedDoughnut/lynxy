@@ -5,9 +5,18 @@ import time
 import random
 import sys
 
+# external dependencies
+from cryptography.fernet import Fernet
+
 # file imports
 from .responses import *
-from .toggles import *
+
+
+# toggles
+limit_username = True
+overwrite_usernames = False
+clear_dead_usernames = True
+encrypt_client_data = True
 
 # where client data is stored
 _client_dict = {
@@ -56,10 +65,13 @@ _starting_thread = 0
 _token = 'x'
 _verified = False
 
+# encryption setup
+_encryption_tool = Fernet(Fernet.generate_key())
+
 # function data
-_do_custom_function = False
-_init_custom_function = 0
-_custom_function = 0
+# _do_custom_function = False
+# _init_custom_function = 0
+# _custom_function = 0
 
 
 
@@ -80,6 +92,22 @@ def override_ip(ip_in: str) -> None:
     '''
     global _ov_ip
     _ov_ip = ip_in
+
+def set_limit_username(choice: bool) -> None:
+    global limit_username
+    limit_username = choice
+
+def set_overwrite_usernames(choice: bool) -> None:
+    global overwrite_usernames
+    overwrite_usernames = choice
+
+def set_clear_dead_usernames(choice: bool) -> None:
+    global clear_dead_usernames
+    clear_dead_usernames = choice
+
+def set_encrypt_client_data(choice: bool) -> None:
+    global encrypt_client_data
+    encrypt_client_data = choice
 
 # disable prints
 def disable_print() -> None:
@@ -111,7 +139,21 @@ def pprint(msg: str) -> None:
 
 def _log_user_data(key: str, data: tuple) -> None:
     global _client_dict
-    _client_dict[key] = data
+    if encrypt_client_data == True: # if server set to encrypt data
+        print(encrypt_client_data)
+        string_data = str(data) # convert data to string
+        encoded_data = string_data.encode() # encode string to bytes
+        encrypted_data = _encrypt_data(encoded_data) # encrypt bytes into bytes
+        data = encrypted_data
+    _client_dict[key] = data # log
+
+def _get_user_data(key: str) -> str:
+    data = _client_dict[key] # get current data 
+    if encrypt_client_data == True: # if server set to encrypt data
+        decrypted_data = _decrypt_data(data) # data is already bytes, directly decrypt
+        string_data = decrypted_data.decode() # convert bytes to string
+        data = string_data # set data to string of tuple
+    return data # return for send
 
 def _remove_dead(username: str):
     if clear_dead_usernames:
@@ -119,6 +161,17 @@ def _remove_dead(username: str):
             del _client_dict[username]
         except:
             pass 
+
+def _encrypt_data(data: bytes) -> bytes:
+    # returns encrypted data
+    return _encryption_tool.encrypt((data))
+
+def _decrypt_data(data: bytes) -> bytes:
+    # returns decrypted data
+    return (_encryption_tool.decrypt(data))
+
+
+
 
 # from typing import Callable
 # def load_function(loop_function: Callable) -> None:
@@ -346,8 +399,10 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             # if prefix is request_by_user, attempt to return the data associated with that username. If it does not exist, send back "None"
             elif prefix == 'request_by_user':
                 try:
-                    self.request.sendall(str(_client_dict[joined_msg]).encode())
-                    pprint(f'[{addr}] {prefix} - return {joined_msg} data: {_client_dict[joined_msg]}')
+                    # self.request.sendall(str(_client_dict[joined_msg]).encode())
+                    d = _get_user_data(joined_msg)
+                    self.request.sendall(d.encode())
+                    pprint(f'[{addr}] {prefix} - return {joined_msg} data: {d}')
                 except:
                     pprint(f'[{addr}] {prefix} - return {joined_msg} data: None')
                     # self.request.sendall('None'.encode())

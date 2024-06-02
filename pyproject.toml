@@ -1,6 +1,7 @@
 [build-system]
 requires = [
-    "hatchling" #,
+    "hatchling",
+    "cryptography"
     # "requests"
 ]
 build-backend = "hatchling.build"
@@ -27,9 +28,10 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
-# dependencies = [
+dependencies = [
 #   "requests"
-# ]
+    "cryptography"
+]
 
 [project.urls]
 Homepage = "https://github.com/SketchedDoughnut/lynxy"

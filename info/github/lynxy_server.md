@@ -85,15 +85,21 @@ The server has the ability to execute a custom function, if you choose to create
 **Overriding other features** <br>
 There are a couple of other things you can ovverride. These are variables you can set. You can change all of them directly. For example, `(var) = True`, or `(var) = False`.
 
-`limit_username`
-  - This boolean decides whether or not the server will limit the client to only being able to submit a single username to the server.
+`set_limit_username(choice: bool)`
+  - This function decides whether or not the server will limit the client to only being able to submit a single username to the server.
+  - **DEFAULT**: True
 
-`overwrite_usernames`
-  - This boolean decides whether the client can override a username that already exists in the database.
+`set_overwrite_usernames(choice: bool)`
+  - This function decides whether the client can override a username that already exists in the database.
+  - **DEFAULT**: False
 
-`clear_dead_usernames`
-  - This boolean decides whether the server will clear usernames (and the data associated with them) from the database when the client disconnects / crashes.
+`set_clear_dead_usernames(choice: bool)`
+  - This function decides whether the server will clear usernames (and the data associated with them) from the database when the client disconnects / crashes.
+  - **DEFAULT**: True
 
+`set_encrypt_client_data(choice: bool)`
+- This function decides whether the server encrypts client data when saving it. This is on by default, and for security is it advised that it stays on. 
+- **DEFAULT**: True
 
 
 
@@ -180,6 +186,21 @@ These functions are elaborated on more in the client setup page, but what you do
 - **end_session**
   - This argument ends the session between the client and the server. Example usage is below.
     - `lynxy.send_msg('end_session' )`
+
+
+
+
+
+
+
+
+***
+# Server security
+The server is equipped with encryption, by default. This means that client data (ip address and port) is encrypted when stored in the databse, and is decrypted when returned. There is no way to access the token used for encryption, but you can disable encryption on server startup as shown above.
+
+
+
+
 
 
 
