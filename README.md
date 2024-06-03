@@ -28,8 +28,8 @@ To access client setup, go [**here**](./info/github/lynxy.md)
 - You can view the release changelog [**here**](./info/github/changelogs/release_changelog.md) 
 
 **Experimental info** <br>
-- You can view the experimental changelog [**here**](./info/github/changelogs/experimental_changelog.md) 
 - You can find the experimental releases [**here**](https://test.pypi.org/project/lynxy/). 
+- You can view the experimental changelog [**here**](./info/github/changelogs/experimental_changelog.md) 
   - To install experimental releases, do the following.
     - `pip install -i https://test.pypi.org/simple/ lynxy` 
     - `python3 -m pip install -i https://test.pypi.org/simple/ lynxy` <br> 
