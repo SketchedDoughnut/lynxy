@@ -23,6 +23,7 @@ To access server setup, go [**here**](./info/github/lynxy_server.md)
 To access client setup, go [**here**](./info/github/lynxy.md)
 
 # Etc
+You can view the changelog [**here**](./changelog.md) <br>
 You can find official releases [**here**](https://pypi.org/project/lynxy/) <br>
 You can find the testing releases [**here**](https://test.pypi.org/project/lynxy/). <br>
 - To install testing releases, do the following.
