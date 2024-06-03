@@ -428,6 +428,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     is_listener = True
                     threading.Thread(target=lambda:_loopback_input(self.request)).start()
                     self.request.sendall(OPERATION_SUCCESS)
+                    pprint(f'[{addr}] {msg} - subscribing to listener')
 
 
             # if msg is clear_client, check if this client is authorized and then clear the client_dict
@@ -508,7 +509,7 @@ def no_thread_start_server(is_threaded: bool = False) -> None:
                 pprint('[SERVER] Started scan for shutdown requests')
                 # start distributor thread
                 threading.Thread(target=lambda:_distributor()).start()
-                pprint('[SERVER] STarted distributor thread')
+                pprint('[SERVER] Started distributor thread')
                 if is_threaded: 
                     pprint(f'[SERVER] Server IP: {_HOST}')
                     pprint(f'[SERVER] Control token: {_token}')
