@@ -1,13 +1,20 @@
-from src import lynxy_server as ls
-
-# ls.set_encrypt_client_data(False)
-ip, port, token = ls.start_server()
-
 from src import lynxy as l
 
-l.enable_print()
-l.start_client(ip)
-l.submit_username_data('SketchedDoughnut')
-l.submit_username_data('SketchedDoughnut')
-l.request_username_data('SketchedDoughnut')
-print(ls.get_data())
+def run_client(ip):
+    l.enable_print()
+    # ip = input('-> ')
+    print('state of connect:', l.start_client(ip))
+    while True:
+        msg = input('-> ')
+        # msg = 't'
+        if msg == 'break':
+            break
+        # elif msg == 'token':
+        #     l.send_msg(f'auth {token}')
+            continue
+        l.send_msg(msg)
+    l.shutdown_client()
+
+
+# running
+run_client(input('-> '))
