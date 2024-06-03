@@ -23,11 +23,14 @@ To access server setup, go [**here**](./info/github/lynxy_server.md)
 To access client setup, go [**here**](./info/github/lynxy.md)
 
 # Etc
-You can view the release changelog [**here**](./info/github/changelogs/release_changelog.md) <br>
-You can view the experimental changelog [**here**](./info/github/changelogs/experimental_changelog.md) <br>
-You can find official releases [**here**](https://pypi.org/project/lynxy/) <br>
-You can find the testing releases [**here**](https://test.pypi.org/project/lynxy/). <br>
-- To install testing releases, do the following.
-  - `pip install -i https://test.pypi.org/simple/ lynxy` <br>
-  - `python3 -m pip install -i https://test.pypi.org/simple/ lynxy` <br>
-**NOTE**: FUNCTIONALITY CAN NOT BE GUARANTEED IF YOU ARE USING A TEST RELEASE.
+**Release** <br>
+- You can find official releases [**here**](https://pypi.org/project/lynxy/) <br>
+- You can view the release changelog [**here**](./info/github/changelogs/release_changelog.md) <br>
+
+**Experimental** <br>
+- You can view the experimental changelog [**here**](./info/github/changelogs/experimental_changelog.md) <br
+- You can find the experimental releases [**here**](https://test.pypi.org/project/lynxy/). <br>
+  - To install testing releases, do the following.
+    - `pip install -i https://test.pypi.org/simple/ lynxy` <br>
+    - `python3 -m pip install -i https://test.pypi.org/simple/ lynxy` <br>
+  **NOTE**: FUNCTIONALITY CAN NOT BE GUARANTEED IF YOU ARE USING A TEST RELEASE.
