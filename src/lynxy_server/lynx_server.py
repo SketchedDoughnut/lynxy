@@ -251,20 +251,20 @@ def _loopback_input(client: socket.socket) -> None:
     while True:
         msg = client.recv(1024).decode()
         # client.sendall(OPERATION_SUCCESS)
-        _data_queue.append(msg)
+        _data_queue.append([client, msg])
+        client.sendall(OPERATION_SUCCESS)
 
 def _distributor() -> None:
     global _data_queue
     while True:
-        for message in _data_queue:
-            # temp delay
-            # time.sleep(3)
+        for message_data in _data_queue:
+            ignore_client = message_data[0]
+            message = message_data[1]
             for client in _listener_list:
-                encoded = message.encode()
-                client.sendall(encoded)
-            # print(f'sent {message} to {client}')
-            # print('size:', sys.getsizeof(encoded))
-            _data_queue.remove(message)
+                if client != ignore_client:
+                    encoded = message.encode()
+                    client.sendall(encoded)
+            _data_queue.remove(message_data)
 
 # MAIN CLASS
 class _myTCPserver(socketserver.BaseRequestHandler):
@@ -298,11 +298,8 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     joined_msg = "".join(split_msg)
                 except:
                     try:
-                        if not is_listener:
-                            self.request.sendall(INVALID_MESSAGE) # try to send message telling them what they gave is invalid
-                            continue
-                        else:
-                            pass
+                        self.request.sendall(INVALID_MESSAGE) # try to send message telling them what they gave is invalid
+                        continue
                     except Exception as e:
                         pprint(f'[{addr}] - crash - ending this instance')
                         _remove_dead(saved_username)

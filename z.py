@@ -1,13 +1,15 @@
 import lynxy as l
-# import lynxy_server as ls
-# from src import lynxy_server as ls
 import lynxy_server as ls
+
+from src import lynxy as l
+from src import lynxy_server as ls
 
 def run_server():
     ip, port, token = ls.start_server()
     return (ip, port, token)
 
 def run_client(ip):
+    respond_mode = True
     l.enable_print()
     # ip = input('-> ')
     print('state of connect:', l.start_client(ip))
@@ -19,7 +21,9 @@ def run_client(ip):
         elif msg == 'token':
             l.send_msg(f'auth {token}')
             continue
-        l.send_msg(msg)
+        elif msg == 'listener':
+            respond_mode = False
+        l.send_msg(msg, respond_mode)
     l.shutdown_client()
 
 
