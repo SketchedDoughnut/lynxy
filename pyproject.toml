@@ -1,7 +1,8 @@
 [build-system]
 requires = [
     "hatchling",
-    "cryptography"
+    "cryptography",
+    "cffi"
     # "requests"
 ]
 build-backend = "hatchling.build"
@@ -14,7 +15,7 @@ packages = [
 
 [project]
 name = "lynxy"
-version = "0.1.15" # test pypi release
+version = "0.1.17" # test pypi release
 # version = "0.0.5" # pypi release 
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
@@ -30,7 +31,8 @@ classifiers = [
 ]
 dependencies = [
 #   "requests"
-    "cryptography"
+    "cryptography",
+    "cffi"
 ]
 
 [project.urls]
