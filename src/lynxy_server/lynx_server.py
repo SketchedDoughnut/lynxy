@@ -3,10 +3,12 @@ import socket
 import threading
 import time
 import random
+import pickle
 import sys
 
 # external dependencies
 from cryptography.fernet import Fernet
+import rsa
 
 # file imports
 from .responses import *
@@ -247,6 +249,15 @@ def _gen_auth_token() -> str:
             token += str(random.randint(0, 9))
     return token
 
+def _gen_access_keys() -> tuple:
+    '''
+    Generates a public and private key, and returns them in a tuple
+    '''
+    public_key, private_key = rsa.newkeys(1024)
+    return public_key, private_key
+
+
+## FUNCTIONS FOR DISTRIBUTION SERVER
 def _loopback_input(client: socket.socket) -> None:
     while True:
         msg = client.recv(1024).decode()
@@ -275,6 +286,11 @@ class _myTCPserver(socketserver.BaseRequestHandler):
         local_data_queue = []
         local_data_save = []
         saved_username = ''
+
+        # doing initial send of public key to client
+        dumped_public_key = pickle.dumps(_public_key)
+        self.request.sendall(dumped_public_key)
+        
         while True:
             # establish client address
             addr = self.client_address[0]
@@ -473,6 +489,29 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 self.request.sendall(INVALID_COMMAND)
                 pass
 
+
+
+
+
+
+
+
+
+
+
+# FINAL VAR DEFINITIONS
+
+# private / public key setup
+_public_key, _private_key = _gen_access_keys()
+
+
+
+
+
+
+
+
+# STARTING CODE
 
 # main function for starting, does not use a thread and will block code
 def no_thread_start_server(is_threaded: bool = False) -> None:

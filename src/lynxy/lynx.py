@@ -1,6 +1,6 @@
-# this below code has been contributed to by chat gpt
 import socket
 import time
+import pickle
 
 _valid_ports = [
     11111,
@@ -25,7 +25,7 @@ _do_print = False
 
 # status vars
 _connected = False
-
+_public_key = 0
 
 
 ## FUNCTIONS - overrides, features
@@ -82,7 +82,7 @@ def get_data() -> dict:
 ## FUNCTIONS - operations
 # cycles port connection
 def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
-    global _connected
+    global _connected, _public_key
     '''
     An internal function used to cycle through the ports in _valid_ports to try and find a connection
     '''
@@ -107,6 +107,9 @@ def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
                 port = _valid_ports[0]
                 pprint(f'[PORT CYCLE - RESET 2] Client resetting port to: {port}')
     if _connected == True:
+        _public_key = client.recv(1024)
+        _public_key = pickle.loads(_public_key)
+        print('CLIENT RECIEVED PUBLIC KEY:', _public_key)
         return client, out_port, True
     elif _connected == False:
         pprint('[PORT CYCLE] the client can not find a open valid server port, exiting')
