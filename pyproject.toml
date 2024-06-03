@@ -2,8 +2,10 @@
 requires = [
     "hatchling",
     "cryptography",
-    "cffi"
-    # "requests"
+    "cffi",
+
+    "rsa",
+    "pyasn1"
 ]
 build-backend = "hatchling.build"
 
@@ -30,9 +32,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-#   "requests"
     "cryptography",
-    "cffi"
+    "cffi",
+
+    "rsa",
+    "pyasn1"
 ]
 
 [project.urls]
