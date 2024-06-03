@@ -1,5 +1,5 @@
 # Table of contents
-[Home](https://github.com/SketchedDoughnut/lynxy/blob/master/README.md) <br>
+[Home](https://github.com/SketchedDoughnut/lynxy) <br>
 [Server setup](./lynxy_server.md#server-setup) <br>
 [Configuring your server](./lynxy_server.md#configuring-your-server) <br>
 [Starting the server](./lynxy_server.md#starting-the-server) <br>
