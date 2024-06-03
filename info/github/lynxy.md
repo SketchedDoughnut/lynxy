@@ -72,6 +72,7 @@ This section is dedicated towards explaining the functions that the lynxy module
 ***
 # Client to server usage
 To find information about how to use the client to communicate with the server, go to the ["Server functions key"](lynxy_server.md#server-functions-key) section of the server setup page!
+**NOTE**: If the server goes offline, the client is not notified and the connection is terminated. For this reason, please put anything interacting with the server (sending / recieving data) in a try and except, and try to catch the errors.
 
 <!-- ***
 # Client to client usage
