@@ -1,6 +1,7 @@
 import lynxy as l
 # import lynxy_server as ls
-from src import lynxy_server as ls
+# from src import lynxy_server as ls
+import lynxy_server as ls
 
 def run_server():
     ip, port, token = ls.start_server()
