@@ -5,7 +5,10 @@ requires = [
     "cffi",
 
     "rsa",
-    "pyasn1"
+    "pyasn1",
+
+    # ???
+    "setuptools"
 ]
 build-backend = "hatchling.build"
 
@@ -17,7 +20,7 @@ packages = [
 
 [project]
 name = "lynxy"
-version = "0.1.19" # test pypi release
+version = "0.1.20" # test pypi release
 # version = "0.0.5" # pypi release 
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
@@ -36,7 +39,10 @@ dependencies = [
     "cffi",
 
     "rsa",
-    "pyasn1"
+    "pyasn1",
+
+     # ???
+    "setuptools"
 ]
 
 [project.urls]
