@@ -214,6 +214,7 @@ The server also uses asymmetrical encryption on both ends (public and private ke
 
 ***
 # Other features
+**NOTE**: THIS FEATURE IS SOMEWHAT EXPERIMENTAL AND FUNCTIONALITY CANT ALWAYS BE GUARANTEED
 The server is also capable of being a distribution server for information. It is not currently the best system, but it does work. In order to use this system, you do not need to do much.
 - look at the instructions above in "server functions key" about "listener".
 - start the servers listener for messages immediately after submitting the "listener" command to the server.
