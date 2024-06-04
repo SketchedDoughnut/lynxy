@@ -17,7 +17,7 @@ packages = [
 
 [project]
 name = "lynxy"
-version = "0.1.18" # test pypi release
+version = "0.1.19" # test pypi release
 # version = "0.0.5" # pypi release 
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
