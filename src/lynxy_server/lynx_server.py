@@ -352,7 +352,11 @@ def _distributor() -> None:
                 active_client = client[0]
                 if active_client != ignore_client:
                     encoded = _encrypt_public(client_key, message)
-                    active_client.sendall(encoded)
+                    try:
+                        active_client.sendall(encoded)
+                    except:
+                        # assume the client cant be commmunicated with, remove from ppl to send to
+                        _listener_list.remove(client)
             _data_queue.remove(message_data)
             time.sleep(0.0025)
 
