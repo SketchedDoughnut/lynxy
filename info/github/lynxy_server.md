@@ -197,7 +197,8 @@ These functions are elaborated on more in the client setup page, but what you do
 
 ***
 # Server security
-The server is equipped with encryption, by default. This means that client data (ip address and port) is encrypted when stored in the databse, and is decrypted when returned. There is no way to access the token used for encryption, but you can disable encryption on server startup as shown above.
+The server is equipped with encryption, by default. This means that client data (ip address and port) is encrypted when stored in the database, and is decrypted when returned. There is no way to access the token used for encryption, but you can disable encryption on server startup as shown above.
+The server also uses asymmetrical encryption on both ends (public and private keys) to ensure safety when sending data from client to server, or from client to client.
 
 
 
