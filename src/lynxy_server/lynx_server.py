@@ -366,7 +366,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
 
 
 
-
+        pprint('[SERVER HANDSHAKE] Handshaking with client...')
         # send public key of server to client
         pickled_server_public_key = pickle.dumps(_server_public_key)
         self.request.sendall(pickled_server_public_key)

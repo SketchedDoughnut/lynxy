@@ -117,19 +117,20 @@ def _gen_access_keys() -> tuple:
 def _handshake(client: socket.socket) -> None:
     global _client_private_key, _client_public_key, _server_public_key
 
+    pprint('[CLIENT HANDSHAKE] Handshaking with server...')
     # generate public and private keys (OBJECTS)
     _client_public_key, _client_private_key = _gen_access_keys()
-    pprint('CLIENT: generating public and private key')
+    # pprint('[HANDSHAKE]: generating public and private key')
 
     # get servers public key (BYTES -> OBJECT)
     pickled_server_public_key = client.recv(1024)
     _server_public_key = pickle.loads(pickled_server_public_key)
-    pprint('CLIENT: getting server public key')
+    # pprint('[HANDSHAKE]: getting server public key')
 
     # pickle and send our public key (OBJECT -> BYTES)
     pickled_client_public_key = pickle.dumps(_client_public_key)
     client.sendall(pickled_client_public_key)
-    pprint('CLIENT: sending public key')
+    # pprint('[HANDSHAKE]: sending public key')
 
     # print('client priv key:', _client_private_key)
     # print('client pub key:', _client_public_key)
