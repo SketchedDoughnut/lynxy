@@ -188,6 +188,12 @@ These functions are elaborated on more in the client setup page, but what you do
   - This argument ends the session between the client and the server. Example usage is below.
     - `lynxy.send_msg('end_session' )`
 
+- **listener**
+  - This argument puts the client into listening mode, meaning it listens for messages from the server. When this is sent, you should disable responses from any future messages sent to the server as it wont be responding.
+   - `(send_msg(recieve=False)` <br>
+  You can not exit listening mode unless you shutdown the client.
+    - `shutdown_client()`
+
 
 
 
@@ -206,7 +212,15 @@ The server also uses asymmetrical encryption on both ends (public and private ke
 
 
 
-
+***
+# Other features
+The server is also capable of being a distribution server for information. It is not currently the best system, but it does work. In order to use this system, you do not need to do much.
+- look at the instructions above in "server functions key" about "listener".
+- start the servers listener for messages immediately after submitting the "listener" command to the server.
+- `start_client_listener()`
+- you can now send data to the server using the following function. Please make sure that there is a minimum break of 0.025 seconds of sending data to the server, to avoid issues with the server interpreting info. Packets of information can be lost if you do not abide by this. <br>
+**NOTE**: The time the client has to wait between sending messages to the server can differ depending on how large your packets of information is. Consider dynamically expanding the time with size. There also might be a limit to how big of a packet you can send, so consider adapting for that.
+- `lynxy.send_msg(msg, recieve=False)`
 
 
 

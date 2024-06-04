@@ -117,7 +117,7 @@ def _encrypt_public(cpk, data) -> bytes:
     return rsa.encrypt(pickled_data, cpk)
 
 # uses servers private key to decrypt data
-def _decrypt_private(data) -> bytes:
+def _decrypt_private(data) -> any:
     data = rsa.decrypt(data, _server_private_key)
     unpickle_data = pickle.loads(data)
     return unpickle_data
@@ -327,12 +327,19 @@ def _poll_shutdown() -> None:
 
 
 ## FUNCTIONS FOR DISTRIBUTION SERVER
-def _loopback_input(client: socket.socket) -> None:
+def _loopback_input(client: socket.socket, cpk) -> None:
     while True:
-        msg = client.recv(1024).decode()
-        # client.sendall(OPERATION_SUCCESS)
-        _data_queue.append([client, msg])
-        client.sendall(OPERATION_SUCCESS)
+        try:
+            # msg = client.recv(1024).decode()
+            msg = client.recv(1024)
+            decoded = _decrypt_private(msg)
+            # client.sendall(OPERATION_SUCCESS)
+            _data_queue.append([client, decoded])
+            # client.sendall(OPERATION_SUCCESS)
+            # fancy_send(client, cpk, OPERATION_SUCCESS)
+        except:
+            # packet loss
+            pass
 
 def _distributor() -> None:
     global _data_queue
@@ -344,10 +351,10 @@ def _distributor() -> None:
                 client_key = client[1]
                 active_client = client[0]
                 if active_client != ignore_client:
-                    # encoded = message.encode()
                     encoded = _encrypt_public(client_key, message)
                     active_client.sendall(encoded)
             _data_queue.remove(message_data)
+            time.sleep(0.0025)
 
 # MAIN CLASS
 class _myTCPserver(socketserver.BaseRequestHandler):
@@ -580,8 +587,9 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 if not is_listener:
                     _listener_list.append([self.request, client_public_key])
                     is_listener = True
-                    threading.Thread(target=lambda:_loopback_input(self.request)).start()
+                    threading.Thread(target=lambda:_loopback_input(self.request, client_public_key)).start()
                     # self.request.sendall(OPERATION_SUCCESS)
+                    time.sleep(0.025)
                     fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
                     pprint(f'[{addr}] {msg} - subscribing to listener')
 

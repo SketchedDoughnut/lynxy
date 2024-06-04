@@ -1,6 +1,7 @@
 import socket
 import time
 import pickle
+import threading
 
 # installs
 import rsa
@@ -33,6 +34,9 @@ _connected = False
 _server_public_key = 0
 _client_private_key = 0
 _client_public_key = 0
+
+# listener features
+message_queue = []
 
 ## FUNCTIONS - overrides, features
 def override_ports(ports: list) -> None:
@@ -77,6 +81,9 @@ def get_data() -> dict:
         'client info': {
             'ip': _HOST,
             'port': _PORT
+        },
+        'data': {
+            'message_queue': message_queue
         },
         'sillies': 'sillies :3'
     }
@@ -391,3 +398,20 @@ def start_client(connection_ip: str) -> bool:
     # establish the connection to a port that the server is on
     _main_client, _PORT, state = _cycle_port(_main_client)
     return state
+
+
+def start_client_listener() -> None:
+    '''
+    A function that acts on the recieving end to recieve information from the server
+    '''
+    threading.Thread(target=lambda:_internal_client_listener()).start()
+
+
+def _internal_client_listener():
+    global message_queue
+    while True:
+        data = _main_client.recv(1024)
+        decoded = _decrypt_private(data)
+        if decoded == '000':
+            continue
+        message_queue.append(decoded)
