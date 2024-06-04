@@ -5,6 +5,7 @@
 [Starting the server](./lynxy_server.md#starting-the-server) <br>
 [Server response key](./lynxy_server.md#server-response-key) <br>
 [Server functions key](./lynxy_server.md#server-functions-key) <br>
+[Other features](./lynxy_server.md#other-features) <br>
 [Other functions](./lynxy_server.md#other-functions) 
 
 ***
