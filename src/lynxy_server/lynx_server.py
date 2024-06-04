@@ -341,9 +341,12 @@ def _distributor() -> None:
             ignore_client = message_data[0]
             message = message_data[1]
             for client in _listener_list:
-                if client != ignore_client:
-                    encoded = message.encode()
-                    client.sendall(encoded)
+                client_key = client[1]
+                active_client = client[0]
+                if active_client != ignore_client:
+                    # encoded = message.encode()
+                    encoded = _encrypt_public(client_key, message)
+                    active_client.sendall(encoded)
             _data_queue.remove(message_data)
 
 # MAIN CLASS
@@ -575,7 +578,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             # if msg is listener, add their socket to the listening list and ignore any more messages from them
             elif msg == 'listener':
                 if not is_listener:
-                    _listener_list.append(self.request)
+                    _listener_list.append([self.request, client_public_key])
                     is_listener = True
                     threading.Thread(target=lambda:_loopback_input(self.request)).start()
                     # self.request.sendall(OPERATION_SUCCESS)
