@@ -76,6 +76,9 @@ _verified = False
 
 
 ######### ALL SAFETY BITS
+# encryption setup
+_encryption_tool = Fernet(Fernet.generate_key())
+
 # generates auth token for remote control of server
 def _gen_auth_token() -> str:
     lower_alpha = 'abcdefghijklmnopqrstuvwxyz'
@@ -101,12 +104,12 @@ def _gen_access_keys() -> tuple:
 # encrypts data for storage
 def _encrypt_data(data: bytes) -> bytes:
     # returns encrypted data
-    return _encryption_tool.encrypt((data))
+    return _encryption_tool.encrypt(data)
 
 # decrypts data from storage
 def _decrypt_data(data: bytes) -> bytes:
     # returns decrypted data
-    return (_encryption_tool.decrypt(data))
+    return _encryption_tool.decrypt(data)
 
 # uses clients public key to encrypt data
 def _encrypt_public(cpk, data) -> bytes:
@@ -118,9 +121,6 @@ def _decrypt_private(data) -> bytes:
     data = rsa.decrypt(data, _server_private_key)
     unpickle_data = pickle.loads(data)
     return unpickle_data
-
-# encryption setup
-_encryption_tool = Fernet(Fernet.generate_key())
 
 
 
