@@ -287,11 +287,11 @@ def request_username_data(username: str) -> any:
         return incoming_data
 
     # parse into list
-    address_str = incoming_data.strip('()')
-    ip_str, port_str = address_str.split(',')
-    ip_str = ip_str.strip().strip("'")
-    port_int = int(port_str.strip())
-    incoming_data = [ip_str, port_int]
+    # address_str = incoming_data.strip('()')
+    # ip_str, port_str = address_str.split(',')
+    # ip_str = ip_str.strip().strip("'")
+    # port_int = int(port_str.strip())
+    # incoming_data = [ip_str, port_int]
     return incoming_data
 
 # a general message sender

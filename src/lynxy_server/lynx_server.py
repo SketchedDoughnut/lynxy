@@ -246,7 +246,7 @@ def fancy_recieve(client: socket.socket) -> any:
 def _log_user_data(key: str, data: tuple) -> None:
     global _client_dict
     if encrypt_client_data == True: # if server set to encrypt data
-        print(encrypt_client_data)
+        # print(encrypt_client_data)
         # string_data = str(data) # convert data to string
         pickled_data = pickle.dumps(data)
         # encoded_data = string_data.encode() # encode string to bytes
@@ -352,8 +352,8 @@ class _myTCPserver(socketserver.BaseRequestHandler):
         global _client_dict, _verified, _shutdown
 
         is_listener = False
-        local_data_queue = []
-        local_data_save = []
+        # local_data_queue = []
+        # local_data_save = []
         saved_username = ''
 
 
