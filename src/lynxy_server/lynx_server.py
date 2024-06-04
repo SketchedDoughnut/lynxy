@@ -568,9 +568,9 @@ class _myTCPserver(socketserver.BaseRequestHandler):
 
             elif msg == 'help':
                 msg = 'Commands: username, request_by_user, auth, help, clear_client (auth only), freeze_server (auth only)'
-                encoded = msg.encode()
+                # encoded = msg.encode()
                 # self.request.sendall(encoded)
-                fancy_send(self.request, client_public_key, encoded)
+                fancy_send(self.request, client_public_key, msg)
                 
             # if msg is listener, add their socket to the listening list and ignore any more messages from them
             elif msg == 'listener':
