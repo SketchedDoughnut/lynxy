@@ -67,13 +67,95 @@ _starting_thread = 0
 _token = 'x'
 _verified = False
 
+
+
+
+
+
+
+
+
+######### ALL SAFETY BITS
+# generates auth token for remote control of server
+def _gen_auth_token() -> str:
+    lower_alpha = 'abcdefghijklmnopqrstuvwxyz'
+    upper_alpha = lower_alpha.upper()
+    letter_list = [lower_alpha, upper_alpha]
+    token = ''
+    for i in range(6): # length of your sign-in token
+        letter_or_num = random.randint(0, 1)
+        if letter_or_num == 0:
+            letter_type = random.randint(0, 1)
+            letter_range = letter_list[letter_type]
+            letter_index = random.randint(0, len(letter_range) - 1)
+            token += letter_range[letter_index]
+        elif letter_or_num == 1:
+            token += str(random.randint(0, 9))
+    return token
+
+# generates the public and private key for server
+def _gen_access_keys() -> tuple:
+    public_key, private_key = rsa.newkeys(1024)
+    return public_key, private_key
+
+# encrypts data for storage
+def _encrypt_data(data: bytes) -> bytes:
+    # returns encrypted data
+    return _encryption_tool.encrypt((data))
+
+# decrypts data from storage
+def _decrypt_data(data: bytes) -> bytes:
+    # returns decrypted data
+    return (_encryption_tool.decrypt(data))
+
+# uses clients public key to encrypt data
+def _encrypt_public(cpk, data) -> bytes:
+    return rsa.encrypt(data, cpk)
+
+# uses servers private key to decrypt data
+def _decrypt_private(data) -> bytes:
+    return rsa.decrypt(data, _server_private_key)
+
 # encryption setup
 _encryption_tool = Fernet(Fernet.generate_key())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # function data
 # _do_custom_function = False
 # _init_custom_function = 0
 # _custom_function = 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -139,6 +221,23 @@ def pprint(msg: str) -> None:
     else:
         pass
 
+def fancy_send(client: socket.socket, cpk, data) -> None:
+    '''
+    A function meant for fancy sending
+    '''
+    pickled_data = pickle.dumps(data)
+    encrypted_data = _encrypt_public(cpk, pickled_data)
+    client.sendall(encrypted_data)
+
+def fancy_recieve(client: socket.socket) -> any:
+    '''
+    A function meant for fancy recieving
+    '''
+    incoming = client.recv(1024)
+    decoded = _decrypt_private(incoming)
+    return decoded
+
+
 def _log_user_data(key: str, data: tuple) -> None:
     global _client_dict
     if encrypt_client_data == True: # if server set to encrypt data
@@ -149,12 +248,13 @@ def _log_user_data(key: str, data: tuple) -> None:
         data = encrypted_data
     _client_dict[key] = data # log
 
-def _get_user_data(key: str) -> str:
+def _get_user_data(key: str) -> tuple:
     data = _client_dict[key] # get current data 
     if encrypt_client_data == True: # if server set to encrypt data
         decrypted_data = _decrypt_data(data) # data is already bytes, directly decrypt
         string_data = decrypted_data.decode() # convert bytes to string
-        data = string_data # set data to string of tuple
+        string_data = pickle.loads(string_data)
+        data = string_data # set data to tuple
     return data # return for send
 
 def _remove_dead(username: str):
@@ -163,17 +263,6 @@ def _remove_dead(username: str):
             del _client_dict[username]
         except:
             pass 
-
-def _encrypt_data(data: bytes) -> bytes:
-    # returns encrypted data
-    return _encryption_tool.encrypt((data))
-
-def _decrypt_data(data: bytes) -> bytes:
-    # returns decrypted data
-    return (_encryption_tool.decrypt(data))
-
-
-
 
 # from typing import Callable
 # def load_function(loop_function: Callable) -> None:
@@ -229,32 +318,6 @@ def _poll_shutdown() -> None:
     exit()
 
 ## SAFETY FUNCTIONS
-# function to generate an auth token that someone can use to remotely control the server
-def _gen_auth_token() -> str:
-    '''
-    A function that generates an auth token for the user to use to remotely connect and control the server
-    '''
-    lower_alpha = 'abcdefghijklmnopqrstuvwxyz'
-    upper_alpha = lower_alpha.upper()
-    letter_list = [lower_alpha, upper_alpha]
-    token = ''
-    for i in range(6): # length of your sign-in token
-        letter_or_num = random.randint(0, 1)
-        if letter_or_num == 0:
-            letter_type = random.randint(0, 1)
-            letter_range = letter_list[letter_type]
-            letter_index = random.randint(0, len(letter_range) - 1)
-            token += letter_range[letter_index]
-        elif letter_or_num == 1:
-            token += str(random.randint(0, 9))
-    return token
-
-def _gen_access_keys() -> tuple:
-    '''
-    Generates a public and private key, and returns them in a tuple
-    '''
-    public_key, private_key = rsa.newkeys(1024)
-    return public_key, private_key
 
 
 ## FUNCTIONS FOR DISTRIBUTION SERVER
@@ -287,9 +350,43 @@ class _myTCPserver(socketserver.BaseRequestHandler):
         local_data_save = []
         saved_username = ''
 
-        # doing initial send of public key to client
-        dumped_public_key = pickle.dumps(_public_key)
-        self.request.sendall(dumped_public_key)
+
+
+
+
+
+
+
+
+
+
+
+        # send public key of server to client
+        pickled_server_public_key = pickle.dumps(_server_public_key)
+        self.request.sendall(pickled_server_public_key)
+
+        # recieve clients public key
+        pickled_client_public_key = self.request.recv(1024)
+        client_public_key = pickle.loads(pickled_client_public_key)
+
+        # print('server priv key:', _server_private_key)
+        # print('server pub key:', _server_public_key)
+        # print('server client pub key:', client_public_key)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         while True:
             # establish client address
@@ -299,7 +396,8 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             # kill client communication if is true (will kill before msg)
             if _kill_all == True:
                 # self.request.sendall('the server has been commanded to kill all client instances'.encode())
-                self.request.sendall(KILL_ALL)
+                # self.request.sendall(KILL_ALL)
+                fancy_send(self.request, client_public_key, KILL_ALL)
                 pprint(f'[{addr}] Killing this instance, due to _kill_all being True...')
                 _remove_dead(saved_username)
                 break
@@ -307,14 +405,17 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             # format incoming message
             if not is_listener:
                 try:
-                    msg = bytes(self.request.recv(1024)).decode('utf-8')
+                    # msg = self.request.recv(1024)
+                    # msg = msg.decode()
+                    msg = fancy_recieve(self.request)
                     split_msg = msg.split()
                     prefix = split_msg[0]
                     split_msg.remove(prefix)
                     joined_msg = "".join(split_msg)
                 except:
                     try:
-                        self.request.sendall(INVALID_MESSAGE) # try to send message telling them what they gave is invalid
+                        # self.request.sendall(INVALID_MESSAGE) # try to send message telling them what they gave is invalid
+                        fancy_send(self.request, client_public_key, INVALID_MESSAGE)
                         continue
                     except Exception as e:
                         pprint(f'[{addr}] - crash - ending this instance')
@@ -361,7 +462,8 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     # if they have not already inputted a username and the username limit is not on,
                     if limit_username == True: # if username limit is enabled
                         if saved_username: # if they have already submtited a username,
-                            self.request.sendall(ALREADY_REGISTERED_USERNAME) # tell them they have already registered a username
+                            # self.request.sendall(ALREADY_REGISTERED_USERNAME) # tell them they have already registered a username
+                            fancy_send(self.request, client_public_key, ALREADY_REGISTERED_USERNAME)
                             continue # start next loop iteration
                         else: # else, they have not submitted a username
                             if overwrite_usernames == True: # if they want to overwrite usernames
@@ -370,72 +472,84 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                                 # _log_user_data(joined_msg, (self.client_address, self.request))
                                 _log_user_data(joined_msg, self.client_address)
                                 saved_username = joined_msg
-                                self.request.sendall(OPERATION_SUCCESS) # send back success
+                                # self.request.sendall(OPERATION_SUCCESS) # send back success
+                                fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
                                 continue # start next loop iteration
                             else: # if they do not want to overwrite usernames
                                 try: # see if the entry exists
                                     _client_dict[joined_msg] # try to access entry
-                                    self.request.sendall(USERNAME_EXISTS) # if entry exists, no error, returns exists
+                                    # self.request.sendall(USERNAME_EXISTS) # if entry exists, no error, returns exists
+                                    fancy_send(self.request, client_public_key, USERNAME_EXISTS)
                                     continue # start next loop iteration
                                 except KeyError: # fails since no key exists
                                     # _client_dict[joined_msg] = self.client_address # set username since it does not exist
                                     _log_user_data(joined_msg, self.client_address)
                                     pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
                                     saved_username = joined_msg
-                                    self.request.sendall(OPERATION_SUCCESS)
+                                    # self.request.sendall(OPERATION_SUCCESS)
+                                    fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
                     else:
                         if overwrite_usernames == True:
                             pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
                             # _client_dict[joined_msg] = self.client_address # write username regardless
                             _log_user_data(joined_msg, self.client_address)
                             saved_username = joined_msg
-                            self.request.sendall(OPERATION_SUCCESS) # send back success
+                            # self.request.sendall(OPERATION_SUCCESS) # send back success
+                            fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
                             continue # start next loop iteration
                         else:
                             try: # see if the entry exists
                                 _client_dict[joined_msg] # try to access entry
-                                self.request.sendall(USERNAME_EXISTS) # if entry exists, no error, returns exists
+                                # self.request.sendall(USERNAME_EXISTS) # if entry exists, no error, returns exists
+                                fancy_send(self.request, client_public_key, USERNAME_EXISTS)
                                 continue # start next loop iteration
                             except KeyError: # fails since no key exists
                                 # _client_dict[joined_msg] = self.client_address # set username since it does not exist
                                 pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
                                 _log_user_data(joined_msg, self.client_address)
                                 saved_username = joined_msg
-                                self.request.sendall(OPERATION_SUCCESS)
+                                # self.request.sendall(OPERATION_SUCCESS)
+                                fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
 
                         # pprint(f'[{addr}] {prefix} - logging {self.client_address} to {joined_msg}')
                         # # self.request.sendall('logged username, data'.encode())
                         # self.request.sendall(OPERATION_SUCCESS)
                 else:
-                    self.request.sendall(INVALID_MESSAGE)
+                    # self.request.sendall(INVALID_MESSAGE)
+                    fancy_send(self.request, client_public_key, INVALID_MESSAGE)
 
             # if prefix is request_by_user, attempt to return the data associated with that username. If it does not exist, send back "None"
             elif prefix == 'request_by_user':
                 try:
                     # self.request.sendall(str(_client_dict[joined_msg]).encode())
                     d = _get_user_data(joined_msg)
-                    self.request.sendall(d.encode())
+                    # self.request.sendall(d2)
+                    fancy_send(self.request, client_public_key, d)
                     pprint(f'[{addr}] {prefix} - return {joined_msg} data: {d}')
                 except:
                     pprint(f'[{addr}] {prefix} - return {joined_msg} data: None')
                     # self.request.sendall('None'.encode())
-                    self.request.sendall(INVALID_USERNAME_DATA)
+                    # self.request.sendall(INVALID_USERNAME_DATA)
+                    fancy_send(self.request, client_public_key, INVALID_USERNAME_DATA)
 
             # if prefix is auth, check if token is matching, then allow user to use dev features
             elif prefix == 'auth':
                 if joined_msg == _token:
                     _verified = True
                     # self.request.sendall('client session authorized'.encode())
-                    self.request.sendall(OPERATION_SUCCESS)
+                    # self.request.sendall(OPERATION_SUCCESS)
+                    fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
                     pprint(f'[{addr}] {prefix} - authed client')
                 else:
                     # self.request.sendall('invalid auth token'.encode())
-                    self.request.sendall(INVALID_AUTH_TOKEN)
+                    # self.request.sendall(INVALID_AUTH_TOKEN)
+                    fancy_send(self.request, client_public_key, INVALID_AUTH_TOKEN)
 
             elif msg == 'help':
                 msg = 'Commands: username, request_by_user, auth, help, clear_client (auth only), freeze_server (auth only)'
                 encoded = msg.encode()
-                self.request.sendall(encoded)
+                # self.request.sendall(encoded)
+                fancy_send(self.request, client_public_key, encoded)
                 
             # if msg is listener, add their socket to the listening list and ignore any more messages from them
             elif msg == 'listener':
@@ -443,7 +557,8 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     _listener_list.append(self.request)
                     is_listener = True
                     threading.Thread(target=lambda:_loopback_input(self.request)).start()
-                    self.request.sendall(OPERATION_SUCCESS)
+                    # self.request.sendall(OPERATION_SUCCESS)
+                    fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
                     pprint(f'[{addr}] {msg} - subscribing to listener')
 
 
@@ -454,11 +569,13 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                         'default': 0
                     }
                     # self.request.sendall('cleared client dictionary')
-                    self.request.sendall(OPERATION_SUCCESS)
+                    # self.request.sendall(OPERATION_SUCCESS)
+                    fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
                     pprint(f'[{addr}] {msg} - clearing client_dict')
                 else:
                     # self.request.sendall('user not authorized'.encode())
-                    self.request.sendall(USER_NOT_AUTHORIZED)
+                    # self.request.sendall(USER_NOT_AUTHORIZED)
+                    fancy_send(self.request, client_public_key, USER_NOT_AUTHORIZED)
 
 
             # if msg is freeze_server, check if this client is authorized and then raise the flag to shutdown srever
@@ -466,16 +583,19 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 if _verified == True:
                     _shutdown = True
                     # self.request.sendall('shutdown of server requested, raising flag'.encode())
-                    self.request.sendall(OPERATION_SUCCESS)
+                    # self.request.sendall(OPERATION_SUCCESS)
+                    fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
                     pprint(f'[{addr}] {msg} - shutdown of server requested, raising flag')
                 else:
                     # self.request.sendall('user not authorized'.encode())
-                    self.request.sendall(USER_NOT_AUTHORIZED)
+                    # self.request.sendall(USER_NOT_AUTHORIZED)
+                    fancy_send(self.request, client_public_key, USER_NOT_AUTHORIZED)
 
             # if msg is end_session, end the current session the server and the client have
             elif msg == 'end_session':
                 # self.request.sendall('ending'.encode())
-                self.request.sendall(END_SESSION)
+                # self.request.sendall(END_SESSION)
+                fancy_send(self.request, client_public_key, END_SESSION)
                 pprint(f'[{addr}] {msg} - ending this instance')
                 # print("CHECKING CLEAR")
                 _remove_dead(saved_username)
@@ -486,7 +606,8 @@ class _myTCPserver(socketserver.BaseRequestHandler):
             else:
                 # self.request.sendall(msg.upper().encode())  # Send response back to the client
                 # self.request.sendall('invalid command'.encode())
-                self.request.sendall(INVALID_COMMAND)
+                # self.request.sendall(INVALID_COMMAND)
+                fancy_send(self.request, client_public_key, INVALID_COMMAND)
                 pass
 
 
@@ -502,7 +623,7 @@ class _myTCPserver(socketserver.BaseRequestHandler):
 # FINAL VAR DEFINITIONS
 
 # private / public key setup
-_public_key, _private_key = _gen_access_keys()
+_server_public_key, _server_private_key = _gen_access_keys()
 
 
 

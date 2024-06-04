@@ -2,6 +2,9 @@ import socket
 import time
 import pickle
 
+# installs
+import rsa
+
 _valid_ports = [
     11111,
     12111,
@@ -25,8 +28,11 @@ _do_print = False
 
 # status vars
 _connected = False
-_public_key = 0
 
+# safety vars
+_server_public_key = 0
+_client_private_key = 0
+_client_public_key = 0
 
 ## FUNCTIONS - overrides, features
 def override_ports(ports: list) -> None:
@@ -79,10 +85,85 @@ def get_data() -> dict:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## FUNCTIONS - safety
+def _gen_access_keys() -> tuple:
+    '''
+    Generates a public and private key, and returns them in a tuple
+    '''
+    public_key, private_key = rsa.newkeys(1024)
+    return public_key, private_key
+
+def _handshake(client: socket.socket) -> None:
+    global _client_private_key, _client_public_key, _server_public_key
+
+    # generate public and private keys (OBJECTS)
+    _client_public_key, _client_private_key = _gen_access_keys()
+
+    # get servers public key (BYTES -> OBJECT)
+    pickled_server_public_key = client.recv(1024)
+    _server_public_key = pickle.loads(pickled_server_public_key)
+
+    # pickle and send our public key (OBJECT -> BYTES)
+    pickled_client_public_key = pickle.dumps(_client_public_key)
+    client.sendall(pickled_client_public_key)
+
+    # print('client priv key:', _client_private_key)
+    # print('client pub key:', _client_public_key)
+    # print('client server pub key:', _server_public_key)
+
+def _encrypt_public(data) -> bytes:
+    pickled_data = pickle.dumps(data)
+    encoded_data = rsa.encrypt(pickled_data, _server_public_key)
+    return encoded_data
+
+def _decrypt_private(data) -> any:
+    decrypted_data = rsa.decrypt(data, _client_private_key)
+    loaded_data = pickle.loads(decrypted_data)
+    return loaded_data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## FUNCTIONS - operations
 # cycles port connection
 def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
-    global _connected, _public_key
+    global _connected
     '''
     An internal function used to cycle through the ports in _valid_ports to try and find a connection
     '''
@@ -107,13 +188,44 @@ def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
                 port = _valid_ports[0]
                 pprint(f'[PORT CYCLE - RESET 2] Client resetting port to: {port}')
     if _connected == True:
-        _public_key = client.recv(1024)
-        _public_key = pickle.loads(_public_key)
-        print('CLIENT RECIEVED PUBLIC KEY:', _public_key)
+        _handshake(client)
         return client, out_port, True
     elif _connected == False:
         pprint('[PORT CYCLE] the client can not find a open valid server port, exiting')
         return client, _PORT, False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -138,10 +250,13 @@ def submit_username_data(username: str) -> str:
     message = username
     # encoded_message = message.encode('utf-8')
     message2 = f'username {message}'
-    encoded_message = message2.encode('utf-8') # added username prefix by default
+    # encoded_message = message2.encode('utf-8') # added username prefix by default
+    encoded_message = _encrypt_public(message2)
     client.sendall(encoded_message)
     pprint(f"Sent:     {message2}")
-    incoming_data = client.recv(1024).decode('utf-8')
+    # incoming_data = client.recv(1024).decode()\
+    incoming_data = client.recv(1024)
+    incoming_data = _decrypt_private(incoming_data)
     pprint(f"Received: {incoming_data}")
     return incoming_data
 
@@ -156,11 +271,14 @@ def request_username_data(username: str) -> any:
     message = username
     # encoded_message = message.encode('utf-8')
     message2 = f'request_by_user {message}'
-    encoded_message = message2.encode('utf-8') # added request_by_user prefix by default
+    # encoded_message = message2.encode('utf-8') # added request_by_user prefix by default
+    encoded_message = _encrypt_public(message2)
     client.sendall(encoded_message)
     pprint(f"Sent:     {message2}")
     # incoming_data = full_recieve(client)
-    incoming_data = client.recv(1024).decode('utf-8')
+    # incoming_data = client.recv(1024).decode('utf-8')
+    incoming_data = client.recv(1024)
+    incoming_data = _decrypt_private(incoming_data)
     pprint(f"Received: {incoming_data}")
     if incoming_data == '100':
         return incoming_data
@@ -180,12 +298,15 @@ def send_msg(message: str, recieve: bool = True) -> str:
     '''
     # local override for package form
     client = _main_client
-    encoded_message = message.encode('utf-8')
+    # encoded_message = message.encode('utf-8')
+    encoded_message = _encrypt_public(message)
     client.sendall(encoded_message)
     pprint(f"Sent:     {message}")
     # incoming_data = full_recieve(client)
     if recieve:
-        incoming_data = client.recv(1024).decode('utf-8')
+        # incoming_data = client.recv(1024).decode('utf-8')
+        incoming_data = client.recv(1024)
+        incoming_data = _decrypt_private(incoming_data)
         pprint(f"Received: {incoming_data}")
         return incoming_data
 
