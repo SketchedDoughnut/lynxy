@@ -334,6 +334,10 @@ def _loopback_input(client: socket.socket, cpk) -> None:
             msg = client.recv(1024)
             decoded = _decrypt_private(msg)
             # client.sendall(OPERATION_SUCCESS)
+            if isinstance(decoded, str) == True and decoded.isspace() == True:
+                continue
+            elif not decoded:
+                continue
             _data_queue.append([client, decoded])
             # client.sendall(OPERATION_SUCCESS)
             # fancy_send(client, cpk, OPERATION_SUCCESS)
@@ -428,6 +432,9 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                     # msg = self.request.recv(1024)
                     # msg = msg.decode()
                     msg = fancy_recieve(self.request)
+                    if not msg:
+                        fancy_send(self.request, client_public_key, INVALID_MESSAGE)
+                        continue
                     split_msg = msg.split()
                     prefix = split_msg[0]
                     split_msg.remove(prefix)
