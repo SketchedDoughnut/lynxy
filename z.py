@@ -5,6 +5,7 @@ from src import lynxy as l
 from src import lynxy_server as ls
 
 def run_server():
+    # ls.set_encrypt_client_data(False)
     ip, port, token = ls.start_server()
     return (ip, port, token)
 
