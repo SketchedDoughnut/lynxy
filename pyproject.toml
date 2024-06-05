@@ -1,8 +1,8 @@
 [build-system]
 requires = [
     "hatchling",
-    "cryptography",
-    "cffi",
+    # "cryptography",
+    # "cffi",
 
     "rsa",
     "pyasn1"
