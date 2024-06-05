@@ -19,7 +19,7 @@ packages = [
 
 [project]
 name = "lynxy"
-version = "0.1.21" # test pypi release
+version = "0.1.22" # test pypi release
 # version = "0.0.5" # pypi release 
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" },
@@ -38,10 +38,10 @@ dependencies = [
     "cffi",
 
     "rsa",
-    "pyasn1",
+    "pyasn1"
 
      # ???
-    "setuptools"
+    # "setuptools"
 ]
 
 [project.urls]
