@@ -63,9 +63,11 @@ def recieve_handler():
 rect1 = ((255, 0, 0), gen_square()) # this is the local square
 rect2 = ((0, 255, 0), gen_square()) # this is the square from the other client
 # start server
-ip, port, token = ls.start_server()
+# ip, port, token = ls.start_server()
 # start client
-start_connection(ip)
+input_ip = input('-> ')
+# start_connection(ip)
+start_connection(input_ip)
 # go into listener mode
 l.send_msg('listener')
 rm = False
@@ -89,5 +91,5 @@ while running:
         pass
     pygame.display.update()
 pygame.quit()
-ls.freeze_server()
+# ls.freeze_server()
 l.shutdown_client()

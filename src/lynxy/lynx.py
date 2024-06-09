@@ -403,10 +403,19 @@ def start_client(connection_ip: str) -> bool:
 
 def start_client_listener() -> None:
     '''
-    A function that acts on the recieving end to recieve information from the server
+    A function that acts on the recieving end to recieve information from the server. It adds to a message queue that can be accessed to retrieve data. 
+    The latest entry in the data queue is the newest information. The queue gets cleared after 25 entries for efficiency and optimal storage.
     '''
-    threading.Thread(target=lambda:_internal_client_listener()).start()
+    threading.Thread(target=lambda:_internal_client_listener()).start() # actual listener
+    threading.Thread(target=lambda:_message_queue_cleaner()).start() # cleaner for list, saves latest val
 
+def _message_queue_cleaner():
+    global message_queue
+    while True:
+        if len(message_queue) > 25: # currently hard set value
+            latest = message_queue[-1]
+            message_queue = [latest]
+            # print('cleaning data queue')
 
 def _internal_client_listener():
     global message_queue
