@@ -37,6 +37,7 @@ def send_rect():
     while True:
         time.sleep(1)
         l.send_msg(rect, rm)
+        # print('sent:', rect)
 
 def gen_new():
     global rect
@@ -47,7 +48,10 @@ def gen_new():
 def recieve_handler():
     while True:
         global rect
-        rect = l.message_queue[-1]
+        try:
+            rect = l.message_queue[-1]
+        except:
+            pass
 
 
 
@@ -73,9 +77,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        window.fill((0, 0, 0))
-        pygame.draw.rect(window, (255, 255, 255), rect)
-        pygame.display.update()
+    window.fill((0, 0, 0))
+    print('drawing this rect:', rect)
+    pygame.draw.rect(window, (255, 255, 255), rect)
+    pygame.display.update()
 pygame.quit()
 ls.freeze_server()
 l.shutdown_client()
