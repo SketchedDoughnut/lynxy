@@ -35,7 +35,7 @@ def start_connection(ip):
 
 def send_rect():
     while True:
-        time.sleep(1)
+        # time.sleep(1) 
         l.send_msg(rect1, rm)
         # print('sent:', rect)
 
