@@ -49,8 +49,11 @@ def recieve_handler():
     while True:
         global rect2
         try:
+            # print('setting rect2 to -1 of message queue')
             rect2 = l.message_queue[-1]
-        except:
+            # print('rect 2 set to:', rect2)
+        except Exception as e:
+            print('set rect error:', e)
             pass
 
 
@@ -63,13 +66,13 @@ def recieve_handler():
 rect1 = ((255, 0, 0), gen_square()) # this is the local square
 rect2 = ((0, 255, 0), gen_square()) # this is the square from the other client
 # start server
-# ip, port, token = ls.start_server()
+ip, port, token = ls.start_server()
 # start client
-input_ip = input('-> ')
-# start_connection(ip)
-start_connection(input_ip)
+# input_ip = input('-> ')
+start_connection(ip)
+# start_connection(input_ip)
 # go into listener mode
-l.send_msg('listener')
+l.send_msg('listener')  
 rm = False
 l.start_client_listener()
 # start threads to send data
@@ -86,10 +89,12 @@ while running:
     window.fill((0, 0, 0))
     pygame.draw.rect(window, rect1[0], rect1[1])
     try:
+        # print('second rect drawing to:', rect2)
         pygame.draw.rect(window, rect2[0], rect2[1])
-    except:
+    except Exception as e:
+        print('draw error:', e)
         pass
     pygame.display.update()
 pygame.quit()
-# ls.freeze_server()
+ls.freeze_server()
 l.shutdown_client()

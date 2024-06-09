@@ -407,15 +407,24 @@ def start_client_listener() -> None:
     The latest entry in the data queue is the newest information. The queue gets cleared after 25 entries for efficiency and optimal storage.
     '''
     threading.Thread(target=lambda:_internal_client_listener()).start() # actual listener
-    threading.Thread(target=lambda:_message_queue_cleaner()).start() # cleaner for list, saves latest val
+    # threading.Thread(target=lambda:_message_queue_cleaner()).start() # cleaner for list, saves latest val
 
 def _message_queue_cleaner():
     global message_queue
     while True:
         if len(message_queue) > 25: # currently hard set value
-            latest = message_queue[-1]
-            message_queue = [latest]
-            # print('cleaning data queue')
+            try:
+                latest = message_queue[-1]
+                # latest = message_queue[-5:]
+                # print('saving latest:', latest)
+                message_queue = [latest]
+                # message_queue = latest
+                # print('set new message queue to:', message_queue)
+                # message_queue = []
+                # print('cleaning data queue')
+            except Exception as e:
+                # print('clean error:', e)
+                pass
 
 def _internal_client_listener():
     global message_queue
@@ -423,8 +432,12 @@ def _internal_client_listener():
         data = _main_client.recv(1024)
         try:
             decoded = _decrypt_private(data)
-        except:
+        except Exception as e:
+            # print('packet loss error:', e)
             continue # packet loss
         if decoded == '000':
             continue
+        # print('adding message to queue:', len(message_queue) + 1)
+        # print('recieved packet:', decoded)
         message_queue.append(decoded)
+        # print('message queue:', message_queue)

@@ -354,7 +354,8 @@ def _distributor() -> None:
             for client in _listener_list:
                 client_key = client[1]
                 active_client = client[0]
-                if active_client != ignore_client:
+                # if active_client != ignore_client: 
+                if active_client == ignore_client: # TESTER STATEMENT
                     encoded = _encrypt_public(client_key, message)
                     try:
                         active_client.sendall(encoded)
