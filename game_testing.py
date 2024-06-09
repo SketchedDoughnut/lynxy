@@ -14,7 +14,7 @@ screen_dimensions = (screen_width, screen_height)
 pygame.init()
 window = pygame.display.set_mode(screen_dimensions)
 
-def gen_square() -> pygame.Rect:
+def gen_square():
     width = 50
     height = 50
     x = random.randint(0, screen_width - width)
@@ -36,20 +36,20 @@ def start_connection(ip):
 def send_rect():
     while True:
         time.sleep(1)
-        l.send_msg(rect, rm)
+        l.send_msg(rect1, rm)
         # print('sent:', rect)
 
 def gen_new():
-    global rect
+    global rect1
     while True:
         time.sleep(5)
-        rect= gen_square()
+        rect1 = ((255, 0, 0), gen_square())
 
 def recieve_handler():
     while True:
-        global rect
+        global rect2
         try:
-            rect = l.message_queue[-1]
+            rect2 = l.message_queue[-1]
         except:
             pass
 
@@ -60,7 +60,8 @@ def recieve_handler():
 # Code for the SENDING
 
 # initialize rect
-rect = gen_square()
+rect1 = ((255, 0, 0), gen_square()) # this is the local square
+rect2 = ((0, 255, 0), gen_square()) # this is the square from the other client
 # start server
 ip, port, token = ls.start_server()
 # start client
@@ -68,9 +69,12 @@ start_connection(ip)
 # go into listener mode
 l.send_msg('listener')
 rm = False
+l.start_client_listener()
 # start threads to send data
 threading.Thread(target=lambda:send_rect()).start()
 threading.Thread(target=lambda:gen_new()).start()
+# start recieving thread
+threading.Thread(target=lambda:recieve_handler()).start()
 # start game loop
 running = True
 while running:
@@ -78,35 +82,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     window.fill((0, 0, 0))
-    print('drawing this rect:', rect)
-    pygame.draw.rect(window, (255, 255, 255), rect)
+    pygame.draw.rect(window, rect1[0], rect1[1])
+    pygame.draw.rect(window, rect2[0], rect2[1])
     pygame.display.update()
 pygame.quit()
 ls.freeze_server()
 l.shutdown_client()
-
-###########
-
-# Code for the RECIEVING
-
-# # initialize rect
-# rect = gen_square()
-# # start connection
-# start_connection(input('-> '))
-# # go into listener mode
-# l.send_msg('listener')
-# rm = False
-# # start thread to recieve data
-# l.start_client_listener()
-# threading.Thread(target=lambda:recieve_handler()).start()
-# # start game loop
-# running = True
-# while running:
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#         window.fill((0, 0, 0))
-#         pygame.draw.rect(window, (255, 255, 255), rect)
-#         pygame.display.update()
-# pygame.quit()
-# l.shutdown_client()
