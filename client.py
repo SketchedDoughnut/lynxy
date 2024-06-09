@@ -5,7 +5,7 @@ import time
 import threading
 
 # lynxy imports
-from src import lynxy as l
+from src import lynxy as l, lynxy_server as ls
 
 screen_width = 500
 screen_height = 500
