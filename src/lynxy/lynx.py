@@ -303,10 +303,11 @@ def request_username_data(username: str) -> any:
     return incoming_data
 
 # a general message sender
-def send_msg(message: str, recieve: bool = True) -> str:
+def send_msg(data: any, recieve: bool = True) -> str:
     '''
     A general tool function for sending messages to the recipient (server, other client, etc)
     '''
+    message = data
     # local override for package form
     client = _main_client
     # encoded_message = message.encode('utf-8')
