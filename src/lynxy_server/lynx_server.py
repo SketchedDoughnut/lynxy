@@ -363,7 +363,7 @@ def _distributor() -> None:
                         # assume the client cant be commmunicated with, remove from ppl to send to
                         _listener_list.remove(client)
             _data_queue.remove(message_data)
-            # time.sleep(0.0025) # who needs a delay anyways?
+            time.sleep(0.0025) # who needs a delay anyways?
 
 # MAIN CLASS
 class _myTCPserver(socketserver.BaseRequestHandler):

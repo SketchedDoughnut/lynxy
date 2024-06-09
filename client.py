@@ -5,7 +5,7 @@ import time
 import threading
 
 # lynxy imports
-from src import lynxy as l, lynxy_server as ls
+from src import lynxy as l
 
 screen_width = 500
 screen_height = 500
@@ -35,7 +35,7 @@ def start_connection(ip):
 
 def send_rect():
     while True:
-        # time.sleep(1)
+        time.sleep(1)
         l.send_msg(rect1, rm)
         # print('sent:', rect)
 
