@@ -83,7 +83,10 @@ while running:
             running = False
     window.fill((0, 0, 0))
     pygame.draw.rect(window, rect1[0], rect1[1])
-    pygame.draw.rect(window, rect2[0], rect2[1])
+    try:
+        pygame.draw.rect(window, rect2[0], rect2[1])
+    except:
+        pass
     pygame.display.update()
 pygame.quit()
 ls.freeze_server()

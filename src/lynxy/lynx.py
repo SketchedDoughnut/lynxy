@@ -303,7 +303,7 @@ def request_username_data(username: str) -> any:
     return incoming_data
 
 # a general message sender
-def send_msg(data: any, recieve: bool = True) -> str:
+def send_msg(data: any, recieve: bool = True) -> any:
     '''
     A general tool function for sending messages to the recipient (server, other client, etc)
     '''
