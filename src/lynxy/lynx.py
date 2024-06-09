@@ -412,7 +412,10 @@ def _internal_client_listener():
     global message_queue
     while True:
         data = _main_client.recv(1024)
-        decoded = _decrypt_private(data)
+        try:
+            decoded = _decrypt_private(data)
+        except:
+            continue # packet loss
         if decoded == '000':
             continue
         message_queue.append(decoded)
