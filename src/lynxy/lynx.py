@@ -408,6 +408,8 @@ def start_client_listener() -> None:
     '''
     send_msg('listener')
     threading.Thread(target=lambda:_internal_client_listener()).start() # actual listener
+    threading.Thread(target=lambda:_inbound_data_parser()).start() # parser to get individual commands
+    threading.Thread(target=lambda:_parsed_data_decrypter()).start() # decrypts each command, goes into message queue
     # threading.Thread(target=lambda:_message_queue_cleaner()).start() # cleaner for list, saves latest val
 
 def _message_queue_cleaner():
@@ -427,18 +429,75 @@ def _message_queue_cleaner():
                 # print('clean error:', e)
                 pass
 
+#######################################################################################
+
+_inbound_data = []
+_parsed_data = [] 
+# this function is responsible for decrypting and finally outputting data to the message queue
+def _parsed_data_decrypter():
+    while True:
+        for parsed in _parsed_data:
+            # print('[DECRYPTER] Decrypting:', parsed)
+            try:
+                decoded = _decrypt_private(parsed)
+                # print('NEW DECRYPTED:', decoded)
+                message_queue.append(decoded)
+            except Exception as e:
+                print('NEW DECRYPTION LOST:', e)
+                # packet loss
+                pass
+            _parsed_data.remove(parsed)
+            # exit()
+
+# this function creates a parser which isolates each message
+def _inbound_data_parser():
+    while True:
+        for data in _inbound_data:
+            decoded_data = data.decode()
+            # print('[PARSER] Parsing:', decoded_data)
+            split_entry = [str(i) for i in decoded_data]
+            new_segment = ''
+            for letter in split_entry:
+                if letter == '~':
+                    location = split_entry.index(letter)
+                    try:
+                        next = split_entry[location + 1]
+                        if next == 'E':
+                            # new_segment = new_segment.encode()
+                            new_segment = eval(new_segment)
+                            # print('NEWS SEGMENT:', new_segment)
+                            _parsed_data.append(new_segment)
+                            new_segment = ''
+                            break
+                    except Exception as e:
+                        print('NEW SEGMENT LOST:', e)
+                        # cant go farther, lost packet
+                        pass
+                else:
+                    new_segment += letter
+            _inbound_data.remove(data)
+            # exit()
+
+# this function is responsible for taking in messages
 def _internal_client_listener():
     global message_queue
     while True:
+        ## OLD CODE
+        # data = _main_client.recv(1024)
+        # try:
+        #     decoded = _decrypt_private(data)
+        # except Exception as e:
+        #     # print('packet loss error:', e)
+        #     continue # packet loss
+        # if decoded == '000':
+        #     continue
+        # # print('adding message to queue:', len(message_queue) + 1)
+        # # print('recieved packet:', decoded)
+        # message_queue.append(decoded)
+        # # print('message queue:', message_queue)
+
+        ## NEW CODE
         data = _main_client.recv(1024)
-        try:
-            decoded = _decrypt_private(data)
-        except Exception as e:
-            # print('packet loss error:', e)
-            continue # packet loss
-        if decoded == '000':
-            continue
-        # print('adding message to queue:', len(message_queue) + 1)
-        # print('recieved packet:', decoded)
-        message_queue.append(decoded)
-        # print('message queue:', message_queue)
+        _inbound_data.append(data)
+        # print('[LISTENER] Recieving:', data)
+        # exit()

@@ -53,7 +53,7 @@ def recieve_handler():
             rect2 = l.message_queue[-1]
             # print('rect 2 set to:', rect2)
         except Exception as e:
-            print('set rect error:', e)
+            # print('set rect error:', e)
             pass
 
 

@@ -356,11 +356,15 @@ def _distributor() -> None:
             for client in _listener_list:
                 client_key = client[1]
                 active_client = client[0]
-                if active_client != ignore_client: 
-                # if active_client == ignore_client: # TESTER STATEMENT
+                # if active_client != ignore_client: 
+                if active_client == ignore_client: # TESTER STATEMENT
                     encoded = _encrypt_public(client_key, message)
                     try:
-                        active_client.sendall(encoded)
+                        # new message segments
+                        segmented = f'{encoded}~E'
+                        encoded_segment = segmented.encode()
+                        # active_client.sendall(encoded)
+                        active_client.sendall(encoded_segment)
                     except:
                         # assume the client cant be commmunicated with, remove from ppl to send to
                         _listener_list.remove(client)
