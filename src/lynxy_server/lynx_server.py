@@ -356,8 +356,8 @@ def _distributor() -> None:
             for client in _listener_list:
                 client_key = client[1]
                 active_client = client[0]
-                # if active_client != ignore_client: 
-                if active_client == ignore_client: # TESTER STATEMENT
+                if active_client != ignore_client: 
+                # if active_client == ignore_client: # TESTER STATEMENT
                     encoded = _encrypt_public(client_key, message)
                     try:
                         # new message segments
@@ -369,7 +369,7 @@ def _distributor() -> None:
                         # assume the client cant be commmunicated with, remove from ppl to send to
                         _listener_list.remove(client)
             _data_queue.remove(message_data)
-            time.sleep(0.0025) # who needs a delay anyways?
+            # time.sleep(0.0025) # who needs a delay anyways?
 
 # MAIN CLASS
 class _myTCPserver(socketserver.BaseRequestHandler):
