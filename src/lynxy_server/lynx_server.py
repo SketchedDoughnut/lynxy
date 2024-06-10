@@ -328,6 +328,8 @@ def _poll_shutdown() -> None:
 
 ## FUNCTIONS FOR DISTRIBUTION SERVER
 def _loopback_input(client: socket.socket, cpk) -> None:
+    # become brick
+    time.sleep(0.025)
     while True:
         try:
             # msg = client.recv(1024).decode()
@@ -599,11 +601,14 @@ class _myTCPserver(socketserver.BaseRequestHandler):
                 if not is_listener:
                     _listener_list.append([self.request, client_public_key])
                     is_listener = True
-                    threading.Thread(target=lambda:_loopback_input(self.request, client_public_key)).start()
+                    # threading.Thread(target=lambda:_loopback_input(self.request, client_public_key)).start()
                     # self.request.sendall(OPERATION_SUCCESS)
-                    time.sleep(0.025)
+                    # time.sleep(0.025)
+
+                    # lets create a brick
                     _fancy_send(self.request, client_public_key, OPERATION_SUCCESS)
                     pprint(f'[{addr}] {msg} - subscribing to listener')
+                    _loopback_input(self.request, client_public_key)
 
 
             # if msg is clear_client, check if this client is authorized and then clear the client_dict

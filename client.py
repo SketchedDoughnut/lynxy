@@ -72,7 +72,7 @@ ip = input('-> ')
 start_connection(ip)
 # start_connection(input_ip)
 # go into listener mode
-l.send_msg('listener')  
+# l.send_msg('listener')  
 rm = False
 l.start_client_listener()
 # start threads to send data

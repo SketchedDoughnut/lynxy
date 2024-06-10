@@ -53,7 +53,7 @@ def recieve_handler():
             rect2 = l.message_queue[-1]
             # print('rect 2 set to:', rect2)
         except Exception as e:
-            print('set rect error:', e)
+            # print('set rect error:', e)
             pass
 
 
@@ -72,7 +72,7 @@ ip, port, token = ls.start_server()
 start_connection(ip)
 # start_connection(input_ip)
 # go into listener mode
-l.send_msg('listener')  
+# l.send_msg('listener')  
 rm = False
 l.start_client_listener()
 # start threads to send data
