@@ -53,7 +53,7 @@ def recieve_handler():
             rect2 = l.message_queue[-1]
             # print('rect 2 set to:', rect2)
         except Exception as e:
-            # print('set rect error:', e)
+            print('set rect error:', e)
             pass
 
 
@@ -92,7 +92,7 @@ while running:
         # print('second rect drawing to:', rect2)
         pygame.draw.rect(window, rect2[0], rect2[1])
     except Exception as e:
-        print('draw error:', e)
+        # print('draw error:', e)
         pass
     pygame.display.update()
 pygame.quit()

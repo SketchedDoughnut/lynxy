@@ -406,6 +406,7 @@ def start_client_listener() -> None:
     A function that acts on the recieving end to recieve information from the server. It adds to a message queue that can be accessed to retrieve data. 
     The latest entry in the data queue is the newest information. The queue gets cleared after 25 entries for efficiency and optimal storage.
     '''
+    send_msg('listener')
     threading.Thread(target=lambda:_internal_client_listener()).start() # actual listener
     # threading.Thread(target=lambda:_message_queue_cleaner()).start() # cleaner for list, saves latest val
 
