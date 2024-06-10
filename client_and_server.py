@@ -34,10 +34,24 @@ def start_connection(ip):
 
 
 def send_rect():
+    avg = 0
+    count = 0
     while True:
         time.sleep(1) 
+        start = time.time()
         l.send_msg(rect1, rm)
-        # print('sent:', rect)
+        end = time.time()
+        dif = end - start
+        count += 1
+        avg += dif
+        n_avg = avg / count
+        ms_latency = dif * 1000
+        rounded_ms = round(ms_latency, 3)
+        rounded_avg = round(n_avg, 3)
+        print('packet sent:', rect1)
+        print('time taken:', dif)
+        print(f'average time: {rounded_avg}s')
+        print(f'ms: {rounded_ms}')
 
 def gen_new():
     global rect1
@@ -49,11 +63,8 @@ def recieve_handler():
     while True:
         global rect2
         try:
-            # print('setting rect2 to -1 of message queue')
             rect2 = l.message_queue[-1]
-            # print('rect 2 set to:', rect2)
         except Exception as e:
-            # print('set rect error:', e)
             pass
 
 
@@ -87,10 +98,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     window.fill((0, 0, 0))
-    pygame.draw.rect(window, rect1[0], rect1[1])
+    # pygame.draw.rect(window, rect1[0], rect1[1])
     try:
         # print('second rect drawing to:', rect2)
-        pygame.draw.rect(window, rect2[0], rect2[1])
+        # pygame.draw.rect(window, rect2[0], rect2[1])
+        pass
     except Exception as e:
         # print('draw error:', e)
         pass
