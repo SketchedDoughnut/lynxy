@@ -483,21 +483,21 @@ def _internal_client_listener():
     global message_queue
     while True:
         ## OLD CODE
-        data = _main_client.recv(1024)
-        try:
-            decoded = _decrypt_private(data)
-        except Exception as e:
-            # print('packet loss error:', e)
-            continue # packet loss
-        if decoded == '000':
-            continue
-        # print('adding message to queue:', len(message_queue) + 1)
-        # print('recieved packet:', decoded)
-        message_queue.append(decoded)
-        # print('message queue:', message_queue)
+        # data = _main_client.recv(1024)
+        # try:
+        #     decoded = _decrypt_private(data)
+        # except Exception as e:
+        #     # print('packet loss error:', e)
+        #     continue # packet loss
+        # if decoded == '000':
+        #     continue
+        # # print('adding message to queue:', len(message_queue) + 1)
+        # # print('recieved packet:', decoded)
+        # message_queue.append(decoded)
+        # # print('message queue:', message_queue)
 
         ## NEW CODE
-        # data = _main_client.recv(1024)
-        # _inbound_data.append(data)
-        # # print('[LISTENER] Recieving:', data)
-        # # exit()
+        data = _main_client.recv(1024)
+        _inbound_data.append(data)
+        # print('[LISTENER] Recieving:', data)
+        # exit()
