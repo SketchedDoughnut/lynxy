@@ -1,0 +1,17 @@
+To release to PyPi
+    - put the corresponding pyproject.toml in the root directory (either lynxy or lynxy_server)
+    - run: python3 -m build
+    - run: python3 -m twine upload --repository pypi dist/*
+
+To release to test PyPi:
+    - put the corresponding pyproject.toml in the root directory (either lynxy or lynxy_server)
+    - run: python3 -m build
+    - run: python3 -m twine upload --repository testpypi dist/*
+
+To download from PyPi:
+    - pip install lynxy
+    - pip install lynxy_server
+
+To download from test PyPi:
+    - pip install -i https://test.pypi.org/simple/ lynxy
+    - pip install -i https://test.pypi.org/simple/ lynxy_server

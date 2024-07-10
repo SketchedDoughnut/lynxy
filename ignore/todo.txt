@@ -1,0 +1,7 @@
+- clean up pyproject.toml for lynxy and lynxy_server
+- improve documentation
+- clean up lynxy and lynxy_server
+- release lynxy_server as a standalone extension for lynxy
+    - release on test pypi first
+- release lynxy as its own module, seperate of lynxy_server
+- clean up files a bit more
