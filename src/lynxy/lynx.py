@@ -1,11 +1,20 @@
+# included
 import socket
-# import time
 import pickle
 import threading
 
-# installs
+# external
 import rsa
 
+
+
+
+
+
+
+
+
+# default ports client will try and connect to
 _valid_ports = [
     11111,
     12111,
@@ -19,66 +28,91 @@ _valid_ports = [
     22222
 ]
 
-# define all global vars
-_HOST, _PORT = '', _valid_ports[0] # local_HOST
-_main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# enums / toggles dictionary
+DO_PRINT = 'print'
+_toggles = {
+    'print': False
+}
 
+## establish variables
+_HOST, _PORT = '', _valid_ports[0] # server ip, port ip
+_main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # main client for communication
 # override info
 _ov_ports = []
-_do_print = False
-
 # status vars
 _connected = False
-
 # safety vars
 _server_public_key = 0
 _client_private_key = 0
 _client_public_key = 0
-
-# listener features
+# listener features for when data is distributed to clients
 message_queue = []
 
-## FUNCTIONS - overrides, features
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## override functions
+# override ports
 def override_ports(ports: list) -> None:
     ''' 
-    Overrides what ports the client will attempt to connect to
+    Overrides what ports the client will attempt to connect to.
+    ARGS
+        - ports: list
+
+    Each port should be an integer, and the server and the client should have at least one port in common.
     '''
     global _ov_ports
     _ov_ports = ports
 
-# disable prints
-def disable_print() -> None:
+# toggles settings
+def toggle(toggle, state: bool) -> None:
     '''
-    Disables the client from printing messages
+    Toggles the inputted toggle, setting it to either True or False.
+    Example:
+        - toggle(DO_PRINT, FALSE)
     '''
-    global _do_print
-    _do_print = False
+    global _toggles
+    _toggles[toggle] = state
 
-# enable prints
-def enable_print() -> None:
-    '''
-    Enables the client to print messages
-    '''
-    global _do_print
-    _do_print = True
 
-# function to handle printing
+
+
+## feature functions
+# function to handle printing if its enabled
 def pprint(msg: str) -> None:
     '''
-    A function meant for filtering prints based on if it is enabled or disabled - This is meant for internal use
+    A function meant for filtering prints based on if it is enabled or disabled - This is meant for internal use.
     '''
-    if _do_print:
+    if _toggles[DO_PRINT]:
         print(msg)
-    else:
-        pass
 
 # function to display current data
 def get_data() -> dict:
     '''
-    Returns data about the current client in the form of a dictionary
+    Returns data about the current client in the form of a dictionary.
     '''
     return {
-        'client info': {
+        'server info': {
             'ip': _HOST,
             'port': _PORT
         },
@@ -113,13 +147,15 @@ def get_data() -> dict:
 
 
 
-## FUNCTIONS - safety
-def _gen_access_keys() -> tuple:
+## safety functions
+# function to generate RSA public and private keys
+def _gen_access_keys() -> tuple[rsa.PublicKey, rsa.PrivateKey]:
     '''
-    Generates a public and private key, and returns them in a tuple
+    Generates a public and private key, and returns them in a tuple.
     '''
     public_key, private_key = rsa.newkeys(1024)
     return public_key, private_key
+
 
 def _handshake(client: socket.socket) -> None:
     global _client_private_key, _client_public_key, _server_public_key
