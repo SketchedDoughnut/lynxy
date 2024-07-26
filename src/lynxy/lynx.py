@@ -28,25 +28,32 @@ _valid_ports = [
     22222
 ]
 
-# enums / toggles dictionary
+# constants / toggles dictionary
+# manages anything that can be changed 
 DO_PRINT = 'print'
+PORT_OVERRIDE = 'port_override'
 _toggles = {
-    'print': False
+    DO_PRINT: False,
+    PORT_OVERRIDE: _valid_ports
 }
 
-## establish variables
+# establish the main socket variables
+# such as server ip, server port, main_client communicating with server
 _HOST, _PORT = '', _valid_ports[0] # server ip, port ip
-_main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # main client for communication
-# override info
-_ov_ports = []
-# status vars
-_connected = False
+_main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # main client for communication with server
+
+# status variables
+# these help know what has succeeded and whatnot
+_connected = False # connected to server
+
 # safety vars
+# these are used for encryption and general safety
 _server_public_key = 0
 _client_private_key = 0
 _client_public_key = 0
+
 # listener features for when data is distributed to clients
-message_queue = []
+listener_message_queue = []
 
 
 
@@ -85,7 +92,7 @@ def override_ports(ports: list) -> None:
     _ov_ports = ports
 
 # toggles settings
-def toggle(toggle, state: bool) -> None:
+def toggle(toggle, state) -> None:
     '''
     Toggles the inputted toggle, setting it to either True or False.
     Example:
@@ -117,7 +124,7 @@ def get_data() -> dict:
             'port': _PORT
         },
         'data': {
-            'message_queue': message_queue
+            'listener_message_queue': listener_message_queue
         },
         'sillies': 'sillies :3'
     }
@@ -446,20 +453,20 @@ def start_client_listener() -> None:
     threading.Thread(target=lambda:_internal_client_listener()).start() # actual listener
     threading.Thread(target=lambda:_inbound_data_parser()).start() # parser to get individual commands
     threading.Thread(target=lambda:_parsed_data_decrypter()).start() # decrypts each command, goes into message queue
-    # threading.Thread(target=lambda:_message_queue_cleaner()).start() # cleaner for list, saves latest val
+    # threading.Thread(target=lambda:_listener_message_queue_cleaner()).start() # cleaner for list, saves latest val
 
-def _message_queue_cleaner():
-    global message_queue
+def _listener_message_queue_cleaner():
+    global listener_message_queue
     while True:
-        if len(message_queue) > 25: # currently hard set value
+        if len(listener_message_queue) > 25: # currently hard set value
             try:
-                latest = message_queue[-1]
-                # latest = message_queue[-5:]
+                latest = listener_message_queue[-1]
+                # latest = listener_message_queue[-5:]
                 # print('saving latest:', latest)
-                message_queue = [latest]
-                # message_queue = latest
-                # print('set new message queue to:', message_queue)
-                # message_queue = []
+                listener_message_queue = [latest]
+                # listener_message_queue = latest
+                # print('set new message queue to:', listener_message_queue)
+                # listener_message_queue = []
                 # print('cleaning data queue')
             except Exception as e:
                 # print('clean error:', e)
@@ -467,8 +474,17 @@ def _message_queue_cleaner():
 
 #######################################################################################
 
+# _internal_client_listener() just takes in every message and puts it into _inbound_data
+# _inbound_data_parser() identifies the start and end of a packet, joins it all together, and then puts that into _parser_data
+    # make local copy of _inbound_data
+    # 
+# _split_data_decrypter() decrypts each full packet of data in _parser_data, and then finalls adds it to the listener_message_queue
+
+
 _inbound_data = []
+_current_parse = ''
 _parsed_data = [] 
+
 # this function is responsible for decrypting and finally outputting data to the message queue
 def _parsed_data_decrypter():
     while True:
@@ -477,7 +493,7 @@ def _parsed_data_decrypter():
             try:
                 decoded = _decrypt_private(parsed)
                 # print('NEW DECRYPTED:', decoded)
-                message_queue.append(decoded)
+                listener_message_queue.append(decoded)
             except Exception as e:
                 print('NEW DECRYPTION LOST:', e)
                 # packet loss
@@ -485,39 +501,53 @@ def _parsed_data_decrypter():
             _parsed_data.remove(parsed)
             # exit()
 
-# this function creates a parser which isolates each message
+# this function creates a parser which identifies the start and end of a full message, joins that, then pipes it into _parsed_data
 def _inbound_data_parser():
-    while True:
-        for data in _inbound_data:
-            decoded_data = data.decode()
-            # print('[PARSER] Parsing:', decoded_data)
-            split_entry = [str(i) for i in decoded_data]
-            new_segment = ''
-            for letter in split_entry:
-                if letter == '~':
-                    location = split_entry.index(letter)
-                    try:
-                        next = split_entry[location + 1]
-                        if next == 'E':
-                            # new_segment = new_segment.encode()
-                            new_segment = eval(new_segment)
-                            # print('NEWS SEGMENT:', new_segment)
-                            _parsed_data.append(new_segment)
-                            new_segment = ''
-                            break
-                    except Exception as e:
-                        print('NEW SEGMENT LOST:', e)
-                        # cant go farther, lost packet
-                        pass
-                else:
-                    new_segment += letter
-            _inbound_data.remove(data)
-            # exit()
+    ## OLD CODE
+    # global _inbound_data # so we can erase current _inbound_data after making a local copy
+    # global _current_parse # so we can set/clear the current parsed info
+    # lc_inbound_data = _inbound_data # make local copy
+    # _inbound_data = [] # clear current _inbound_data, as we have copied data from it
+    # while True:
+    #     for data in _inbound_data: # for each packet of info in _inbound_data
+    #         data: bytes # type hinting
+    #         decoded_data = data.decode() # decode data, this decoded data includes the encrypted message, and then should include an end marker "~E"
+    #         split_entry = [str(i) for i in decoded_data] # split the packet into its individual character
+    #         new_segment = _current_parse # set new_segment to the currently parsed data, or if nothing is there, set it to an empty string
+    #         for current_letter in split_entry: # for each letter in the split entry
+    #             current_location = split_entry.index(current_letter)
+    #             if (len(split_entry) - 1) > current_location: # if there is more in the list
+    #                 next_location = split_entry[current_location + 1]
+    #                 next_letter = split_entry[next_location]
+    #             else: # there is no more in the list, meaning there is no matcher for this 
+    #                 next_location = 0
+    #                 next_letter = 'None'
+    #             # if the end marker is successfully detected
+    #             # also checks if it is present between _current_parse and current_letter
+    #             if current_letter == '~' and next_letter == 'E' or _current_parse[-1] == '~' and current_letter == "E":
+    #                 new_segment = eval(new_segment) # turn string of bytes into bytes?? idek
+    #                 _parsed_data.append(new_segment) # pipe this full packet into _parsed_data
+    #                 new_segment = '' # reset new segment
+    #                 _current_parse = '' # reset the current saved parse
+    #                 continue # continue onto next loop iteration
+    #             else: # no marker match
+    #                 new_segment += current_letter # add letter to new_segment
+    #         _inbound_data.remove(data) # remove the data packet, it has been analyzed
 
-# this function is responsible for taking in messages
+    ## NEW CODE
+    global _inbound_data
+    global _current_parse
+
+
+
+
+# this function is responsible for taking in messages and piping them into _inbound_data
 def _internal_client_listener():
-    global message_queue
+    global listener_message_queue
     while True:
+        data = _main_client.recv(1024)
+        _inbound_data.append(data)
+
         ## OLD CODE
         # data = _main_client.recv(1024)
         # try:
@@ -527,13 +557,7 @@ def _internal_client_listener():
         #     continue # packet loss
         # if decoded == '000':
         #     continue
-        # # print('adding message to queue:', len(message_queue) + 1)
+        # # print('adding message to queue:', len(listener_message_queue) + 1)
         # # print('recieved packet:', decoded)
-        # message_queue.append(decoded)
-        # # print('message queue:', message_queue)
-
-        ## NEW CODE
-        data = _main_client.recv(1024)
-        _inbound_data.append(data)
-        # print('[LISTENER] Recieving:', data)
-        # exit()
+        # listener_message_queue.append(decoded)
+        # # print('message queue:', listener_message_queue)
