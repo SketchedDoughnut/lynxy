@@ -482,7 +482,6 @@ def _listener_message_queue_cleaner():
 
 
 _inbound_data = []
-_current_parse = ''
 _parsed_data = [] 
 
 # this function is responsible for decrypting and finally outputting data to the message queue
@@ -503,40 +502,33 @@ def _parsed_data_decrypter():
 
 # this function creates a parser which identifies the start and end of a full message, joins that, then pipes it into _parsed_data
 def _inbound_data_parser():
-    ## OLD CODE
-    # global _inbound_data # so we can erase current _inbound_data after making a local copy
-    # global _current_parse # so we can set/clear the current parsed info
-    # lc_inbound_data = _inbound_data # make local copy
-    # _inbound_data = [] # clear current _inbound_data, as we have copied data from it
-    # while True:
-    #     for data in _inbound_data: # for each packet of info in _inbound_data
-    #         data: bytes # type hinting
-    #         decoded_data = data.decode() # decode data, this decoded data includes the encrypted message, and then should include an end marker "~E"
-    #         split_entry = [str(i) for i in decoded_data] # split the packet into its individual character
-    #         new_segment = _current_parse # set new_segment to the currently parsed data, or if nothing is there, set it to an empty string
-    #         for current_letter in split_entry: # for each letter in the split entry
-    #             current_location = split_entry.index(current_letter)
-    #             if (len(split_entry) - 1) > current_location: # if there is more in the list
-    #                 next_location = split_entry[current_location + 1]
-    #                 next_letter = split_entry[next_location]
-    #             else: # there is no more in the list, meaning there is no matcher for this 
-    #                 next_location = 0
-    #                 next_letter = 'None'
-    #             # if the end marker is successfully detected
-    #             # also checks if it is present between _current_parse and current_letter
-    #             if current_letter == '~' and next_letter == 'E' or _current_parse[-1] == '~' and current_letter == "E":
-    #                 new_segment = eval(new_segment) # turn string of bytes into bytes?? idek
-    #                 _parsed_data.append(new_segment) # pipe this full packet into _parsed_data
-    #                 new_segment = '' # reset new segment
-    #                 _current_parse = '' # reset the current saved parse
-    #                 continue # continue onto next loop iteration
-    #             else: # no marker match
-    #                 new_segment += current_letter # add letter to new_segment
-    #         _inbound_data.remove(data) # remove the data packet, it has been analyzed
-
-    ## NEW CODE
-    global _inbound_data
-    global _current_parse
+    global _inbound_data # so we can erase current _inbound_data after making a local copy
+    lc_inbound_data = _inbound_data # make local copy
+    _inbound_data = [] # clear current _inbound_data, as we have copied data from it
+    while True:
+        for data in lc_inbound_data:
+            data: bytes
+            decoded_data = data.decode()
+            split_entry = [str(i) for i in decoded_data]
+            new_segment = ''
+            for letter in split_entry:
+                if letter == '~':
+                    location = split_entry.index(letter)
+                    try:
+                        next = split_entry[location + 1]
+                        if next == 'E':
+                            # new_segment = new_segment.encode()
+                            new_segment = eval(new_segment)
+                            _parsed_data.append(new_segment)
+                            new_segment = ''
+                            break
+                    except Exception as e:
+                        print('NEW SEGMENT LOST:', e)
+                        # cant go farther, lost packet
+                        pass
+                else:
+                    new_segment += letter
+            lc_inbound_data.remove(data)
 
 
 
