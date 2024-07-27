@@ -12,7 +12,7 @@ import rsa
 
 
 
-
+################################################################## Variable assignment
 
 # default ports client will try and connect to
 _valid_ports = [
@@ -31,15 +31,17 @@ _valid_ports = [
 # constants / toggles dictionary
 # manages anything that can be changed 
 DO_PRINT = 'print'
-PORT_OVERRIDE = 'port_override'
+DEFAULT_PORTS = 'port_override'
 _toggles = {
     DO_PRINT: False,
-    PORT_OVERRIDE: _valid_ports
+    DEFAULT_PORTS: _valid_ports
 }
 
 # establish the main socket variables
 # such as server ip, server port, main_client communicating with server
-_HOST, _PORT = '', _valid_ports[0] # server ip, port ip
+_HOST = '' # server ip
+_PORT = _valid_ports[0] # server port
+# _HOST, _PORT = '', _valid_ports[0] # server ip, port ip
 _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # main client for communication with server
 
 # status variables
@@ -76,10 +78,10 @@ listener_message_queue = []
 
 
 
+################################################################## Optional functions for ovveriding / toggles
 
-
-## override functions
 # override ports
+# used to change the ports the client tries to connect to
 def override_ports(ports: list) -> None:
     ''' 
     Overrides what ports the client will attempt to connect to.
@@ -88,8 +90,10 @@ def override_ports(ports: list) -> None:
 
     Each port should be an integer, and the server and the client should have at least one port in common.
     '''
-    global _ov_ports
-    _ov_ports = ports
+    # global _ov_ports
+    # _ov_ports = ports
+    global _toggles
+    _toggles[DEFAULT_PORTS] = ports
 
 # toggles settings
 def toggle(toggle, state) -> None:
@@ -480,25 +484,23 @@ def _listener_message_queue_cleaner():
     # 
 # _split_data_decrypter() decrypts each full packet of data in _parser_data, and then finalls adds it to the listener_message_queue
 
-
 _inbound_data = []
 _parsed_data = [] 
 
 # this function is responsible for decrypting and finally outputting data to the message queue
 def _parsed_data_decrypter():
+    global _parsed_data
     while True:
-        for parsed in _parsed_data:
-            # print('[DECRYPTER] Decrypting:', parsed)
+        lc_parsed_data = _parsed_data
+        _parsed_data = []
+        for parsed in lc_parsed_data:
             try:
                 decoded = _decrypt_private(parsed)
-                # print('NEW DECRYPTED:', decoded)
                 listener_message_queue.append(decoded)
             except Exception as e:
                 print('NEW DECRYPTION LOST:', e)
-                # packet loss
                 pass
-            _parsed_data.remove(parsed)
-            # exit()
+            lc_parsed_data.remove(parsed)
 
 # this function creates a parser which identifies the start and end of a full message, joins that, then pipes it into _parsed_data
 def _inbound_data_parser():
@@ -524,7 +526,6 @@ def _inbound_data_parser():
                             break
                     except Exception as e:
                         print('NEW SEGMENT LOST:', e)
-                        # cant go farther, lost packet
                         pass
                 else:
                     new_segment += letter
