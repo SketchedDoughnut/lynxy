@@ -296,16 +296,16 @@ def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
 
 
 
-################################################################## functions used for connecting to server (external)
+################################################################## functions used for connecting to server / other client (external)
 
 def start_client(connection_ip: str) -> bool:
     '''
-    Starts a connection to the server.
+    Starts a connection to the server or other client.
     # Parameters
     **connection_ip**
-    the ip of the server to connect to as a string
+    the ip of the server/client to connect to as a string
     # Returns
-    a boolean saying whether connecting to the server succeeded or not
+    a boolean saying whether connecting succeeded or not
     '''
     # globals
     global _main_client # client for communicating with server
@@ -325,7 +325,7 @@ def start_client(connection_ip: str) -> bool:
 
 
 
-################################################################## functions for communicating with server
+################################################################## functions for communicating with server / other client
 
 # sends data to server, gets data back if recieve = True
 def send_msg(data: any, recieve: bool = True) -> any:
@@ -333,11 +333,11 @@ def send_msg(data: any, recieve: bool = True) -> any:
     A general messaging function for sending data to the recipient (decided by what _main_client is connected to).
     # Parameters
     **data** \n
-    The information you want to send to the server. This can be anything you want! \n
+    The information you want to send to the recipient. This can be anything you want! \n
     **recieve** \n
-    True by default, set this to False if you do not want send_msg() to wait for a response from the server.
+    True by default, set this to False if you do not want send_msg() to wait for a response from the recipient.
     # Returns
-    data recieved from server, if recieve = True
+    data recieved from recipient, if recieve = True
     '''
     encoded_data = _encrypt_public(data)
     _main_client.sendall(encoded_data)
@@ -357,7 +357,8 @@ def submit_username_data(username: str) -> str:
     **username** \n
     your preferred username as a string (please, no spaces!) \n
     # Returns \n
-    a status code as a string that gives information on what happened server-side.
+    a status code as a string that gives information on what happened server-side. \n
+    Please note this function is meant for use only with a lynxy_server server.
     '''
     full_data = f'username {username}'
     encrypted_data = _encrypt_public(full_data)
@@ -380,7 +381,8 @@ def request_username_data(username: str) -> any:
     a status code as a string that gives information on what happened server-side. \n
     If the server has disabled this feature, you will instead get a status code signifying a fail. 
     This might occur if the server has disabled directly connecting to other clients. 
-    If this happens, then you will have to communicate with the other clients through the server.
+    If this happens, then you will have to communicate with the other clients through the server. \n
+    Please note this function is meant for use only with a lynxy_server server.
     '''
     full_data = f'request_by_user {username}'
     # encoded_message = message2.encode('utf-8') # added request_by_user prefix by default
@@ -408,7 +410,7 @@ def request_username_data(username: str) -> any:
 
 
 
-################################################################## functions for ending connections with the other end of communications
+################################################################## functions for ending connections with the other end
 
 # function for shutting down the client
 def shutdown_client() -> bool:
@@ -548,11 +550,11 @@ def _inbound_data_listener():
 
 
 
-##################################################################
-##################################################################
-##################################################################
-##################################################################
-##################################################################
+####################################################################################################################################
+####################################################################################################################################
+####################################################################################################################################
+####################################################################################################################################
+####################################################################################################################################
 
 '''
 below is random code that I am not sure what to do with, so for now they remain as comments!
