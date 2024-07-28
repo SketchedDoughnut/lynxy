@@ -6,3 +6,12 @@ DO THESE IN ORDER PLEASE
     - release on test pypi first
 - release lynxy as its own module, seperate of lynxy_server
 - clean up files a bit more
+
+
+
+IMPORTANT: KEEP THESE IN MIND WHEN REFACTORING lynxy_server
+- request_username_data() should only work if the server is configured for having clients directly communicate. Otherwise, if the server is configured to have the clients communicate through the server, deny them with a response code
+- add processor to properly string together inputs (mainly for listener clients sending data, but see where else this is needed)
+
+IMPORTANT: KEEP THESE IN MIND WHEN REFACTORING lynxy
+- add something to split packets up into smaller bits before sending off

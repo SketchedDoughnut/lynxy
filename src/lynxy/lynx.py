@@ -1,3 +1,5 @@
+################################################################## imports
+
 # included
 import socket
 import pickle
@@ -12,7 +14,8 @@ import rsa
 
 
 
-################################################################## Variable assignment
+
+################################################################## variable assignment
 
 # default ports client will try and connect to
 _valid_ports = [
@@ -55,7 +58,7 @@ _client_private_key = 0
 _client_public_key = 0
 
 # listener features for when data is distributed to clients
-listener_message_queue = []
+data_queue = []
 
 
 
@@ -64,43 +67,57 @@ listener_message_queue = []
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################## Optional functions for ovveriding / toggles
+################################################################## optional functions for overriding / toggles
 
 # override ports
 # used to change the ports the client tries to connect to
-def override_ports(ports: list) -> None:
-    ''' 
-    Overrides what ports the client will attempt to connect to.
-    ARGS
-        - ports: list
+# def override_ports(ports: list) -> None:
+#     ''' 
+#     Overrides what ports the client will attempt to connect to. \n
+#     ARGS
+#         - ports: list
+#         Each port should be an integer, and the server and the client should have at least one port in common.
+#     '''
+#     # global _ov_ports
+#     # _ov_ports = ports
+#     global _toggles
+#     _toggles[DEFAULT_PORTS] = ports
 
-    Each port should be an integer, and the server and the client should have at least one port in common.
-    '''
-    # global _ov_ports
-    # _ov_ports = ports
-    global _toggles
-    _toggles[DEFAULT_PORTS] = ports
+# def disable_print() -> None:
+#     '''
+#     Disables the client from printing messages
+#     '''
+#     global _do_print
+#     _do_print = False
+
+# # enable prints
+# def enable_print() -> None:
+#     '''
+#     Enables the client to print messages
+#     '''
+#     global _do_print
+#     _do_print = True
 
 # toggles settings
 def toggle(toggle, state) -> None:
     '''
-    Toggles the inputted toggle, setting it to either True or False.
-    Example:
-        - toggle(DO_PRINT, FALSE)
+    Toggles the value associated with the input "toggle". \n
+    # Parameters
+        - DO_PRINT
+            - information: 
+                - this toggles whether lynxy prints message to console or not. This is disabled by default.
+            - values: True, False
+            - example: 
+                - toggle(DO_PRINT, True)
+                - toggle(DO_PRINT, False)
+        - DEFAULT_PORTS
+            - information:
+                - this regards the ports that the client will attempt to connect to on the servers IP.
+            - values: list of integer ports
+            - example: 
+                - toggle(DEFAULT_PORTS, [12345, 23456, 34567])
+            - notes: The client and the server HAVE to have at least one port in common! This is very important, 
+                     because if they do not have a common port then the two can not connect.
     '''
     global _toggles
     _toggles[toggle] = state
@@ -108,27 +125,64 @@ def toggle(toggle, state) -> None:
 
 
 
-## feature functions
+
+
+
+
+################################################################## other general use functions (internal)
+
 # function to handle printing if its enabled
 def pprint(msg: str) -> None:
     '''
-    A function meant for filtering prints based on if it is enabled or disabled - This is meant for internal use.
+    A function meant for filtering prints based on if it is enabled or disabled - this is meant for internal use.
+    # Parameters
+    **msg** \n
+    the information to print
     '''
     if _toggles[DO_PRINT]:
         print(msg)
 
+
+
+
+
+
+
+
+################################################################## other general use functions (external)
+
 # function to display current data
 def get_data() -> dict:
     '''
-    Returns data about the current client in the form of a dictionary.
+    This is the main function used for acquiring data used by lynxy. The variables it returns are the following:
+    - server ip
+    - server port
+    - ports to connect to
+    - main client socket.socket object
+    - boolean representing connected or not
+    - toggles, including whether to print or not and the ports to connect to
+    - security data, including the clients public and private key, and the servers public key
+    # Returns
+    - dictionary with above data
     '''
     return {
         'server info': {
             'ip': _HOST,
             'port': _PORT
         },
-        'data': {
-            'listener_message_queue': listener_message_queue
+        'client info': {
+            'default ports': _valid_ports,
+            'main client': _main_client,
+            'connected': _connected,
+            'toggles': _toggles
+        },
+        # 'data': {
+        #     'data_queue': data_queue
+        # },
+        'security': {
+            'client public key': _client_public_key,
+            'client private key': _client_private_key,
+            'server public key': _server_public_key
         },
         'sillies': 'sillies :3'
     }
@@ -140,64 +194,58 @@ def get_data() -> dict:
 
 
 
+################################################################## functions for safety / security (encryption and whatnot)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## safety functions
 # function to generate RSA public and private keys
 def _gen_access_keys() -> tuple[rsa.PublicKey, rsa.PrivateKey]:
     '''
-    Generates a public and private key, and returns them in a tuple.
+    Generates a public and private key, and returns them in a tuple like this: [public_key, private_key]
     '''
     public_key, private_key = rsa.newkeys(1024)
     return public_key, private_key
 
 
+# function to do a handshake with the server, exchanging public and private keys
 def _handshake(client: socket.socket) -> None:
-    global _client_private_key, _client_public_key, _server_public_key
-
+    '''
+    Does a handshake with the server, exchanging public keys.
+    # Parameters
+    - client: socket.socket object
+    '''
+    # globals
+    global _client_public_key, _client_private_key # globally edit the clients public and private key
+    global _server_public_key # globally edit the servers private key
+    # generate keys
     pprint('[CLIENT HANDSHAKE] Handshaking with server...')
-    # generate public and private keys (OBJECTS)
-    _client_public_key, _client_private_key = _gen_access_keys()
-    # pprint('[HANDSHAKE]: generating public and private key')
+    _client_public_key, _client_private_key = _gen_access_keys() # generate public and private keys for client
+    # acquire server public key
+    pickled_server_public_key = client.recv(1024) # recieve pickled (pickle module turns var into bytes (var can be string, object, whatever)) public key from server
+    _server_public_key = pickle.loads(pickled_server_public_key) # converts the bytes object back into its original form
+    # send public key to server
+    pickled_client_public_key = pickle.dumps(_client_public_key) # convert the public_key into bytes
+    client.sendall(pickled_client_public_key) # send to server
 
-    # get servers public key (BYTES -> OBJECT)
-    pickled_server_public_key = client.recv(1024)
-    _server_public_key = pickle.loads(pickled_server_public_key)
-    # pprint('[HANDSHAKE]: getting server public key')
 
-    # pickle and send our public key (OBJECT -> BYTES)
-    pickled_client_public_key = pickle.dumps(_client_public_key)
-    client.sendall(pickled_client_public_key)
-    # pprint('[HANDSHAKE]: sending public key')
-
-    # print('client priv key:', _client_private_key)
-    # print('client pub key:', _client_public_key)
-    # print('client server pub key:', _server_public_key)
-
+# function to encrypt data when sending to server, using the servers public key
 def _encrypt_public(data) -> bytes:
-    pickled_data = pickle.dumps(data)
-    encoded_data = rsa.encrypt(pickled_data, _server_public_key)
+    '''
+    A function that encrypts data using RSA, and the servers public key.
+    # Parameters
+    - data: any
+    # Returns
+    - bytes
+    '''
+    pickled_data = pickle.dumps(data) # converts data into bytes
+    encoded_data = rsa.encrypt(pickled_data, _server_public_key) # encrypts data with servers public key
     return encoded_data
 
+
 def _decrypt_private(data) -> any:
-    decrypted_data = rsa.decrypt(data, _client_private_key)
-    loaded_data = pickle.loads(decrypted_data)
+    '''
+    A function that decrypts using RSA, and the clients private key
+    '''
+    decrypted_data = rsa.decrypt(data, _client_private_key) # decrypts data with the clients private key
+    loaded_data = pickle.loads(decrypted_data) # converts bytes into data
     return loaded_data
 
 
@@ -207,50 +255,39 @@ def _decrypt_private(data) -> any:
 
 
 
+################################################################## functions used for connecting to server (internal)
 
-
-
-
-
-
-
-
-
-
-
-## FUNCTIONS - operations
-# cycles port connection
+# cycles ports until a connection to the server succeeds / fails.
 def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
-    global _connected
     '''
-    An internal function used to cycle through the ports in _valid_ports to try and find a connection
+    An internal function used to cycle through the ports in _valid_ports to try and make a connection.
+    # Parameters
+    - client: socket.socket object
+    # Returns
+    - tuple[socket.socket object of server, the port the client connected to, a boolean on whether the connection succeeded or not]
     '''
-    _connected = False
-    out_port = 0
-    for port in _valid_ports:
-        out_port = port
-        try:
+    # globals
+    global _connected # indicates if the client has connected or not
+    _connected = False # by default, set to False
+    for port in _valid_ports: # iterate through each port
+        try: # try and connect to server with current port
             pprint(f'[PORT CYCLE] Client trying port: {port}')
-            client.connect((_HOST, port))
+            client.connect((_HOST, port)) # try to connect to server ip, and the current cycled port
             pprint(f'[PORT CYCLE] Client connected to: {port}')
             pprint('----------------------------------------------')
-            _connected = True
-            break
-        except IndexError:
-            port = _valid_ports[0]
-            pprint(f'[PORT CYCLE - RESET 1] Client resetting port to: {port}')
-        except:
-            try:
-                pprint(f'[PORT CYCLE] Client port cycling: {port} -> {_valid_ports[_valid_ports.index(port) + 1]}')
-            except IndexError:
-                port = _valid_ports[0]
-                pprint(f'[PORT CYCLE - RESET 2] Client resetting port to: {port}')
-    if _connected == True:
-        _handshake(client)
-        return client, out_port, True
-    elif _connected == False:
+            _connected = True # connection succeeded, set variable
+            _handshake(client) # do handshake with server to exchange public keys
+            return client, port, _connected # returns the client communicating with server, the port that it is connected to, and a boolean for the connection status
+        except: # connection to that port failed
+            try: # print that we are trying next port
+                current_port_index = _valid_ports.index(port) 
+                next_port = _valid_ports[current_port_index + 1]
+                pprint(f'[PORT CYCLE] Client port cycling: {port} -> {next_port}')
+            except IndexError: # failed, pass since the for loop will exit after this iteration is done anyways
+                pass
+    if _connected == False: # verify _connected is False
         pprint('[PORT CYCLE] the client can not find a open valid server port, exiting')
-        return client, _PORT, False
+        return client, _PORT, _connected # return the client, _PORT as it has not changed, and a boolean for the connection status
 
 
 
@@ -259,6 +296,27 @@ def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
 
 
 
+################################################################## functions used for connecting to server (external)
+
+def start_client(connection_ip: str) -> bool:
+    '''
+    Starts a connection to the server.
+    # Parameters
+    **connection_ip**
+    the ip of the server to connect to as a string
+    # Returns
+    a boolean saying whether connecting to the server succeeded or not
+    '''
+    # globals
+    global _main_client # client for communicating with server
+    global _valid_ports # edit the valid ports for the client to connect to
+    global _HOST, _PORT # servers ip, and port
+    _HOST = connection_ip # set global server ip to the inputted connection_ip
+    # establish connection
+    _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # reset the main_client socket
+    _valid_ports = _toggles[DEFAULT_PORTS] # set the valid ports to the ports inside of _toggles
+    _main_client, _PORT, state = _cycle_port(_main_client) # establish the connection to a port that the server is on
+    return state # whether the connection succeeded or not
 
 
 
@@ -267,6 +325,81 @@ def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
 
 
 
+################################################################## functions for communicating with server
+
+# sends data to server, gets data back if recieve = True
+def send_msg(data: any, recieve: bool = True) -> any:
+    '''
+    A general messaging function for sending data to the recipient (decided by what _main_client is connected to).
+    # Parameters
+    **data** \n
+    The information you want to send to the server. This can be anything you want! \n
+    **recieve** \n
+    True by default, set this to False if you do not want send_msg() to wait for a response from the server.
+    # Returns
+    data recieved from server, if recieve = True
+    '''
+    encoded_data = _encrypt_public(data)
+    _main_client.sendall(encoded_data)
+    pprint(f"Sent:     {data}")
+    if recieve:
+        incoming_data = _main_client.recv(1024)
+        decrypted_data = _decrypt_private(incoming_data)
+        pprint(f"Received: {decrypted_data}")
+        return decrypted_data
+
+
+# a function for submitting username data to the server
+def submit_username_data(username: str) -> str:
+    '''
+    Submits a username to the server, which the server will associate with your IP and port. \n
+    # Parameters \n
+    **username** \n
+    your preferred username as a string (please, no spaces!) \n
+    # Returns \n
+    a status code as a string that gives information on what happened server-side.
+    '''
+    full_data = f'username {username}'
+    encrypted_data = _encrypt_public(full_data)
+    _main_client.sendall(encrypted_data)
+    pprint(f"Sent:     {full_data}")
+    incoming_data = _main_client.recv(1024)
+    decrypted_data = _decrypt_private(incoming_data)
+    pprint(f"Received: {decrypted_data}")
+    return decrypted_data
+
+
+# requests ip and port from server
+def request_username_data(username: str) -> any:
+    '''
+    Requests the data associated with a username from the server. 
+    # Parameters
+    **username** \n
+    a string of the username that you want to request the data with (Please, no spaces!) \n
+    # Returns \n
+    a status code as a string that gives information on what happened server-side. \n
+    If the server has disabled this feature, you will instead get a status code signifying a fail. 
+    This might occur if the server has disabled directly connecting to other clients. 
+    If this happens, then you will have to communicate with the other clients through the server.
+    '''
+    full_data = f'request_by_user {username}'
+    # encoded_message = message2.encode('utf-8') # added request_by_user prefix by default
+    encoded_message = _encrypt_public(full_data)
+    _main_client.sendall(encoded_message)
+    pprint(f"Sent:     {full_data}")
+    # incoming_data = full_recieve(client)
+    # incoming_data = client.recv(1024).decode('utf-8')
+    incoming_data = _main_client.recv(1024)
+    decrypted_data = _decrypt_private(incoming_data)
+    pprint(f"Received: {decrypted_data}")
+    return decrypted_data
+
+    # parse into list
+    # address_str = incoming_data.strip('()')
+    # ip_str, port_str = address_str.split(',')
+    # ip_str = ip_str.strip().strip("'")
+    # port_int = int(port_str.strip())
+    # incoming_data = [ip_str, port_int]
 
 
 
@@ -275,6 +408,23 @@ def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
 
 
 
+################################################################## functions for ending connections with the other end of communications
+
+# function for shutting down the client
+def shutdown_client() -> bool:
+    '''
+    A function that shuts down the clients connection with the other end.
+    # Returns
+    a boolean telling you whether or not the shutdown succeeded
+    '''
+    global _main_client
+    try: send_msg('end_session')
+    except: pass
+    try:
+        _main_client.close()
+        pprint('[CLIENT SHUTDOWN] Shutting down client...')
+        return True
+    except: return False
 
 
 
@@ -283,8 +433,130 @@ def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
 
 
 
+################################################################## functions for starting other processes
+
+def start_listening() -> None:
+    '''
+    A function that acts on the recieving end to recieve information from the other end (decided by what _main_client is connected to). 
+    It adds to a data queue that can be accessed to retrieve data. The latest entry in the data queue is the newest information. 
+    '''
+    # "The queue gets cleared after 25 entries for efficiency and optimal storage."
+    send_msg('listener')
+    threading.Thread(target=lambda:_inbound_data_listener()).start() # listener which recieves data
+    threading.Thread(target=lambda:_inbound_data_parser()).start() # parser which identifies individual commands
+    threading.Thread(target=lambda:_parsed_data_decrypter()).start() # decrypter which decrypts individual commands, this one adds to data_queue
+    # threading.Thread(target=lambda:_data_queue_cleaner()).start() # cleaner for list, saves latest val
 
 
+
+
+
+
+
+
+################################################################## functions / variables that are part of the listening category
+
+_inbound_data = []
+_parsed_data = []
+
+
+# this function is responsible for decrypting and finally outputting data to the message queue
+def _parsed_data_decrypter():
+    '''
+    A function that decrypts the data put into _parsed_data_decrypter, then pipes that data into data_queue.
+    '''
+    global _parsed_data # so we can erase current _parsed_data after making a local copy
+    while True:
+        lc_parsed_data = _parsed_data # lc = local_copy
+        _parsed_data = [] # reset _parsed_data as we have copied locally, there is the potential for some data loss here
+        for parsed_data in lc_parsed_data:
+            try:
+                decoded = _decrypt_private(parsed_data)
+                data_queue.append(decoded)
+            except Exception as e: # this error will likely happen if the parser fails to identify and assemble a proper message
+                print('NEW DECRYPTION LOST:', e)
+                pass
+            # we do not need to remove data as that will mess with iteration
+            # and once we are done iterating this data will be erased anyways
+            # lc_parsed_data.remove(parsed_data) 
+
+
+# this function creates a parser which identifies the start and end of a full message, joins that, then pipes it into _parsed_data
+def _inbound_data_parser():
+    '''
+    A function that identifies the start and end of each full data packet, pieces them together, and then pipes that into _parsed_data.
+    '''
+    global _inbound_data
+    lc_inbound_data = _inbound_data # lc = local copy
+    _inbound_data = [] # reset _inbound_data as we have copied locally, there is the potential for some data loss here
+    # im not really sure what happens from here down, but i think it works so oh well- not sure how i even wrote this
+    # i tried to comment as best i can
+    # i also renamed some stuff
+    while True:
+        for data in lc_inbound_data: # iterate over each piece of packet stored
+            data: bytes # type hinting
+            decoded_data = data.decode() # decode data
+            split_entry = [str(i) for i in decoded_data] # split it into each character
+            new_packet = '' # this represents the new full packet of data
+            for letter in split_entry: # iterate over each character
+                if letter == '~': # first marker of the end flag
+                    location = split_entry.index(letter) # second marker of end flag
+                    try: # try to check next character, if fails then at end of list
+                        next = split_entry[location + 1]
+                        if next == 'E':
+                            # new_packet = new_packet.encode()
+                            new_packet = eval(new_packet) # turn back into bytes??
+                            _parsed_data.append(new_packet) # pipe full packet into _parsed_data
+                            new_packet = '' # reset new_packet
+                            break # break out of loop, currently doesn't continue searching
+                    except IndexError as e:
+                        print('NEW SEGMENT LOST:', e) # lost packed because could not find second part of end marker
+                else:
+                    new_packet += letter # add this character to the new packet
+            # we do not need to remove data as that will mess with iteration
+            # and once we are done iterating this data will be erased anyways
+            # lc_inbound_data.remove(data)
+
+
+# this function is responsible for taking in messages and piping them into _inbound_data
+def _inbound_data_listener():
+    '''
+    A function responsible for listening for data as soon as it gets it, and piping it into _inbound_data
+    '''
+    while True:
+        data = _main_client.recv(1024) # reccieve data
+        _inbound_data.append(data) # pipe data in
+
+        ## OLD CODE
+        # data = _main_client.recv(1024)
+        # try:
+        #     decoded = _decrypt_private(data)
+        # except Exception as e:
+        #     # print('packet loss error:', e)
+        #     continue # packet loss
+        # if decoded == '000':
+        #     continue
+        # # print('adding message to queue:', len(data_queue) + 1)
+        # # print('recieved packet:', decoded)
+        # data_queue.append(decoded)
+        # # print('message queue:', data_queue)
+
+
+
+
+
+
+
+
+##################################################################
+##################################################################
+##################################################################
+##################################################################
+##################################################################
+
+'''
+below is random code that I am not sure what to do with, so for now they remain as comments!
+'''
 
 
 # a function to fully recieve the message from server (to try and prevent loss)
@@ -297,78 +569,6 @@ def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
 #         local_length = len(incoming_message)
 #     return incoming_message
 
-# a function for submitting username data to the server
-def submit_username_data(username: str) -> str:
-    '''
-    Submits a username to the server, which the server will associate with your IP and port.
-    Returns a message that confirms that the action has happened.
-    '''
-    # local override for package form
-    client = _main_client
-    message = username
-    # encoded_message = message.encode('utf-8')
-    message2 = f'username {message}'
-    # encoded_message = message2.encode('utf-8') # added username prefix by default
-    encoded_message = _encrypt_public(message2)
-    client.sendall(encoded_message)
-    pprint(f"Sent:     {message2}")
-    # incoming_data = client.recv(1024).decode()\
-    incoming_data = client.recv(1024)
-    incoming_data = _decrypt_private(incoming_data)
-    pprint(f"Received: {incoming_data}")
-    return incoming_data
-
-# requests ip and port from server
-def request_username_data(username: str) -> any:
-    '''
-    requests data associated with a username from the server, and either returns a status code, meaning you entered an invalid username, 
-    or returns the IP and port of the user in a list.
-    '''
-    # local override for package form
-    client = _main_client
-    message = username
-    # encoded_message = message.encode('utf-8')
-    message2 = f'request_by_user {message}'
-    # encoded_message = message2.encode('utf-8') # added request_by_user prefix by default
-    encoded_message = _encrypt_public(message2)
-    client.sendall(encoded_message)
-    pprint(f"Sent:     {message2}")
-    # incoming_data = full_recieve(client)
-    # incoming_data = client.recv(1024).decode('utf-8')
-    incoming_data = client.recv(1024)
-    incoming_data = _decrypt_private(incoming_data)
-    pprint(f"Received: {incoming_data}")
-    if incoming_data == '100':
-        return incoming_data
-
-    # parse into list
-    # address_str = incoming_data.strip('()')
-    # ip_str, port_str = address_str.split(',')
-    # ip_str = ip_str.strip().strip("'")
-    # port_int = int(port_str.strip())
-    # incoming_data = [ip_str, port_int]
-    return incoming_data
-
-# a general message sender
-def send_msg(data: any, recieve: bool = True) -> any:
-    '''
-    A general tool function for sending messages to the recipient (server, other client, etc)
-    '''
-    message = data
-    # local override for package form
-    client = _main_client
-    # encoded_message = message.encode('utf-8')
-    encoded_message = _encrypt_public(message)
-    # print('CLIENT: ENCRYPTED:', encoded_message)
-    client.sendall(encoded_message)
-    pprint(f"Sent:     {message}")
-    # incoming_data = full_recieve(client)
-    if recieve:
-        # incoming_data = client.recv(1024).decode('utf-8')
-        incoming_data = client.recv(1024)
-        incoming_data = _decrypt_private(incoming_data)
-        pprint(f"Received: {incoming_data}")
-        return incoming_data
 
 # def send_file(file, recieve: bool = False) -> any:
 #     '''
@@ -376,6 +576,7 @@ def send_msg(data: any, recieve: bool = True) -> any:
 #     '''
 #     client = _main_client
 #     encoded_file =
+
 
 # def target_client(client_ip: str, client_port: int, mode: str) -> bool:
 #     '''
@@ -408,149 +609,19 @@ def send_msg(data: any, recieve: bool = True) -> any:
 #     return False
 
 
-
-# function for shutting down the client
-def shutdown_client() -> bool:
-    '''
-    A function to shut down the client: returns a bool telling you whether it worked or not.
-    '''
-    global _main_client
-    try:
-        send_msg('end_session')
-    except:
-        pass
-    try:
-        _main_client.close()
-        pprint('[CLIENT SHUTDOWN] Shutting down client...')
-        return True
-    except:
-        return False
-
-def start_client(connection_ip: str) -> bool:
-    '''
-    Starts the connection to the server, taking in an IP. 
-    This function returns a bool, telling you whether it worked or not.
-    '''
-    global _main_client, _valid_ports, _PORT, _HOST
-    _HOST = connection_ip
-
-    # reset _main_client
-    _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    # overrides
-    if len(_ov_ports) > 0:
-        _valid_ports = _ov_ports
-        _PORT = _valid_ports[0]
-        pprint(f'[OVERRIDE] Overrided ports to: {_valid_ports}')
-    
-    # establish the connection to a port that the server is on
-    _main_client, _PORT, state = _cycle_port(_main_client)
-    return state
-
-
-def start_client_listener() -> None:
-    '''
-    A function that acts on the recieving end to recieve information from the server. It adds to a message queue that can be accessed to retrieve data. 
-    The latest entry in the data queue is the newest information. The queue gets cleared after 25 entries for efficiency and optimal storage.
-    '''
-    send_msg('listener')
-    threading.Thread(target=lambda:_internal_client_listener()).start() # actual listener
-    threading.Thread(target=lambda:_inbound_data_parser()).start() # parser to get individual commands
-    threading.Thread(target=lambda:_parsed_data_decrypter()).start() # decrypts each command, goes into message queue
-    # threading.Thread(target=lambda:_listener_message_queue_cleaner()).start() # cleaner for list, saves latest val
-
-def _listener_message_queue_cleaner():
-    global listener_message_queue
-    while True:
-        if len(listener_message_queue) > 25: # currently hard set value
-            try:
-                latest = listener_message_queue[-1]
-                # latest = listener_message_queue[-5:]
-                # print('saving latest:', latest)
-                listener_message_queue = [latest]
-                # listener_message_queue = latest
-                # print('set new message queue to:', listener_message_queue)
-                # listener_message_queue = []
-                # print('cleaning data queue')
-            except Exception as e:
-                # print('clean error:', e)
-                pass
-
-#######################################################################################
-
-# _internal_client_listener() just takes in every message and puts it into _inbound_data
-# _inbound_data_parser() identifies the start and end of a packet, joins it all together, and then puts that into _parser_data
-    # make local copy of _inbound_data
-    # 
-# _split_data_decrypter() decrypts each full packet of data in _parser_data, and then finalls adds it to the listener_message_queue
-
-_inbound_data = []
-_parsed_data = [] 
-
-# this function is responsible for decrypting and finally outputting data to the message queue
-def _parsed_data_decrypter():
-    global _parsed_data
-    while True:
-        lc_parsed_data = _parsed_data
-        _parsed_data = []
-        for parsed in lc_parsed_data:
-            try:
-                decoded = _decrypt_private(parsed)
-                listener_message_queue.append(decoded)
-            except Exception as e:
-                print('NEW DECRYPTION LOST:', e)
-                pass
-            lc_parsed_data.remove(parsed)
-
-# this function creates a parser which identifies the start and end of a full message, joins that, then pipes it into _parsed_data
-def _inbound_data_parser():
-    global _inbound_data # so we can erase current _inbound_data after making a local copy
-    lc_inbound_data = _inbound_data # make local copy
-    _inbound_data = [] # clear current _inbound_data, as we have copied data from it
-    while True:
-        for data in lc_inbound_data:
-            data: bytes
-            decoded_data = data.decode()
-            split_entry = [str(i) for i in decoded_data]
-            new_segment = ''
-            for letter in split_entry:
-                if letter == '~':
-                    location = split_entry.index(letter)
-                    try:
-                        next = split_entry[location + 1]
-                        if next == 'E':
-                            # new_segment = new_segment.encode()
-                            new_segment = eval(new_segment)
-                            _parsed_data.append(new_segment)
-                            new_segment = ''
-                            break
-                    except Exception as e:
-                        print('NEW SEGMENT LOST:', e)
-                        pass
-                else:
-                    new_segment += letter
-            lc_inbound_data.remove(data)
-
-
-
-
-# this function is responsible for taking in messages and piping them into _inbound_data
-def _internal_client_listener():
-    global listener_message_queue
-    while True:
-        data = _main_client.recv(1024)
-        _inbound_data.append(data)
-
-        ## OLD CODE
-        # data = _main_client.recv(1024)
-        # try:
-        #     decoded = _decrypt_private(data)
-        # except Exception as e:
-        #     # print('packet loss error:', e)
-        #     continue # packet loss
-        # if decoded == '000':
-        #     continue
-        # # print('adding message to queue:', len(listener_message_queue) + 1)
-        # # print('recieved packet:', decoded)
-        # listener_message_queue.append(decoded)
-        # # print('message queue:', listener_message_queue)
+# def _data_queue_cleaner():
+#     global data_queue
+#     while True:
+#         if len(data_queue) > 25: # currently hard set value
+#             try:
+#                 latest = data_queue[-1]
+#                 # latest = data_queue[-5:]
+#                 # print('saving latest:', latest)
+#                 data_queue = [latest]
+#                 # data_queue = latest
+#                 # print('set new message queue to:', data_queue)
+#                 # data_queue = []
+#                 # print('cleaning data queue')
+#             except Exception as e:
+#                 # print('clean error:', e)
+#                 pass
