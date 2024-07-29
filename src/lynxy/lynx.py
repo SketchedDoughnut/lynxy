@@ -57,7 +57,8 @@ _server_public_key = 0
 _client_private_key = 0
 _client_public_key = 0
 
-# listener features for when data is distributed to clients
+# listener features for when data is distributed to clients from the other end
+# this is publicly accessible so users can get data out of it
 data_queue = []
 
 
@@ -101,8 +102,10 @@ data_queue = []
 # toggles settings
 def toggle(toggle, state) -> None:
     '''
-    Toggles the value associated with the input "toggle". \n
+    Edits the value associated with the input "toggle". \n
     # Parameters
+    **toggle** \n
+    This should be set to the constants provided by lynxy, to signify what you want to change. They are listed below!
         - DO_PRINT
             - information: 
                 - this toggles whether lynxy prints message to console or not. This is disabled by default.
@@ -117,10 +120,14 @@ def toggle(toggle, state) -> None:
             - example: 
                 - toggle(DEFAULT_PORTS, [12345, 23456, 34567])
             - notes: The client and the server HAVE to have at least one port in common! This is very important, 
-                     because if they do not have a common port then the two can not connect.
+                     because if they do not have a common port then the two can not connect. \n
+    **state** \n
+    State should be the corresponding value for what you entered for toggle, meaning that if for example you do `DO_PRINT`, 
+    then state should either be `True` or `False`.
     '''
-    global _toggles
+    global _toggles, _valid_ports
     _toggles[toggle] = state
+    _valid_ports = _toggles[DEFAULT_PORTS] # update valid ports manually (idk why?)
 
 
 
@@ -154,7 +161,7 @@ def pprint(msg: str) -> None:
 # function to display current data
 def get_data() -> dict:
     '''
-    This is the main function used for acquiring data used by lynxy. The variables it returns are the following:
+    This is the main function used for acquiring data used by lynxy. The data it returns is as follows:
     - server ip
     - server port
     - ports to connect to
@@ -330,14 +337,14 @@ def start_client(connection_ip: str) -> bool:
 # sends data to server, gets data back if recieve = True
 def send_msg(data: any, recieve: bool = True) -> any:
     '''
-    A general messaging function for sending data to the recipient (decided by what _main_client is connected to).
+    A general messaging function for sending data to the other end (decided by what _main_client is connected to).
     # Parameters
     **data** \n
-    The information you want to send to the recipient. This can be anything you want! \n
+    The information you want to send to the other end. This can be anything you want! \n
     **recieve** \n
-    True by default, set this to False if you do not want send_msg() to wait for a response from the recipient.
+    True by default, set this to False if you do not want send_msg() to wait for a response from the other end.
     # Returns
-    data recieved from recipient, if recieve = True
+    data recieved from other end, if recieve = True
     '''
     encoded_data = _encrypt_public(data)
     _main_client.sendall(encoded_data)
@@ -355,10 +362,11 @@ def submit_username_data(username: str) -> str:
     Submits a username to the server, which the server will associate with your IP and port. \n
     # Parameters \n
     **username** \n
-    your preferred username as a string (please, no spaces!) \n
+    Your username as a string (please, no spaces!) \n
     # Returns \n
     a status code as a string that gives information on what happened server-side. \n
-    Please note this function is meant for use only with a lynxy_server server.
+    Please note this function is meant for use only with a lynxy_server server. Otherwise, your server must be configured 
+    to handle this call.
     '''
     full_data = f'username {username}'
     encrypted_data = _encrypt_public(full_data)
@@ -381,8 +389,9 @@ def request_username_data(username: str) -> any:
     a status code as a string that gives information on what happened server-side. \n
     If the server has disabled this feature, you will instead get a status code signifying a fail. 
     This might occur if the server has disabled directly connecting to other clients. 
-    If this happens, then you will have to communicate with the other clients through the server. \n
-    Please note this function is meant for use only with a lynxy_server server.
+    If this happens, then you will have to communicate with the other clients by directing traffic through the server. \n
+    Please note this function is meant for use only with a lynxy_server server. Otherwise, your server must be configured 
+    to handle this call.
     '''
     full_data = f'request_by_user {username}'
     # encoded_message = message2.encode('utf-8') # added request_by_user prefix by default
