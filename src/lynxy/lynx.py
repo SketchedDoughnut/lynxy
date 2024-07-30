@@ -99,7 +99,9 @@ data_queue = []
 #     global _do_print
 #     _do_print = True
 
-# toggles settings
+# toggles things that are customizable
+# this includes the ports to connect to, and the option to print to console
+# identified as DEFAULT_PORTS and DO_PRINT
 def toggle(toggle, state) -> None:
     '''
     Edits the value associated with the input "toggle". \n
@@ -123,7 +125,7 @@ def toggle(toggle, state) -> None:
                      because if they do not have a common port then the two can not connect. \n
     **state** \n
     State should be the corresponding value for what you entered for toggle, meaning that if for example you do `DO_PRINT`, 
-    then state should either be `True` or `False`.
+    then state should either be `True` or `False`. More specific cases for states are shown above.
     '''
     global _toggles, _valid_ports
     _toggles[toggle] = state
@@ -307,12 +309,12 @@ def _cycle_port(client: socket.socket) -> tuple[socket.socket, int, bool]:
 
 def start_client(connection_ip: str) -> bool:
     '''
-    Starts a connection to the server or other client.
+    Starts a connection with the other end.
     # Parameters
     **connection_ip**
-    the ip of the server/client to connect to as a string
+    the ip of the other end to connect to as a string
     # Returns
-    a boolean saying whether connecting succeeded or not
+    a boolean saying whether the connection succeeded or not
     '''
     # globals
     global _main_client # client for communicating with server
