@@ -1,14 +1,12 @@
-################################################################## imports
-
-# included
 import socketserver
 import socket
 import threading
 import time
 import random
 import pickle
+# import sys
 
-# external
+# external dependencies
 from cryptography.fernet import Fernet
 import rsa
 
@@ -16,17 +14,22 @@ import rsa
 from .responses import *
 
 
+# toggles
+limit_username = True
+overwrite_usernames = False
+clear_dead_usernames = True
+encrypt_client_data = True
 
+# where client data is stored
+_client_dict = {
+    'default': 0
+}
 
-
-
-
-
-################################################################## variable assignment
+# where listener clients are stored
+_listener_list = []
+_data_queue = []
 
 # all valid ports it will attempt to connect to
-# these ports are what the server binds to
-# at least one of these ports should be the same client-side
 _valid_ports = [
     11111,
     12111,
@@ -40,52 +43,19 @@ _valid_ports = [
     22222
 ]
 
-# constants / toggles dictionary
-# manages anything that can be changed 
-LIMIT_USERNAME = 'limit usernames'
-OVERWRITE_USERNAMES = 'ovewrite usernames'
-CLEAR_DEAD_USERNAMES = 'clear dead usernames'
-ENCRYPT_STORED_CLIENT_DATA = 'encrypt stored client data'
-DEFAULT_PORTS = 'default ports'
-OVERWRITE_IP = 'overwrite IP'
-DO_PRINT = 'do print'
-_toggles = {
-    LIMIT_USERNAME: True,
-    DO_PRINT: True,
-    OVERWRITE_USERNAMES: False,
-    CLEAR_DEAD_USERNAMES: True,
-    ENCRYPT_STORED_CLIENT_DATA: True,
-    DEFAULT_PORTS: _valid_ports,
-    OVERWRITE_IP: None
-}
-
-# a dictionary / constants for flags
-# these get changed depending on the states of the described things
-_CONNECTED = 'connected'
-_SHUTDOWN = 'shutdown'
-_KILL_ALL = 'kill all'
-_flags = {
-    _CONNECTED: False,
-    _SHUTDOWN: False,
-    _KILL_ALL: False
-}
-
-# dictionary for storing client data
-# this includes their port and ip, associated to their username
-# this data is encrypted if _toggles[ENCRYPT_STORED_CLIENT_DATA] = True
-_client_dict = {
-    'default': 0
-}
-
-# where listener clients are stored
-# these are clients who get game data distributed to them
-_listener_list = []
-_data_queue = []
-
 # _HOST and _PORT info for connections
-# This is the main connecting info for the server
 _HOST = socket.gethostbyname(socket.gethostname())
 _PORT = _valid_ports[0]
+
+# override info
+_ov_ip = ''
+_ov_ports = []
+_do_print = True
+
+# status vars
+_connected = False
+_shutdown = False
+_kill_all = False
 
 # server obj for shutting down
 _server = 0
