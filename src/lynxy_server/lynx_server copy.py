@@ -13,6 +13,10 @@ from cryptography.fernet import Fernet
 import rsa
 
 # file imports
+# this below import is only visible because we want them to know response codes
+# if they can see this, then they can see what each response code is
+# hopefully leads to better understanding
+# it will flood the dropdown menu of options (when they do lynxy_server.x)
 from .responses import *
 
 
@@ -49,12 +53,14 @@ ENCRYPT_STORED_CLIENT_DATA = 'encrypt stored client data'
 DEFAULT_PORTS = 'default ports'
 OVERWRITE_IP = 'overwrite IP'
 DO_PRINT = 'do print'
+ALLOW_REMOTE_ADMIN = 'allow remote admin'
 _toggles = {
     LIMIT_USERNAME: True,
     DO_PRINT: True,
     OVERWRITE_USERNAMES: False,
     CLEAR_DEAD_USERNAMES: True,
     ENCRYPT_STORED_CLIENT_DATA: True,
+    ALLOW_REMOTE_ADMIN: False,
     DEFAULT_PORTS: _valid_ports,
     OVERWRITE_IP: None
 }
@@ -94,23 +100,26 @@ _server = 0
 _starting_thread = 0
 
 # server token
+# this is used to admin the current user and access the server
 _token = 'x'
-_verified = False
 
-
-
-
-
-
-
-
-
-######### ALL SAFETY BITS
-# encryption setup
+# main encryption tool for doing symmetrical encryption
 _encryption_tool = Fernet(Fernet.generate_key())
+
+
+
+
+
+
+################################################################## safety features 
+# this includes stuff regarding encryption and whatnot
 
 # generates auth token for remote control of server
 def _gen_auth_token() -> str:
+    '''
+    This function generates an auth token that allows a client user
+    access to the server, as an admin user.
+    '''
     lower_alpha = 'abcdefghijklmnopqrstuvwxyz'
     upper_alpha = lower_alpha.upper()
     letter_list = [lower_alpha, upper_alpha]
@@ -404,9 +413,10 @@ def _distributor() -> None:
 # MAIN CLASS
 class _myTCPserver(socketserver.BaseRequestHandler):
     def handle(self) -> None:
-        global _client_dict, _verified, _shutdown
+        global _client_dict, _shutdown
 
         is_listener = False
+        _verified = False
         # local_data_queue = []
         # local_data_save = []
         saved_username = ''
@@ -613,6 +623,9 @@ class _myTCPserver(socketserver.BaseRequestHandler):
 
             # if prefix is auth, check if token is matching, then allow user to use dev features
             elif prefix == 'auth':
+                if _toggles[ALLOW_REMOTE_ADMIN] == False:
+                    _fancy_send(self.request, client_public_key, FEATURE_DISABLED)
+                    continue
                 if joined_msg == _token:
                     _verified = True
                     # self.request.sendall('client session authorized'.encode())
