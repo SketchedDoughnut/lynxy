@@ -1,4 +1,5 @@
 # IMPORTANT: THIS REPOSITORY IS CURRENTLY GOING UNDER RENOVATIONS. THIS INCLUDES SOURCE CODE AND INCLUDED DOCUMENTATION. SORRY!
+Yes I realize I could have made a branch and avoided this issue, but its too late for that. I'm sorry :c 
 
 
 <!-- title -->
