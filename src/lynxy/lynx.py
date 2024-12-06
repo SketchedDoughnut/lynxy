@@ -1,43 +1,24 @@
-################################################################## imports
-
-# included
+# included modules
 import socket
 import pickle
 import threading
 
-# external
+# external modules
 import rsa
 
+# files
+from constants import Constants
 
 
 
 
 
-
-
-################################################################## variable assignment
-
-# default ports client will try and connect to
-_valid_ports = [
-    11111,
-    12111,
-    11211,
-    11121,
-    11112,
-    22111,
-    12211,
-    11221,
-    11122,
-    22222
-]
-
-# constants / toggles dictionary
-# manages anything that can be changed 
-DO_PRINT = 'print'
-DEFAULT_PORTS = 'port_override'
-_toggles = {
-    DO_PRINT: False,
-    DEFAULT_PORTS: _valid_ports
+# a dictionary that manages the configurable things
+# such as if the lynx client should print messages or not, 
+# and the default ports the 
+_config = {
+    Constants.DO_PRINT: False,
+    Constants.DEFAULT_PORTS: _valid_ports
 }
 
 # establish the main socket variables
@@ -81,8 +62,8 @@ data_queue = []
 #     '''
 #     # global _ov_ports
 #     # _ov_ports = ports
-#     global _toggles
-#     _toggles[DEFAULT_PORTS] = ports
+#     global _config
+#     _config[DEFAULT_PORTS] = ports
 
 # def disable_print() -> None:
 #     '''
@@ -127,9 +108,9 @@ def toggle(toggle, state) -> None:
     State should be the corresponding value for what you entered for toggle, meaning that if for example you do `DO_PRINT`, 
     then state should either be `True` or `False`. More specific cases for states are shown above.
     '''
-    global _toggles, _valid_ports
-    _toggles[toggle] = state
-    _valid_ports = _toggles[DEFAULT_PORTS] # update valid ports manually (idk why?)
+    global _config, _valid_ports
+    _config[toggle] = state
+    _valid_ports = _config[DEFAULT_PORTS] # update valid ports manually (idk why?)
 
 
 
@@ -148,7 +129,7 @@ def pprint(msg: str) -> None:
     **msg** \n
     the information to print
     '''
-    if _toggles[DO_PRINT]:
+    if _config[DO_PRINT]:
         print(msg)
 
 
@@ -183,7 +164,7 @@ def get_data() -> dict:
             'default ports': _valid_ports,
             'main client': _main_client,
             'connected': _connected,
-            'toggles': _toggles
+            'toggles': _config
         },
         # 'data': {
         #     'data_queue': data_queue
@@ -323,7 +304,7 @@ def start_client(connection_ip: str) -> bool:
     _HOST = connection_ip # set global server ip to the inputted connection_ip
     # establish connection
     _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # reset the main_client socket
-    _valid_ports = _toggles[DEFAULT_PORTS] # set the valid ports to the ports inside of _toggles
+    _valid_ports = _config[DEFAULT_PORTS] # set the valid ports to the ports inside of _config
     _main_client, _PORT, state = _cycle_port(_main_client) # establish the connection to a port that the server is on
     return state # whether the connection succeeded or not
 
@@ -553,88 +534,3 @@ def _inbound_data_listener():
         # # print('recieved packet:', decoded)
         # data_queue.append(decoded)
         # # print('message queue:', data_queue)
-
-
-
-
-
-
-
-
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-
-'''
-below is random code that I am not sure what to do with, so for now they remain as comments!
-'''
-
-
-# a function to fully recieve the message from server (to try and prevent loss)
-# def full_recieve(client: socket.socket) -> str:
-#     message_length = len(client.recv(1024).decode('utf-8'))
-#     incoming_message = ''
-#     local_length = 0
-#     while local_length <= message_length:
-#         incoming_message += client.recv(1024).decode('utf-8')
-#         local_length = len(incoming_message)
-#     return incoming_message
-
-
-# def send_file(file, recieve: bool = False) -> any:
-#     '''
-#     A general tool function for sending files to the recipient (server, other client, etc)
-#     '''
-#     client = _main_client
-#     encoded_file =
-
-
-# def target_client(client_ip: str, client_port: int, mode: str) -> bool:
-#     '''
-#     Takes in the target clients ip and port, and will attempt to connect to them. If this fails, 
-#     then it is possible the other client is not available.
-#     This function returns a boolean, telling you whether it worked or not.
-#     '''
-#     global _HOST, _PORT, _valid_ports
-#     global _main_client
-#     global _do_print
-#     # reset main_client
-#     _main_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#     # overwrite host
-#     _HOST = client_ip
-#     # overwrite valid ports list
-#     override_ports([client_port])
-#     # overwrite port
-#     _PORT = _valid_ports[0]
-#     # setup other vars
-#     save = _do_print
-
-#     for i in range(30):
-#         print(f'attempt {i}')
-#         disable_print()
-#         _main_client, _PORT = _cycle_port(_main_client)
-#         _do_print = save
-#         if _connected == True:
-#             return True
-#         time.sleep(1)
-#     return False
-
-
-# def _data_queue_cleaner():
-#     global data_queue
-#     while True:
-#         if len(data_queue) > 25: # currently hard set value
-#             try:
-#                 latest = data_queue[-1]
-#                 # latest = data_queue[-5:]
-#                 # print('saving latest:', latest)
-#                 data_queue = [latest]
-#                 # data_queue = latest
-#                 # print('set new message queue to:', data_queue)
-#                 # data_queue = []
-#                 # print('cleaning data queue')
-#             except Exception as e:
-#                 # print('clean error:', e)
-#                 pass
