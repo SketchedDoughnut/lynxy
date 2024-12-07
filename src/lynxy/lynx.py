@@ -15,9 +15,9 @@ Modules to consider:
 import socket
 
 # files
-from constants import Constants as _Constants
-from exceptions import Exceptions as _Exceptions
-from secManager import Sec as _Sec
+from constants import Constants
+from exceptions import Exceptions
+from secManager import Sec
 
 ####################################################
 
@@ -35,18 +35,18 @@ class Lynxy:
         ##############
 
         # this is an instance of the security manager 
-        self.sec = _Sec()
+        self.sec = Sec()
 
         # this dictionary contains all of the configurable things
         # accessible by the user.
         self.config = {
-            _Constants.DO_PRINT: False,
-            _Constants.DEFAULT_PORTS: _Constants.PLACEHOLDER
+            Constants.DO_PRINT: False,
+            Constants.DEFAULT_PORTS: Constants.PLACEHOLDER
         }
         # this is the IP used for the connection
         self.host = '0.0.0.0'
         # this is the port used for the connection
-        self.port = _Constants.PLACEHOLDER
+        self.port = Constants.PLACEHOLDER
         # this is the client used for sending and recieving
         self.client = None
         # this represents if the client is connected
