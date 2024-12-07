@@ -17,7 +17,7 @@ import socket
 # files
 from constants import Constants
 from exceptions import Exceptions
-from secManager import Sec
+from sec import Sec
 
 ####################################################
 
