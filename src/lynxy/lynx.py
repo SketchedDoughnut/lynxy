@@ -16,8 +16,8 @@ import socket
 
 # files
 from constants import Constants as _Constants
-from exceptions import Exceptions
-from secManager import Sec
+from exceptions import Exceptions as _Exceptions
+from secManager import Sec as _Sec
 
 ####################################################
 
@@ -35,7 +35,7 @@ class Lynxy:
         ##############
 
         # this is an instance of the security manager 
-        self.sec = Sec()
+        self.sec = _Sec()
 
         # this dictionary contains all of the configurable things
         # accessible by the user.
