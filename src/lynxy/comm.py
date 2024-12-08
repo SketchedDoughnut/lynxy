@@ -13,6 +13,9 @@ consider:
 # included modules
 import socket
 import random
+import time
+
+# external modules
 import psutil
 
 # files
@@ -100,12 +103,22 @@ class Comm:
         randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
         # make sure the port is being used
         # if not, raise error
-        targetExist = False
-        for conn in psutil.net_connections(): # https://stackoverflow.com/questions/2470971/fast-way-to-test-if-a-port-is-in-use-using-python
-            if conn.laddr.port == self.target[1]: targetExist = True
-        # if it does exist, send data; else, raise error
-        if targetExist: self.UDP_client.sendto(randNum.encode(), self.target)
-        else: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
+        # we do this 10 times, once every second
+        connectionSuccess = False
+        for attemptNum in range(10):
+            targetExist = False
+            # https://stackoverflow.com/questions/2470971/fast-way-to-test-if-a-port-is-in-use-using-python
+            for conn in psutil.net_connections():
+                if conn.laddr.port == self.target[1]: targetExist = True
+            # if it does exist, send data; else, raise error
+            if targetExist: 
+                self.UDP_client.sendto(randNum.encode(), self.target)
+                connectionSuccess = True
+                break
+            else: 
+                print('attempt:', attemptNum)
+                time.sleep(1)
+        if not connectionSuccess: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
         # now we wait for a number in return, then decode it
         data, self.target = self.UDP_client.recvfrom(1024)
         incomingNum = data.decode()
