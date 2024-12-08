@@ -23,7 +23,7 @@ from .comm import Comm
 
 # the main class for the keeping everything together
 class Lynxy:
-    def __init__(self, ip: str = '', port: int = 56774, UDP_bind: bool = False):
+    def __init__(self, ip: str = '', port: int = 56774, bind: bool = False):
         '''
         This class keeps everything together with your client and the connection with the other machine.
         It is designed for a TCP communication with the other end.
@@ -31,7 +31,7 @@ class Lynxy:
         This class takes 3 arguments:
         - ip: a string of the IP to connect to
         - port: an integer of the port to connect to
-        - UDP_bind: defaulting to False, says whether or not Lynxy should immediately bind to the ip and port. 
+        - bind: defaulting to False, says whether or not Lynxy should immediately bind to the ip and port. 
                     This is recommended if you want to connect quickly.
         '''
         # this is the current working directory
@@ -41,7 +41,7 @@ class Lynxy:
             Constants.Config.DO_PRINT: False
         }
         # this is the manager for communications
-        self.comm = Comm(ip, port, UDP_bind)
+        self.comm = Comm(ip, port, bind)
 
 
     # this function connects to the other machine
