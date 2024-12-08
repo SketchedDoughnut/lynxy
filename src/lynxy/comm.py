@@ -114,6 +114,7 @@ class Comm:
                 self.UDP_client.sendto(randNum.encode(), self.target)
                 data, self.target = self.UDP_client.recvfrom(1024)
                 connectionSuccess = True
+                break
             except TimeoutError:
                 print('Timeout: Retrying...') #################################################
                 time.sleep(3)
