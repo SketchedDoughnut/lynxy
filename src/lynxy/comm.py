@@ -44,10 +44,6 @@ class Comm:
             self.UDP_client.bind((self.host, self.port))
             self.UDP_binded = True
 
-            print('immediate bind')
-
-        print(self.host, self.port)
-
 
     # this regenerates the UDP client
     def _regen_UDP(self) -> None: self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -97,30 +93,15 @@ class Comm:
     def UDP_connect(self) -> tuple[int, int]:
         # first, we bind to our port / ip if not already
         if not self.UDP_binded: 
-            
-            print('binding...')
-
             self._regen_UDP()
             self.UDP_client.bind((self.host, self.port))
             self.UDP_binded = True
-
-            print('binded')
-
         # now, we generate and send a random number
-        randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'.encode()
-        self.UDP_client.sendto(randNum, self.target)
-
-        print('sent')
-
+        randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
+        self.UDP_client.sendto(randNum.encode(), self.target)
         # now we wait for a number in return, then decode it
         data, self.target = self.UDP_client.recvfrom(1024)
-
-        print('got back')
-
         incomingNum = data.decode()
-
-        print(f'{data} -> {incomingNum}')
-
         # we close our UDP and return
         self.UDP_client.close()
         return (randNum, incomingNum)
