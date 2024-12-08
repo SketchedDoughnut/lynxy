@@ -10,19 +10,10 @@ from enum import Enum
 class Constants:
 
     # class that contains the constants used
-    # generally
-    class General(Enum):
-        PLACEHOLDER = 'placeholder'
-
-
-    # class that contains the constants used
     # for config
     # not Enum to not make JSON angry :c
-    class Config:
+    class Config(Enum):
         DO_PRINT = 'do print'
-        VALID_PORTS = 'valid ports'
-        IP_OVERRIDE = 'ip override'
-
     
     # class that contains the constants used
     # for identifying who you are connected to
