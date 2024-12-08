@@ -23,7 +23,7 @@ from .comm import Comm
 
 # the main class for the keeping everything together
 class Lynxy:
-    def __init__(self, ip: str = '', port: int = 56774, bind: bool = False):
+    def __init__(self, host_ip: str = '', host_port: int = 56774, bind: bool = False):
         '''
         This class keeps everything together with your client and the connection with the other machine.
         It is designed for a TCP communication with the other end.
@@ -41,11 +41,11 @@ class Lynxy:
             Constants.Config.DO_PRINT: False
         }
         # this is the manager for communications
-        self.comm = Comm(ip, port, bind)
+        self.comm = Comm(host_ip, host_port, bind)
 
 
     # this function connects to the other machine
-    def connect(self, ip, port) -> None: self.comm.TCP_connect(ip, port)
+    def connect(self, target_ip, target_port) -> None: self.comm.TCP_connect(target_ip, target_port)
 
 
     # a function used to distinguish whether or not to print,
