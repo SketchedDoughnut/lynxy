@@ -43,7 +43,7 @@ class Lynxy:
         # accessible by the user.
         self.config = {
             Constants.Config.DO_PRINT: False,
-            Constants.Config.DEFAULT_PORTS: Constants.General.PLACEHOLDER,
+            Constants.Config.VALID_PORTS: Constants.General.PLACEHOLDER,
             Constants.Config.IP_OVERRIDE: None
         }
         # this is the IP used for the connection
@@ -57,9 +57,9 @@ class Lynxy:
 
 
     # a function to load the default ports from a file
-    def load_default_ports(self):
+    def load_valid_ports(self):
         with open(os.path.join(self.wDir, 'config.json'), 'r') as f: 
-            self.config[Constants.Config.DEFAULT_PORTS] = json.load(f)
+            self.config[Constants.Config.VALID_PORTS] = json.load(f)
         
 
     # a function for setting the externally configurable data
@@ -68,37 +68,37 @@ class Lynxy:
         This is a function that allows you to configure certain internal values.
         - ID: is used as a key in a dictionary to find out what data to change.
               The ID is from lynxy.Constants.Config, and should match with the data you
-              are inputting. For example, if ID is lynxy.Constants.Config.DEFAULT_PORTS, 
+              are inputting. For example, if ID is lynxy.Constants.Config.VALID_PORTS, 
               then data should be a list of integer ports.
         - data: is used for changing the actual data in the config dictionary. As 
                 previously mentioned, your data type must match up with the inputted
                 ID.
-        - save_ports: is used if ID is lynxy.Constants.Config.DEFAULT_PORTS, and decides
+        - save_ports: is used if ID is lynxy.Constants.Config.VALID_PORTS, and decides
                       whether or not the ports inputted are saved into the local file or not.
 
         The proper data types for each ID are as follows:
         - DO_PRINT: data should be a boolean
-        - DEFAULT_PORTS: data should be a list, of valid integer ports
+        - VALID_PORTS: data should be a list, of valid integer ports
 
         Example: 
             >>> inst = Lynxy()
-            >>> inst.set_config(lynxy.Constants.Config.DEFAULT_PORTS, [111, 222, 333])
+            >>> inst.set_config(lynxy.Constants.Config.VALID_PORTS, [111, 222, 333])
         '''
         # make sure the data types are not invalid
         # to prevent errors later on
         # if all pass, then change data
         if ID == Constants.Config.DO_PRINT and type(data) != bool: raise Exceptions.InvalidToggleValueError()
-        elif ID == Constants.Config.DEFAULT_PORTS:
+        elif ID == Constants.Config.VALID_PORTS:
             if type(data) != list: raise Exceptions.InvalidToggleValueError()
             for indiv_port in data: 
                 if type(indiv_port) != int: raise Exceptions.InvalidToggleValueError()
         # save the data into the config dictionary
         self.config[ID] = data
-        # if the file save is enabled, save ports to file
+        # if the save_ports is enabled, save ports to file
         if save_ports: 
             with open(os.path.join(self.wDir, 'config.json'), 'r') as f:
                 config_data = json.load(f)
-            config_data[Constants.Config.DEFAULT_PORTS] = data
+            config_data[Constants._JSON_safe.VALID_PORTs] = data
             with open(os.path.join(self.wDir, 'config.json'), 'w') as f:
                 json.dump(config_data, f)
         return None
@@ -117,5 +117,9 @@ class Lynxy:
     #     # this is essential every time we connect
     #     self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     #     # for each port, we need to try to connect to it
-    #     valid_ports = self.config[Constants.Config.DEFAULT_PORTS]
+    #     valid_ports = self.config[Constants.Config.VALID_PORTS]
     #     for port in valid_ports:
+
+
+inst = Lynxy()
+inst.set_config(Constants.Config.VALID_PORTS, [0], True)

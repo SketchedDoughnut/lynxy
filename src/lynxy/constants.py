@@ -19,7 +19,7 @@ class Constants:
     # for config
     class Config(Enum):
         DO_PRINT = 'do print'
-        DEFAULT_PORTS = 'default ports'
+        VALID_PORTS = 'valid ports'
         IP_OVERRIDE = 'ip override'
 
     
@@ -30,3 +30,10 @@ class Constants:
         LYNXY_CLIENT = 'lynxy client'
         GENERAL_SERVER = 'general server'
         GENERAL_CLIENT = 'general client'
+
+    
+    # an internal class used to access dictionaries
+    # that are to be saved in a way that won't make JSON
+    # angry
+    class _JSON_safe:
+        VALID_PORTs = 'valid ports'
