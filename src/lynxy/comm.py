@@ -104,10 +104,12 @@ class Comm:
         randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
         # we try 15 times to connect, waiting 3 seconds between each request
         # and waiting 5 seconds for a response
+
+        # TODO: FIX
         connectionSuccess = False
         self.UDP_client.settimeout(5)
         for attemptNum in range(15):
-            print('attempt num:', attemptNum) #################################################
+            print('attempt:', attemptNum) #################################################
             try:
                 # if we send the data and get data back,
                 # then it succeeded
@@ -118,11 +120,12 @@ class Comm:
             except TimeoutError:
                 print('Timeout: Retrying...') #################################################
                 time.sleep(3)
-
+        # if no success, raise error
         if not connectionSuccess: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
         # now we decode the recieved data to get the num
         incomingNum = data.decode()
         # we close our UDP and return
+        time.sleep(1)
         self.UDP_client.close()
         return (randNum, incomingNum)
     
