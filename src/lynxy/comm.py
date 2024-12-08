@@ -26,7 +26,7 @@ class Comm:
         # this is an instance of the security manager
         self.sec = Sec()
         # this is the internal client used for sending and recieving
-        if host: self.host = host
+        if len(host) > 0: self.host = host
         else: self.host = socket.gethostbyname(socket.gethostname())
         self.port = port
         # this is the target info
@@ -42,6 +42,10 @@ class Comm:
         if UDP_bind: 
             self.UDP_client.bind((self.host, self.port))
             self.UDP_binded = True
+
+            print('immediate bind')
+
+        print(self.host, self.port)
 
 
     # this regenerates the UDP client
@@ -60,12 +64,18 @@ class Comm:
     def TCP_connect(self, target_ip: str, target_port: int) -> None:
         # set target machine data
         self.target = (target_ip, target_port)
+
+        print('set target to:', self.target)
+
         # we use UDP to get the random number
         ourRandom, targetRandom = self.UDP_connect()
         # we then find out whether to bind our TCP
         # or try to connect to the other end
         # meaning we bind
         self._regen_TCP()
+
+        print(ourRandom, targetRandom)
+
         if ourRandom < targetRandom:
             self.TCP_client.bind((self.host, self.port))
             self.TCP_client.listen(1)
@@ -75,7 +85,9 @@ class Comm:
         # meaning we cry
         elif ourRandom == targetRandom:
             raise Exceptions.ConnectionFailedError('The handshake between the two machines failed.')
-        print('connected!') ##################################################################################### TEST
+        
+        print('connected!')
+
         return None
 
 
@@ -83,15 +95,27 @@ class Comm:
     # and also who is first with exchangin keys
     def UDP_connect(self) -> tuple[int, int]:
         # first, we bind to our port / ip if not already
-        self._regen_UDP()
         if not self.UDP_binded: 
+            
+            print('binding...')
+
+            self._regen_UDP()
             self.UDP_client.bind((self.host, self.port))
             self.UDP_binded = True
+
+            print('binded')
+
         # now, we generate and send a random number
-        randNum = f'{random.randint(0, 50) + random.randint(0, 50)}'.encode()
+        randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'.encode()
         self.UDP_client.sendto(randNum, self.target)
+
+        print('sent')
+
         # now we wait for a number in return, then decode it
         data, self.target = self.UDP_client.recvfrom(1024)
+
+        print('got back')
+
         incomingNum = int(data.decode())
         # we close our UDP and return
         self.UDP_client.close()
