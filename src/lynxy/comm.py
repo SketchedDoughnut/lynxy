@@ -107,7 +107,7 @@ class Comm:
         # we do this 10 times, once every second
         connectionSuccess = False
         for attemptNum in range(15):
-            if self.UDP_client.sendto(randNum.encode(), self.target) == 0:
+            if self.UDP_client.sendto(randNum.encode(), self.target) != 0:
                 connectionSuccess = True
                 print('attempt success:', attemptNum)
                 break
