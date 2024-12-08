@@ -70,6 +70,7 @@ class Comm:
         # meaning we cry
         elif ourRandom == targetRandom:
             raise Exceptions.ConnectionFailedError('The handshake between the two machines failed.')
+        print('connected!') ##################################################################################### TEST
         return None
 
 
