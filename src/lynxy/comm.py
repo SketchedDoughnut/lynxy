@@ -26,7 +26,8 @@ class Comm:
         # this is an instance of the security manager
         self.sec = Sec()
         # this is the internal client used for sending and recieving
-        self.host = host
+        if host: self.host = host
+        else: self.host = socket.gethostbyname(socket.gethostname())
         self.port = port
         # this is the target info
         self.target = ('', 0)
@@ -51,6 +52,10 @@ class Comm:
     def _regen_TCP(self) -> None: self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
+    # this returns the host IP
+    def get_host(self) -> tuple[str, int]: return self.host, self.port
+
+    
     # this function handles the UDP connection that helps make the TCP connection
     def TCP_connect(self, target_ip: str, target_port: int) -> None:
         # set target machine data
