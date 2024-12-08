@@ -75,7 +75,6 @@ class Comm:
         # meaning we bind
         self._regen_TCP()
 
-        print(ourRandom, targetRandom)
         print(f'{ourRandom}, {targetRandom}')
 
         if ourRandom < targetRandom:
@@ -118,10 +117,9 @@ class Comm:
 
         print('got back')
 
-        # decodedData = data.decode()
-        decodedData = pickle.loads(data)
-        print(decodedData)
-        incomingNum = int(decodedData)
+        incomingNum = data.decode()
+
+        print(f'{data} -> {incomingNum}')
 
         # we close our UDP and return
         self.UDP_client.close()
