@@ -19,3 +19,9 @@ class Exceptions:
         def __init__(self, message='The ID and value toggle pair is invalid.'):
             self.message = message
             super().__init__(message)
+
+    
+    class InvalidPortError(Exception):
+        def __init__(self, message=None):
+            self.message = message
+            super().__init__(message)

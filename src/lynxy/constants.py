@@ -17,7 +17,8 @@ class Constants:
 
     # class that contains the constants used
     # for config
-    class Config(Enum):
+    # not Enum to not make JSON angry :c
+    class Config:
         DO_PRINT = 'do print'
         VALID_PORTS = 'valid ports'
         IP_OVERRIDE = 'ip override'
@@ -30,10 +31,3 @@ class Constants:
         LYNXY_CLIENT = 'lynxy client'
         GENERAL_SERVER = 'general server'
         GENERAL_CLIENT = 'general client'
-
-    
-    # an internal class used to access dictionaries
-    # that are to be saved in a way that won't make JSON
-    # angry :c
-    class _JSON_safe:
-        VALID_PORTs = 'valid ports'

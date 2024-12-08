@@ -1,4 +1,6 @@
 {
+    "do print": false,
+    "ip override": null, 
     "valid ports": [
         11111,
         12111,
