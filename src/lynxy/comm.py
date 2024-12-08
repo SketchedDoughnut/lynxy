@@ -108,16 +108,16 @@ class Comm:
         for attemptNum in range(10):
             targetExist = False
             # https://stackoverflow.com/questions/2470971/fast-way-to-test-if-a-port-is-in-use-using-python
-            for conn in psutil.net_connections():
-                if conn.laddr.port == self.target[1]: targetExist = True
+            targetExist = self.UDP_client.connect_ex(self.target) == 0
             # if it does exist, send data; else, raise error
             if targetExist: 
                 self.UDP_client.sendto(randNum.encode(), self.target)
                 connectionSuccess = True
                 break
             else: 
-                print('attempt:', attemptNum)
+                print('attempt failed:', attemptNum)
                 time.sleep(1)
+                continue
         if not connectionSuccess: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
         # now we wait for a number in return, then decode it
         data, self.target = self.UDP_client.recvfrom(1024)
