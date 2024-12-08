@@ -57,7 +57,9 @@ class Lynxy:
 
 
     # a function to load the default ports from a file
-    # def load_default_ports(self):
+    def load_default_ports(self):
+        with open(os.path.join(self.wDir, 'config.json'), 'r') as f: 
+            self.config[Constants.Config.DEFAULT_PORTS] = json.load(f)
         
 
     # a function for setting the externally configurable data
@@ -94,10 +96,10 @@ class Lynxy:
         self.config[ID] = data
         # if the file save is enabled, save ports to file
         if save_ports: 
-            with open(os.path.join(self.wDir, 'config.json', 'r')) as f:
+            with open(os.path.join(self.wDir, 'config.json'), 'r') as f:
                 config_data = json.load(f)
             config_data[Constants.Config.DEFAULT_PORTS] = data
-            with open(os.path.join(self.wDir, 'config.json', 'w')) as f:
+            with open(os.path.join(self.wDir, 'config.json'), 'w') as f:
                 json.dump(config_data, f)
         return None
     
