@@ -4,14 +4,13 @@ PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
 
 # included modules
 import pickle
-import socket
 
 # external modules
 import rsa
 from cryptography.fernet import Fernet
 
 # files
-from .exceptions import Exceptions
+from exceptions import Exceptions
 
 ####################################################
 
@@ -87,8 +86,3 @@ class Sec:
         decryptedData = self.fernet_tool.decrypt(data)
         unpickledData = pickle.loads(decryptedData)
         return unpickledData
-    
-
-    # function that does a handshake for a given socket
-    def RSA_handshake(self, client: socket.socket) -> rsa.PublicKey:
-        pass
