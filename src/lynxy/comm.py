@@ -13,6 +13,7 @@ consider:
 # included modules
 import socket
 import random
+import pickle
 
 # files
 from .sec import Sec
@@ -75,6 +76,7 @@ class Comm:
         self._regen_TCP()
 
         print(ourRandom, targetRandom)
+        print(f'{ourRandom}, {targetRandom}')
 
         if ourRandom < targetRandom:
             self.TCP_client.bind((self.host, self.port))
@@ -116,7 +118,8 @@ class Comm:
 
         print('got back')
 
-        decodedData = data.decode()
+        # decodedData = data.decode()
+        decodedData = pickle.loads(data)
         print(decodedData)
         incomingNum = int(decodedData)
 
