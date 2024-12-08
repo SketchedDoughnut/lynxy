@@ -13,7 +13,7 @@ consider:
 # included modules
 import socket
 import random
-import pickle
+import psutil
 
 # files
 from .sec import Sec
@@ -98,7 +98,14 @@ class Comm:
             self.UDP_binded = True
         # now, we generate and send a random number
         randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
-        self.UDP_client.sendto(randNum.encode(), self.target)
+        # make sure the port is being used
+        # if not, raise error
+        targetExist = False
+        for conn in psutil.net_connections(): # https://stackoverflow.com/questions/2470971/fast-way-to-test-if-a-port-is-in-use-using-python
+            if conn.laddr.port == self.target[1]: targetExist = True
+        # if it does exist, send data; else, raise error
+        if targetExist: self.UDP_client.sendto(randNum.encode(), self.target)
+        else: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
         # now we wait for a number in return, then decode it
         data, self.target = self.UDP_client.recvfrom(1024)
         incomingNum = data.decode()
