@@ -116,7 +116,10 @@ class Comm:
 
         print('got back')
 
-        incomingNum = int(data.decode())
+        decodedData = data.decode()
+        print(decodedData)
+        incomingNum = int(decodedData)
+
         # we close our UDP and return
         self.UDP_client.close()
         return (randNum, incomingNum)
