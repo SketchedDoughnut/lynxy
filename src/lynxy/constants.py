@@ -34,6 +34,6 @@ class Constants:
     
     # an internal class used to access dictionaries
     # that are to be saved in a way that won't make JSON
-    # angry
+    # angry :c
     class _JSON_safe:
         VALID_PORTs = 'valid ports'
