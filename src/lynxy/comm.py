@@ -91,3 +91,12 @@ class Comm:
         # we close our UDP and return
         self.UDP_client.close()
         return (randNum, incomingNum)
+    
+
+    # this function closes the connection between the two machines
+    def close_connection(self) -> None: 
+        self.TCP_client.close()
+        self._regen_UDP()
+        self._regen_TCP()
+        self.UDP_binded = False
+        return

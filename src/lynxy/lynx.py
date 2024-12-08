@@ -48,6 +48,10 @@ class Lynxy:
     def connect(self, target_ip, target_port) -> None: self.comm.TCP_connect(target_ip, target_port)
 
 
+    # this function closes connections
+    def close(self) -> None: self.comm.close_connection()
+
+
     # a function used to distinguish whether or not to print,
     # different from the default printing function but not overwriting it
     def pprint(self, data: str) -> None: print(data) if self.do_print else print('', end='')
