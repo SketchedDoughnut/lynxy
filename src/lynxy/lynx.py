@@ -17,9 +17,9 @@ import os
 import json
 
 # files
-from constants import Constants
-from exceptions import Exceptions
-from sec import Sec
+from .constants import Constants
+from .exceptions import Exceptions
+from .sec import Sec
 
 ####################################################
 
@@ -143,10 +143,6 @@ class Lynxy:
 
     # this is a function that connects, but then also does a handshake
     # exchanging RSA keys
+    # TODO
     def login(self):
         if not self.is_connected: self.connect()
-
-inst = Lynxy()
-inst.set_config(Constants.Config.DO_PRINT, True)
-inst.set_config(Constants.Config.IP_OVERRIDE, '127.0.0.1')
-print(inst.connect(None))
