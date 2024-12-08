@@ -8,6 +8,7 @@ consider:
 - https://www.geeksforgeeks.org/python-simple-port-scanner-with-sockets/
 - https://www.geeksforgeeks.org/python-binding-and-listening-with-sockets/
 - making decorators for when someone else wants to connect
+- https://stackoverflow.com/questions/2470971/fast-way-to-test-if-a-port-is-in-use-using-python
 '''
 
 # included modules
@@ -105,16 +106,12 @@ class Comm:
         # if not, raise error
         # we do this 10 times, once every second
         connectionSuccess = False
-        for attemptNum in range(10):
-            targetExist = False
-            # https://stackoverflow.com/questions/2470971/fast-way-to-test-if-a-port-is-in-use-using-python
-            targetExist = self.UDP_client.connect_ex(self.target) == 0
-            # if it does exist, send data; else, raise error
-            if targetExist: 
-                self.UDP_client.sendto(randNum.encode(), self.target)
+        for attemptNum in range(15):
+            if self.UDP_client.sendto(randNum.encode(), self.target) == 0:
                 connectionSuccess = True
+                print('attempt success:', attemptNum)
                 break
-            else: 
+            else:
                 print('attempt failed:', attemptNum)
                 time.sleep(1)
                 continue

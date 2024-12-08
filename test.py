@@ -21,4 +21,4 @@ def c2():
     inst.close()
 
 c1()
-# c2()
+c2()
