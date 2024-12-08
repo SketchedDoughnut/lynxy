@@ -66,7 +66,7 @@ class Comm:
         # set target machine data
         self.target = (target_ip, target_port)
 
-        print('set target to:', self.target)
+        print('set target to:', self.target) #################################################
 
         # we use UDP to get the random number
         ourRandom, targetRandom = self.UDP_connect()
@@ -75,7 +75,7 @@ class Comm:
         # meaning we bind
         self._regen_TCP()
 
-        print(f'{ourRandom}, {targetRandom}')
+        print(f'{ourRandom}, {targetRandom}') #################################################
 
         if ourRandom < targetRandom:
             self.TCP_client.bind((self.host, self.port))
@@ -87,7 +87,7 @@ class Comm:
         elif ourRandom == targetRandom:
             raise Exceptions.ConnectionFailedError('The handshake between the two machines failed.')
         
-        print('connected!')
+        print('connected!') #################################################
 
         return None
 
@@ -102,19 +102,18 @@ class Comm:
             self.UDP_binded = True
         # now, we generate and send a random number
         randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
-        # make sure the port is being used
-        # if not, raise error
-        # we do this 10 times, once every second
+        # we try 15 times to connect, waiting 3 seconds between each request
+        # and waiting 5 seconds for a response
         connectionSuccess = False
+        self.UDP_client.settimeout(5)
         for attemptNum in range(15):
-            if self.UDP_client.sendto(randNum.encode(), self.target) != 0:
+            print('attempt num:', attemptNum) #################################################
+            try: 
+                self.UDP_client.sendto(randNum.encode(), self.target)
                 connectionSuccess = True
-                print('attempt success:', attemptNum)
-                break
-            else:
-                print('attempt failed:', attemptNum)
-                time.sleep(1)
-                continue
+            except socket.timeout:
+                print('Timeout: Retrying...') #################################################
+
         if not connectionSuccess: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
         # now we wait for a number in return, then decode it
         data, self.target = self.UDP_client.recvfrom(1024)
