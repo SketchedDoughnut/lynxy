@@ -83,7 +83,7 @@ class Comm:
             # self.TCP_client, self.target = self.TCP_client.accept()
 
             print('im second!') #################################################
-            
+
         # meaning we connect
         elif ourRandom > targetRandom: 
             # self.TCP_client.connect(self.target)
@@ -128,8 +128,6 @@ class Comm:
             except TimeoutError:
 
                 print('Timeout: Retrying...') #################################################
-
-                time.sleep(3)
 
         # if no success, raise error
         if not connectionSuccess: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
