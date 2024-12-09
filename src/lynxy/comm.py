@@ -104,9 +104,9 @@ class Comm:
             self.UDP_client.bind((self.host, self.port))
             self.UDP_binded = True
         # now, we generate and send a random number
-        randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
+        randNum = random.randint(0, 100) + random.randint(0, 100)
 
-        randNum = '100' #################################################
+        randNum = 100 #################################################
 
         # we try "attempts" times to connect and wait "timeout" seconds for a response
         connectionSuccess = False
@@ -116,15 +116,15 @@ class Comm:
             try:
                 # if we send the data and get data back,
                 # then it succeeded
-                self.UDP_client.sendto(randNum.encode(), self.target)
+                self.UDP_client.sendto(str(randNum).encode(), self.target)
                 data, self.target = self.UDP_client.recvfrom(1024)
-                self.UDP_client.sendto(randNum.encode(), self.target) # make sure data got through
+                self.UDP_client.sendto(str(randNum).encode(), self.target) # make sure data got through
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we regen number and keep trying
                 incomingNum = int(data.decode())
                 if randNum == incomingNum: 
                     print(f'num match: {randNum} == {incomingNum}')
-                    randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
+                    randNum = random.randint(0, 100) + random.randint(0, 100)
                     continue
                 # otherwise connection was a success, break
                 connectionSuccess = True
@@ -137,7 +137,7 @@ class Comm:
         if not connectionSuccess: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
         # we close our UDP and return
         self.UDP_client.close()
-        return (int(randNum), incomingNum)
+        return (randNum, incomingNum)
     
 
     # this function closes the connection between the two machines
