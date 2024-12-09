@@ -105,9 +105,6 @@ class Comm:
             self.UDP_binded = True
         # now, we generate and send a random number
         randNum = random.randint(0, 100) + random.randint(0, 100)
-
-        randNum = 100 #################################################
-
         # we try "attempts" times to connect and wait "timeout" seconds for a response
         connectionSuccess = False
         self.UDP_client.settimeout(timeout)
@@ -119,13 +116,12 @@ class Comm:
                 self.UDP_client.sendto(str(randNum).encode(), self.target)
                 data, self.target = self.UDP_client.recvfrom(1024)
                 self.UDP_client.sendto(str(randNum).encode(), self.target) # make sure data got through
+
+                # TODO
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we regen number and keep trying
+                
                 incomingNum = int(data.decode())
-                if randNum == incomingNum: 
-                    print(f'num match: {randNum} == {incomingNum}')
-                    randNum = random.randint(0, 100) + random.randint(0, 100)
-                    continue
                 # otherwise connection was a success, break
                 connectionSuccess = True
                 break
