@@ -9,6 +9,7 @@ consider:
 - https://www.geeksforgeeks.org/python-binding-and-listening-with-sockets/
 - making decorators for when someone else wants to connect
 - https://stackoverflow.com/questions/2470971/fast-way-to-test-if-a-port-is-in-use-using-python
+- https://stackoverflow.com/questions/50216417/why-use-socket-io-and-not-just-socket
 '''
 
 # included modules
