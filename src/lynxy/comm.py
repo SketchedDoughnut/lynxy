@@ -105,6 +105,9 @@ class Comm:
             self.UDP_binded = True
         # now, we generate and send a random number
         randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
+
+        randNum = 100 #################################################
+
         # we try "attempts" times to connect and wait "timeout" seconds for a response
         connectionSuccess = False
         self.UDP_client.settimeout(timeout)
