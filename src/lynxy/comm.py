@@ -106,7 +106,7 @@ class Comm:
         # now, we generate and send a random number
         randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
 
-        randNum = 100 #################################################
+        randNum = '100' #################################################
 
         # we try "attempts" times to connect and wait "timeout" seconds for a response
         connectionSuccess = False
@@ -123,6 +123,7 @@ class Comm:
                 # if they are, we regen number and keep trying
                 incomingNum = int(data.decode())
                 if randNum == incomingNum: 
+                    print(f'num match: {randNum} == {incomingNum}')
                     randNum = f'{random.randint(0, 100) + random.randint(0, 100)}'
                     continue
                 # otherwise connection was a success, break
