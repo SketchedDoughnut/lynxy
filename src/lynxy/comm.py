@@ -133,7 +133,7 @@ class Comm:
         if not connectionSuccess: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
         # we close our UDP and return
         self.UDP_client.close()
-        return (randNum, incomingNum)
+        return (int(randNum), incomingNum)
     
 
     # this function closes the connection between the two machines
