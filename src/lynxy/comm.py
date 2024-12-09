@@ -65,33 +65,27 @@ class Comm:
     def TCP_connect(self, target_ip: str, target_port: int, timeout: int = 10, attempts: int = 6) -> None:
         # set target machine data
         self.target = (target_ip, target_port)
-
-        print('set target to:', self.target) #################################################
-
         # we use UDP to get the random number
         ourRandom, targetRandom = self.UDP_connect(timeout, attempts)
         # we then find out whether to bind our TCP
         # or try to connect to the other end
         self._regen_TCP()
-
-        print(f'{ourRandom}, {targetRandom}') #################################################
-
         # meaning we bind
         if ourRandom < targetRandom:
+            
+            # TODO
             # self.TCP_client.bind((self.host, self.port))
             # self.TCP_client.listen(1)
             # self.TCP_client, self.target = self.TCP_client.accept()
-
             print('im second!') #################################################
 
         # meaning we connect
         elif ourRandom > targetRandom: 
+
+            # TODO
             # self.TCP_client.connect(self.target)
-
             print('im first!') #################################################
-        
-        print('connected!') #################################################
-
+            
         return None
 
 
@@ -109,7 +103,6 @@ class Comm:
         connectionSuccess = False
         self.UDP_client.settimeout(timeout)
         for attemptNum in range(attempts):
-            print('attempt:', attemptNum) #################################################
             try:
                 # if we send the data and get data back,
                 # then it succeeded
@@ -120,14 +113,12 @@ class Comm:
                 # TODO
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we regen number and keep trying
-                
+
                 incomingNum = int(data.decode())
                 # otherwise connection was a success, break
                 connectionSuccess = True
                 break
-            except TimeoutError:
-
-                print('Timeout: Retrying...') #################################################
+            except TimeoutError: continue
 
         # if no success, raise error
         if not connectionSuccess: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
