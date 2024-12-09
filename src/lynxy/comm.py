@@ -70,21 +70,21 @@ class Comm:
         # we then find out whether to bind our TCP
         # or try to connect to the other end
         self._regen_TCP()
+        # meaning we connect
+        if ourRandom > targetRandom: 
+
+            # TODO
+            # self.TCP_client.connect(self.target)
+            print('im first!') #################################################
+
         # meaning we bind
-        if ourRandom < targetRandom:
+        elif ourRandom < targetRandom:
             
             # TODO
             # self.TCP_client.bind((self.host, self.port))
             # self.TCP_client.listen(1)
             # self.TCP_client, self.target = self.TCP_client.accept()
             print('im second!') #################################################
-
-        # meaning we connect
-        elif ourRandom > targetRandom: 
-
-            # TODO
-            # self.TCP_client.connect(self.target)
-            print('im first!') #################################################
             
         return None
 
