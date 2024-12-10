@@ -15,10 +15,7 @@ consider:
 # included modules
 import socket
 import random
-import time
-
-# external modules
-import psutil
+import threading
 
 # files
 from .sec import Sec
@@ -82,6 +79,11 @@ class Comm:
         if ourRandom > targetRandom: 
             self.TCP_client.connect(self.target)
             self.actual_target = self.target
+            # we send our public key
+            self.TCP_client.send(self.sec.int_pub_key)
+            # then recieve their public key
+            recievedPubKey = self.TCP_client.recv(1024)
+            self.sec.load_RSA(recievedPubKey)
         # meaning we bind (second)
         elif ourRandom < targetRandom:
             # we try (attempts) times to connect
@@ -98,7 +100,12 @@ class Comm:
                     connectionSuccess = True
                     break
             # raise error if connection failed
-            if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'The incorrect target machine connected to this machine {attempts} times.')   
+            if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'The incorrect target machine connected to this machine {attempts} times.') 
+            # we recieve their public key
+            recievedPubKey = self.TCP_client.recv(1024)
+            self.sec.load_RSA(recievedPubKey)
+            # then send our public key
+            self.TCP_client.send(self.sec.int_pub_key)
         return None
 
 
@@ -147,3 +154,12 @@ class Comm:
         self.__regen_TCP()
         self.UDP_binded = False
         return
+    
+
+    # this function manages sending data
+    def _send(self, data: any) -> int:
+        encryptedData = self.sec.RSA_encrypt(data)
+        return self.TCP_client.send(encryptedData)
+    
+
+    # this function manages recieving data
