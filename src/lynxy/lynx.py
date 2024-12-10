@@ -53,11 +53,11 @@ class Lynxy:
 
 
     # this gets the host 
-    def get_host(self) -> None: return self.comm._get_host()
+    def get_host(self) -> tuple[str, int]: return self.comm._get_host()
 
 
     # this gets the target info
-    def get_actual_target(self) -> None: return self.comm._get_actual_target()
+    def get_actual_target(self) -> tuple[str, int]: return self.comm._get_actual_target()
 
 
     # a function used to distinguish whether or not to print,

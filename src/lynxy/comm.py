@@ -61,21 +61,12 @@ class Comm:
 
 
     # this returns the host IP
-    def _get_host(self) -> tuple[str, int]: 
-        '''
-        Returns the IP and port of this machine, in a tuple.
-        '''
-        return self.host, self.port
+    def _get_host(self) -> tuple[str, int]: return self.host, self.port
 
 
     # this returns the actual target
     # that target being the active TCP connection
-    def _get_actual_target(self) -> tuple[str, int]:
-        '''
-        Returns the IP and port of the other active machine in a TCP connection,
-        in a tuple.
-        '''
-        return self.actual_target
+    def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
 
     
     # this function handles the UDP connection that helps make the TCP connection
