@@ -45,13 +45,13 @@ class Lynxy:
 
 
     # this function connects to the other machine
-    def connect(self, target_ip, target_port) -> None: self.comm.TCP_connect(target_ip, target_port)
+    def connect(self, target_ip, target_port) -> None: self.comm._TCP_connect(target_ip, target_port)
 
 
     # this function closes connections
-    def close(self) -> None: self.comm.close_connection()
+    def close(self) -> None: self.comm._close_connection()
 
 
     # a function used to distinguish whether or not to print,
     # different from the default printing function but not overwriting it
-    def pprint(self, data: str) -> None: print(data) if self.do_print else print('', end='')
+    # def pprint(self, data: str) -> None: print(data) if self.do_print else print('', end='')

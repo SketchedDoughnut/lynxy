@@ -51,11 +51,11 @@ class Comm:
 
 
     # this regenerates the UDP client
-    def _regen_UDP(self) -> None: self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    def __regen_UDP(self) -> None: self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
     # this regenerates the TCP client
-    def _regen_TCP(self) -> None: self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def __regen_TCP(self) -> None: self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
     # this returns the host IP
@@ -63,14 +63,14 @@ class Comm:
 
     
     # this function handles the UDP connection that helps make the TCP connection
-    def TCP_connect(self, target_ip: str, target_port: int, timeout: int = 10, attempts: int = 6) -> None:
+    def _TCP_connect(self, target_ip: str, target_port: int, timeout: int = 10, attempts: int = 6) -> None:
         # set target machine data
         self.target = (target_ip, target_port)
         # we use UDP to get the random number
-        ourRandom, targetRandom = self.UDP_connect(timeout, attempts)
+        ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
         # we then find out whether to bind our TCP
         # or try to connect to the other end
-        self._regen_TCP()
+        self.__regen_TCP()
         # meaning we connect
         if ourRandom > targetRandom: 
 
@@ -92,18 +92,18 @@ class Comm:
 
     # this function manages finding out who goes first with making a TCP connection
     # and also who is first with exchangin keys
-    def UDP_connect(self, timeout, attempts) -> tuple[int, int]:
+    def _UDP_connect(self, timeout, attempts) -> tuple[int, int]:
         # first, we bind to our port / ip if not already
         if not self.UDP_binded: 
-            self._regen_UDP()
+            self.__regen_UDP()
             self.UDP_client.bind((self.host, self.port))
             self.UDP_binded = True
         # now, we generate and send a random number
-        randNum = random.randint(0, 100) + random.randint(0, 100)
+        randNum = random.randint(0, 1000) + random.randint(0, 1000)
         # we try "attempts" times to connect and wait "timeout" seconds for a response
         connectionSuccess = False
         self.UDP_client.settimeout(timeout)
-        for attemptNum in range(attempts):
+        for _ in range(attempts):
             try:
                 # if we send the data and get data back,
                 # then it succeeded
@@ -129,9 +129,9 @@ class Comm:
     
 
     # this function closes the connection between the two machines
-    def close_connection(self) -> None: 
+    def _close_connection(self) -> None: 
         self.TCP_client.close()
-        self._regen_UDP()
-        self._regen_TCP()
+        self.__regen_UDP()
+        self.__regen_TCP()
         self.UDP_binded = False
         return
