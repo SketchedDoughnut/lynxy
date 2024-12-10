@@ -29,17 +29,16 @@ class Lynxy:
         It is designed for a TCP communication with the other end.
         This class has all the configuration and management for your client instance. \n
         This class takes 3 arguments:
-        - ip: a string of the IP to connect to
+        - ip: a string of the IP to connect to. This will be set automatically to this machines
+              address if not specified.
         - port: an integer of the port to connect to
         - bind: defaulting to False, says whether or not Lynxy should immediately bind to the ip and port. 
                     This is recommended if you want to connect quickly.
         '''
-        # this is the current working directory
-        self.wDir = os.path.dirname(os.path.abspath(__file__))
         # this decides certain configurable stuff
-        self.config = {
-            Constants.Config.DO_PRINT: False
-        }
+        # self.config = {
+        #     Constants.Config.DO_PRINT: False
+        # }
         # this is the manager for communications
         self.comm = Comm(host_ip, host_port, bind)
 
