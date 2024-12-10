@@ -9,6 +9,7 @@ def c2():
     print('connecting...')
     inst.connect(connect_ip, connect_port)
     print('connected')
+    print(inst.comm.get_actual_target())
     inst.close()
     print('closed')
 
