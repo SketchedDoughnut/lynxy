@@ -37,6 +37,8 @@ class Comm:
         self.port = port
         # this is the target info
         self.target = ('', 0)
+        # this is the actual connected target info (FOR TCP)
+        self.actual_target = ('', 0)
         # this is the client for UDP for finding out who goes first
         self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         # this is the main client for communication
@@ -99,6 +101,7 @@ class Comm:
                 print('connected:', connectedTarget)
                 print('self target:', self.target)
                 if connectedTarget[0] == self.target[0]: # verify IP, not port
+                    self.actual_target = connectedTarget
                     connectionSuccess = True
                     print('success, break:', connectionSuccess)
                     break
