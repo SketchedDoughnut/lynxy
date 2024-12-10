@@ -15,10 +15,10 @@ consider:
 # included modules
 import socket
 import random
-import threading
 
 # files
 from .sec import Sec
+from .parser import Parser
 from .exceptions import Exceptions
 
 ####################################################
@@ -28,6 +28,8 @@ class Comm:
     def __init__(self, host: str, port: int, UDP_bind: bool):
         # this is an instance of the security manager
         self.sec = Sec()
+        # this is an instance of the parser
+        self.parser = Parser()
         # this is the internal client used for sending and recieving
         if len(host) > 0: self.host = host
         else: self.host = socket.gethostbyname(socket.gethostname())
@@ -154,12 +156,3 @@ class Comm:
         self.__regen_TCP()
         self.UDP_binded = False
         return
-    
-
-    # this function manages sending data
-    def _send(self, data: any) -> int:
-        encryptedData = self.sec.RSA_encrypt(data)
-        return self.TCP_client.send(encryptedData)
-    
-
-    # this function manages recieving data
