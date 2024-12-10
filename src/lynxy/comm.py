@@ -96,6 +96,8 @@ class Comm:
                 self.TCP_client.listen(1) # only listen for 1 connection
                 self.TCP_client, connectedTarget = self.TCP_client.accept()
                 print('accepted')
+                print('connected:', connectedTarget)
+                print('self target:', self.target)
                 if connectedTarget == self.target: 
                     connectionSuccess = True
                     print('success, break:', connectionSuccess)
