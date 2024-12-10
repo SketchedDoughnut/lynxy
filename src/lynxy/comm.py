@@ -75,6 +75,7 @@ class Comm:
         if ourRandom > targetRandom: 
 
             # TODO
+            print('first')
             self.TCP_client.connect(self.target)
 
         # meaning we bind (second)
@@ -84,6 +85,7 @@ class Comm:
             # we try (attempts) times to connect
             # an invalid connection is if the client that connects
             # is not the one we wanted to connect to
+            print('second')
             connectionSuccess = False
             for _ in range(attempts):
                 self.__regen_TCP()

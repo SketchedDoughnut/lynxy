@@ -8,6 +8,8 @@ def c2():
     connect_port = 11111
     print('connecting...')
     inst.connect(connect_ip, connect_port)
+    print('connected')
     inst.close()
+    print('closed')
 
 c2()

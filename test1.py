@@ -8,6 +8,8 @@ def c1():
     connect_port = 11112
     print('connecting...')
     inst.connect(connect_ip, connect_port)
+    print('connected')
     inst.close()
+    print('closed')
 
 c1()
