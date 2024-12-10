@@ -98,7 +98,7 @@ class Comm:
                 print('accepted')
                 print('connected:', connectedTarget)
                 print('self target:', self.target)
-                if connectedTarget == self.target: 
+                if connectedTarget[0] == self.target[0]: # verify IP, not port
                     connectionSuccess = True
                     print('success, break:', connectionSuccess)
                     break
