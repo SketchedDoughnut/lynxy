@@ -81,11 +81,6 @@ class Comm:
         if ourRandom > targetRandom: 
             self.TCP_client.connect(self.target)
             self.actual_target = self.target
-            # we send our public key
-            self.TCP_client.send(self.sec.int_pub_key)
-            # then recieve their public key
-            recievedPubKey = self.TCP_client.recv(1024)
-            self.sec.load_RSA(recievedPubKey)
         # meaning we bind (second)
         elif ourRandom < targetRandom:
             # we try (attempts) times to connect
@@ -103,11 +98,8 @@ class Comm:
                     break
             # raise error if connection failed
             if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'The incorrect target machine connected to this machine {attempts} times.') 
-            # we recieve their public key
-            recievedPubKey = self.TCP_client.recv(1024)
-            self.sec.load_RSA(recievedPubKey)
-            # then send our public key
-            self.TCP_client.send(self.sec.int_pub_key)
+        # do the handshake to exchange RSA keys
+        self._handshake(ourRandom > targetRandom)
         return None
 
 
@@ -147,6 +139,23 @@ class Comm:
         # we close our UDP and return
         self.UDP_client.close()
         return (randNum, incomingNum)
+    
+
+    # this function manages handshakes
+    def _handshake(self, is_first: bool) -> None:
+        if is_first:
+            # we send our public key
+            self.TCP_client.send(self.sec.int_pub_key)
+            # then recieve their public key
+            recievedPubKey = self.TCP_client.recv(1024)
+            self.sec.load_RSA(recievedPubKey)
+        else:
+            # we recieve their public key
+            recievedPubKey = self.TCP_client.recv(1024)
+            self.sec.load_RSA(recievedPubKey)
+            # then send our public key
+            self.TCP_client.send(self.sec.int_pub_key)
+        return None
     
 
     # this function closes the connection between the two machines
