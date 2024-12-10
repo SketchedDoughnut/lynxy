@@ -77,6 +77,7 @@ class Comm:
             # TODO
             print('first')
             self.TCP_client.connect(self.target)
+            print('connected')
 
         # meaning we bind (second)
         elif ourRandom < targetRandom:
@@ -87,13 +88,17 @@ class Comm:
             # is not the one we wanted to connect to
             print('second')
             connectionSuccess = False
-            for _ in range(attempts):
+            for attemptNum in range(attempts):
+                print('attempt:', attemptNum)
                 self.__regen_TCP()
                 self.TCP_client.bind((self.host, self.port))
+                print('binded')
                 self.TCP_client.listen(1) # only listen for 1 connection
                 self.TCP_client, connectedTarget = self.TCP_client.accept()
+                print('accepted')
                 if connectedTarget == self.target: 
                     connectionSuccess = True
+                    print('success, break:', connectionSuccess)
                     break
             if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'The incorrect target machine connected to this machine {attempts} times.')   
 
