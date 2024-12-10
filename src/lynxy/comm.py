@@ -89,20 +89,15 @@ class Comm:
         self.__regen_TCP()
         # meaning we connect (first)
         if ourRandom > targetRandom: 
-
-            print('first')
-
             self.TCP_client.connect(self.target)
+            self.actual_target = self.target
         # meaning we bind (second)
         elif ourRandom < targetRandom:
             # we try (attempts) times to connect
             # an invalid connection is if the client that connects
             # is not the one we wanted to connect to
-
-            print('second')
-
             connectionSuccess = False
-            for attemptNum in range(attempts):
+            for _ in range(attempts):
                 self.__regen_TCP()
                 self.TCP_client.bind((self.host, self.port))
                 self.TCP_client.listen(1) # only listen for 1 connection
@@ -111,6 +106,7 @@ class Comm:
                     self.actual_target = connectedTarget
                     connectionSuccess = True
                     break
+            # raise error if connection failed
             if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'The incorrect target machine connected to this machine {attempts} times.')   
         return None
 

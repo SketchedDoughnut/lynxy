@@ -12,5 +12,4 @@ def c1():
     print(inst.comm.get_actual_target())
     inst.close()
     print('closed')
-
 c1()
