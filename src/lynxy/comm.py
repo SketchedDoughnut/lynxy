@@ -61,7 +61,21 @@ class Comm:
 
 
     # this returns the host IP
-    def get_host(self) -> tuple[str, int]: return self.host, self.port
+    def get_host(self) -> tuple[str, int]: 
+        '''
+        Returns the IP and port of this machine, in a tuple.
+        '''
+        return self.host, self.port
+
+
+    # this returns the actual target
+    # that target being the active TCP connection
+    def get_actual_target(self) -> tuple[str, int]:
+        '''
+        Returns the IP and port of the other active machine in a TCP connection,
+        in a tuple.
+        '''
+        return self.actual_target
 
     
     # this function handles the UDP connection that helps make the TCP connection
@@ -86,7 +100,7 @@ class Comm:
             # is not the one we wanted to connect to
 
             print('second')
-            
+
             connectionSuccess = False
             for attemptNum in range(attempts):
                 self.__regen_TCP()
