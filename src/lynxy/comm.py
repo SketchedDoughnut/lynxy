@@ -76,7 +76,7 @@ class Comm:
 
             # TODO
             # self.TCP_client.connect(self.target)
-            print('im first!') #################################################
+            print('im first!')
 
         # meaning we bind
         elif ourRandom < targetRandom:
@@ -85,7 +85,7 @@ class Comm:
             # self.TCP_client.bind((self.host, self.port))
             # self.TCP_client.listen(1)
             # self.TCP_client, self.target = self.TCP_client.accept()
-            print('im second!') #################################################
+            print('im second')
             
         return None
 
