@@ -52,6 +52,14 @@ class Lynxy:
     def close(self) -> None: self.comm._close_connection()
 
 
+    # this gets the host 
+    def get_host(self) -> None: return self.comm._get_host()
+
+
+    # this gets the target info
+    def get_actual_target(self) -> None: return self.comm._get_actual_target()
+
+
     # a function used to distinguish whether or not to print,
     # different from the default printing function but not overwriting it
     # def pprint(self, data: str) -> None: print(data) if self.do_print else print('', end='')
