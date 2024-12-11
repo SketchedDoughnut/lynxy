@@ -187,7 +187,7 @@ class Comm:
         encryptedData = self.sec.RSA_encrypt(data) # encrypt our data
         intData = int.from_bytes(encryptedData) # convert our data into int
         byteLimit = int.bit_length(intData) # finds out how many bytes it takes to represent our int
-        networkByteOrderByteLimit= socket.htonl(byteLimit) # convert to network byte order
+        networkByteOrderByteLimit = socket.htonl(byteLimit) # convert to network byte order
         self.TCP_client.sendall(pickle.dumps(networkByteOrderByteLimit)) # send length over
         return self.TCP_client.sendall(encryptedData)
     
@@ -196,7 +196,10 @@ class Comm:
     # temporary recieving function
     def _recv(self) -> None:
         while True:
-            encryptedData = self.TCP_client.recv(1024)
-            networkByteOrderByteLimit: int = pickle.loads(encryptedData)
-            byteLimit = socket.ntohl(networkByteOrderByteLimit)
-            print(byteLimit)
+            encryptedByteLimit = self.TCP_client.recv(1024) # recieve encrypted data
+            networkByteOrderByteLimit: int = pickle.loads(encryptedByteLimit) # load byte length
+            byteLimit = socket.ntohl(networkByteOrderByteLimit) # convert to host version
+            print('byte limit:', byteLimit) 
+            encryptedData = self.TCP_client.recv(byteLimit) # recieve bytes length
+            data = self.sec.RSA_decrypt(encryptedData) # decrypt data normally
+            print('recieved:', data)
