@@ -13,6 +13,7 @@ consider:
 - https://github.com/MagicStack/uvloop?tab=Apache-2.0-1-ov-file
 - https://stackoverflow.com/questions/27435284/multiprocessing-vs-multithreading-vs-asyncio
 - https://stackoverflow.com/questions/34252273/what-is-the-difference-between-socket-send-and-socket-sendall
+- https://stackoverflow.com/questions/1708835/python-socket-receive-incoming-packets-always-have-a-different-size
 
 Info about byte order:
 - https://www.ibm.com/docs/ja/zvm/7.2?topic=domains-network-byte-order-host-byte-order
