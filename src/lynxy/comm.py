@@ -25,6 +25,7 @@ import random
 
 # external modules
 from rich import print
+import rsa
 
 # files
 from .sec import Sec
@@ -155,16 +156,18 @@ class Comm:
     def _handshake(self, is_first: bool) -> None:
         if is_first:
             # we send our public key
-            self.TCP_client.sendall(self.sec.int_pub_key)
+            self.TCP_client.sendall(f'{self.sec.int_pub_key}'.encode())
             # then recieve their public key
             recievedPubKey = self.TCP_client.recv(1024)
-            self.sec.load_RSA(recievedPubKey)
+            properPubKey: rsa.PublicKey = recievedPubKey.decode()
+            self.sec.load_RSA(properPubKey)
         else:
             # we recieve their public key
             recievedPubKey = self.TCP_client.recv(1024)
-            self.sec.load_RSA(recievedPubKey)
+            properPubKey: rsa.PublicKey = recievedPubKey.decode()
+            self.sec.load_RSA(properPubKey)
             # then send our public key
-            self.TCP_client.sendall(self.sec.int_pub_key)
+            self.TCP_client.sendall(f'{self.sec.int_pub_key}'.encode())
         return None
     
 

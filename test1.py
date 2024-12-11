@@ -10,6 +10,7 @@ def c1():
     inst.connect(connect_ip, connect_port)
     print('connected')
     print(inst.get_actual_target())
+    print(inst.comm.sec.ext_pub_key)
     inst.close()
     print('closed')
 c1()
