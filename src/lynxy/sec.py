@@ -43,9 +43,7 @@ class Sec:
 
 
     # function that loads RSA public key
-    def load_RSA(self, ext_pub_key: rsa.PublicKey) -> None: 
-        self.ext_pub_key = ext_pub_key
-        return None
+    def load_RSA(self, ext_pub_key: rsa.PublicKey) -> None: self.ext_pub_key = ext_pub_key
 
 
     # function that loads Fernet key
