@@ -201,12 +201,14 @@ class Comm:
     def _recv(self) -> None:
         while True:
             recievedByteLimit = self.TCP_client.recv(2048) # recieve encrypted data
+            if recievedByteLimit == b"": return
             print('recieve:', recievedByteLimit)
             networkByteOrderByteLimit: int = pickle.loads(recievedByteLimit) # load byte length
             print('network order:', networkByteOrderByteLimit)
             byteLimit = socket.ntohl(networkByteOrderByteLimit) # convert to host version
             print('byte limit:', byteLimit) 
-            encryptedData = self.TCP_client.recv(10000) # recieve bytes length
+            encryptedData = self.TCP_client.recv(byteLimit) # recieve bytes length
+            if encryptedData == b"": return
             print('encrypt:', encryptedData)
             data = self.sec.RSA_decrypt(encryptedData) # decrypt data normally
             print('recieved:', data)
