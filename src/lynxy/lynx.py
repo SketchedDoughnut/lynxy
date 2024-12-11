@@ -59,6 +59,10 @@ class Lynxy:
     def get_actual_target(self) -> tuple[str, int]: return self.comm._get_actual_target()
 
 
+    # this sends data
+    def send(self, data: any) -> int: return self.comm._send(data)
+
+    
     # a function used to distinguish whether or not to print,
     # different from the default printing function but not overwriting it
     # def pprint(self, data: str) -> None: print(data) if self.do_print else print('', end='')

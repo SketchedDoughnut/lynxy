@@ -192,8 +192,9 @@ class Comm:
         print('encrypted network byte limit:', encryptedByteLimit)
         self.TCP_client.sendall(encryptedByteLimit) # send length over
         print('sent 1')
-        self.TCP_client.sendall(encryptedData)
+        status = self.TCP_client.sendall(encryptedData)
         print('sent 2')
+        return status
     
 
     # TODO
