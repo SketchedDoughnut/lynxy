@@ -196,10 +196,10 @@ class Comm:
     # temporary recieving function
     def _recv(self) -> None:
         while True:
-            encryptedByteLimit = self.TCP_client.recv(11024) # recieve encrypted data
-            networkByteOrderByteLimit: int = pickle.loads(encryptedByteLimit) # load byte length
+            recievedByteLimit = self.TCP_client.recv(2048) # recieve encrypted data
+            networkByteOrderByteLimit: int = pickle.loads(recievedByteLimit) # load byte length
             byteLimit = socket.ntohl(networkByteOrderByteLimit) # convert to host version
             print('byte limit:', byteLimit) 
-            encryptedData = self.TCP_client.recv(byteLimit) # recieve bytes length
+            encryptedData = self.TCP_client.recv(10000) # recieve bytes length
             data = self.sec.RSA_decrypt(encryptedData) # decrypt data normally
             print('recieved:', data)
