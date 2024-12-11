@@ -188,7 +188,7 @@ class Comm:
         intData = int.from_bytes(encryptedData) # convert our data into int
         byteLimit = int.bit_length(intData) # finds out how many bytes it takes to represent our int
         networkByteOrderByteLimit= socket.htonl(byteLimit) # convert to network byte order
-        self.TCP_client.sendall(networkByteOrderByteLimit.to_bytes()) # send length over
+        self.TCP_client.sendall(pickle.dumps(networkByteOrderByteLimit)) # send length over
         return self.TCP_client.sendall(encryptedData)
     
 
@@ -197,6 +197,6 @@ class Comm:
     def _recv(self) -> None:
         while True:
             encryptedData = self.TCP_client.recv(1024)
-            networkByteOrderByteLimit = int.from_bytes(encryptedData)
+            networkByteOrderByteLimit: int = pickle.loads(encryptedData)
             byteLimit = socket.ntohl(networkByteOrderByteLimit)
             print(byteLimit)
