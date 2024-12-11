@@ -184,24 +184,32 @@ class Comm:
 
     # this function sends data to the other machine
     def _send(self, data: any) -> int:
-        # first, send length of data
         encryptedData = self.sec.RSA_encrypt(data) # encrypt our data
-        intData = int.from_bytes(encryptedData) # convert our data into int
-        byteLimit = int.bit_length(intData) # finds out how many bytes it takes to represent our int
-        networkByteOrderByteLimit = socket.htonl(byteLimit) # convert to network byte order
-        self.TCP_client.sendall(pickle.dumps(networkByteOrderByteLimit)) # send length over
-        return self.TCP_client.sendall(encryptedData) # send actual
+        paddedData = self.parser.addPadding(encryptedData) # format it into proper padding
+        encodedData = paddedData.encode() # encode our padded data
+        return self.TCP_client.sendall(encodedData) # send our encoded data and return status
+
+        ############################################################################################
+        # # first, send length of data
+        # encryptedData = self.sec.RSA_encrypt(data) # encrypt our data
+        # intData = int.from_bytes(encryptedData) # convert our data into int
+        # byteLimit = int.bit_length(intData) # finds out how many bytes it takes to represent our int
+        # networkByteOrderByteLimit = socket.htonl(byteLimit) # convert to network byte order
+        # self.TCP_client.sendall(pickle.dumps(networkByteOrderByteLimit)) # send length over
+        # return self.TCP_client.sendall(encryptedData) # send actual
     
 
     # TODO
     # temporary recieving function
     def _recv(self) -> None:
         while True:
-            recievedByteLimit = self.TCP_client.recv(2048) # recieve encrypted data
-            if len(recievedByteLimit) == 0: return # ignore empty length indicator
-            networkByteOrderByteLimit: int = pickle.loads(recievedByteLimit) # load byte length
-            byteLimit = socket.ntohl(networkByteOrderByteLimit) # convert to host version
-            encryptedData = self.TCP_client.recv(byteLimit) # recieve bytes length
-            if len(encryptedData) == 0: return # ignore empty data
-            data = self.sec.RSA_decrypt(encryptedData) # decrypt data normally
-            print('recv:', data) 
+            pass
+
+            # recievedByteLimit = self.TCP_client.recv(2048) # recieve encrypted data
+            # if len(recievedByteLimit) == 0: return # ignore empty length indicator
+            # networkByteOrderByteLimit: int = pickle.loads(recievedByteLimit) # load byte length
+            # byteLimit = socket.ntohl(networkByteOrderByteLimit) # convert to host version
+            # encryptedData = self.TCP_client.recv(byteLimit) # recieve bytes length
+            # if len(encryptedData) == 0: return # ignore empty data
+            # data = self.sec.RSA_decrypt(encryptedData) # decrypt data normally
+            # print('recv:', data) 

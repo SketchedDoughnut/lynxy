@@ -1,7 +1,16 @@
 from src import lynxy
+from rich import print
+import random
+#################################################################################
+inst = lynxy.Lynxy()
+#################################################################################
 
-inst = lynxy.Lynxy(bind=True)
-print(inst.get_host())
-inst.connect(inst.get_host()[0], inst.get_host()[1])
-print('connected!')
-print('external pub:', inst.comm.sec.ext_pub_key)
+# message = 'dsdfsadjkhhgjhghkjhlkhlkjhlkjhklhjklhjlg;giu;kgfyijldjddkgjfsg'
+# encrypted = inst.comm.sec.RSA_encrypt(message, use_internal=True)
+# intData = int.from_bytes(encrypted)
+# byteLength = int.bit_length(intData)
+# print('sending:', message)
+# print('encrypted:', encrypted)
+# print('integer data:', intData)
+# print('length of encrypted:', byteLength)
+# print('----------------------------------------------')
