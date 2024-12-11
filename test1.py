@@ -11,9 +11,6 @@ def c1():
     inst.connect(connect_ip, connect_port)
     print('connected')
     print(inst.get_actual_target())
-    print('int pub:', inst.comm.sec.int_pub_key)
-    print('int priv:', inst.comm.sec.int_priv_key)
-    print('ext pub:', inst.comm.sec.ext_pub_key)
     # get stuck in recv loop
     inst.comm._recv()
     inst.close()

@@ -197,9 +197,10 @@ class Comm:
     def _recv(self) -> None:
         while True:
             recievedByteLimit = self.TCP_client.recv(2048) # recieve encrypted data
-            if recievedByteLimit == b"": return
+            if len(recievedByteLimit) == 0: return # ignore empty length indicator
             networkByteOrderByteLimit: int = pickle.loads(recievedByteLimit) # load byte length
             byteLimit = socket.ntohl(networkByteOrderByteLimit) # convert to host version
             encryptedData = self.TCP_client.recv(byteLimit) # recieve bytes length
+            if len(encryptedData) == 0: return # ignore empty data
             data = self.sec.RSA_decrypt(encryptedData) # decrypt data normally
             print('recv:', data)
