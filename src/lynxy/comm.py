@@ -185,20 +185,11 @@ class Comm:
     def _send(self, data: any) -> int:
         # first, send length of data
         encryptedData = self.sec.RSA_encrypt(data) # encrypt our data
-        print('encrypted:', encryptedData)
         intData = int.from_bytes(encryptedData) # convert our data into int
-        print('int data:', intData)
         byteLimit = int.bit_length(intData) # finds out how many bytes it takes to represent our int
-        print('byte requirement:', byteLimit)
         networkByteOrderByteLimit= socket.htonl(byteLimit) # convert to network byte order
-        print('network byte order byte limit:', networkByteOrderByteLimit)
-        encryptedByteLimit = self.sec.RSA_encrypt(networkByteOrderByteLimit) # encrypt for sending
-        print('encrypted network byte limit:', encryptedByteLimit)
-        self.TCP_client.sendall(encryptedByteLimit) # send length over
-        print('sent 1')
-        status = self.TCP_client.sendall(encryptedData)
-        print('sent 2')
-        return status
+        self.TCP_client.sendall(networkByteOrderByteLimit.to_bytes()) # send length over
+        return self.TCP_client.sendall(encryptedData)
     
 
     # TODO
@@ -206,5 +197,7 @@ class Comm:
     def _recv(self) -> None:
         while True:
             encryptedData = self.TCP_client.recv(1024)
-            encryptedData = self.sec.RSA_decrypt()
+            networkByteOrderByteLimit = int.from_bytes(encryptedData)
+            byteLimit = socket.ntohl(networkByteOrderByteLimit)
+            print(byteLimit)
             socket.ntohs()

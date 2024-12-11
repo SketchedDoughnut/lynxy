@@ -11,6 +11,8 @@ def c1():
     print('connected')
     print(inst.get_actual_target())
     print(inst.comm.sec.ext_pub_key)
+    # get stuck in recv loop
+    inst.comm._recv()
     inst.close()
     print('closed')
 c1()
