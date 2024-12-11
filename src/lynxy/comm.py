@@ -22,6 +22,7 @@ Info about byte order:
 # included modules
 import socket
 import random
+import pickle
 
 # external modules
 from rich import print
@@ -156,18 +157,18 @@ class Comm:
     def _handshake(self, is_first: bool) -> None:
         if is_first:
             # we send our public key
-            self.TCP_client.sendall(f'{self.sec.int_pub_key}'.encode())
+            self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
             # then recieve their public key
             recievedPubKey = self.TCP_client.recv(1024)
-            properPubKey: rsa.PublicKey = recievedPubKey.decode()
+            properPubKey: rsa.PublicKey = pickle.loads(recievedPubKey)
             self.sec.load_RSA(properPubKey)
         else:
             # we recieve their public key
             recievedPubKey = self.TCP_client.recv(1024)
-            properPubKey: rsa.PublicKey = recievedPubKey.decode()
+            properPubKey: rsa.PublicKey = pickle.loads(recievedPubKey)
             self.sec.load_RSA(properPubKey)
             # then send our public key
-            self.TCP_client.sendall(f'{self.sec.int_pub_key}'.encode())
+            self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
         return None
     
 
