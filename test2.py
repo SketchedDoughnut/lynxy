@@ -1,4 +1,5 @@
 from src import lynxy
+from rich import print
 
 def c2():
     inst = lynxy.Lynxy(host_port=11112, bind=True)
@@ -10,7 +11,9 @@ def c2():
     inst.connect(connect_ip, connect_port)
     print('connected')
     print(inst.get_actual_target())
-    print(inst.comm.sec.ext_pub_key)
+    print('int pub:', inst.comm.sec.int_pub_key)
+    print('int priv:', inst.comm.sec.int_priv_key)
+    print('ext pub:', inst.comm.sec.ext_pub_key)
     inst.send('test!')
     inst.close()
     print('closed')
