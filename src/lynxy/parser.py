@@ -22,9 +22,5 @@ class Parser:
     def removePadding(self, message: str, remove_invalid: bool = True) -> list:
         splitMessage = message.split(self.endMarker)
         if len(splitMessage[-1]) == 0: splitMessage.pop(-1)
-        if remove_invalid: 
-            # https://www.geeksforgeeks.org/python-get-last-n-characters-of-a-string/
-            paddingSection = message[len(message) - len(self.endMarker):]
-            print(paddingSection)
-            if paddingSection != self.endMarker: splitMessage.pop(-1)
+        if remove_invalid and not message.endswith(self.endMarker): splitMessage.pop(-1)
         return splitMessage

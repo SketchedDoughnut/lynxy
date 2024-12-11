@@ -27,11 +27,9 @@ import pickle
 
 # external modules
 from rich import print
-import rsa
 
 # files
 from .sec import Sec
-from .parser import Parser
 from .exceptions import Exceptions
 
 ####################################################
@@ -42,7 +40,6 @@ class Comm:
         # this is an instance of the security manager
         self.sec = Sec()
         # this is an instance of the parser
-        self.parser = Parser()
         # this is the internal client used for sending and recieving
         if len(host) > 0: self.host = host
         else: self.host = socket.gethostbyname(socket.gethostname())
@@ -182,34 +179,27 @@ class Comm:
         return
 
 
+    # TODO
     # this function sends data to the other machine
     def _send(self, data: any) -> int:
-        encryptedData = self.sec.RSA_encrypt(data) # encrypt our data
-        paddedData = self.parser.addPadding(encryptedData) # format it into proper padding
-        encodedData = paddedData.encode() # encode our padded data
-        return self.TCP_client.sendall(encodedData) # send our encoded data and return status
-
-        ############################################################################################
-        # # first, send length of data
-        # encryptedData = self.sec.RSA_encrypt(data) # encrypt our data
-        # intData = int.from_bytes(encryptedData) # convert our data into int
-        # byteLimit = int.bit_length(intData) # finds out how many bytes it takes to represent our int
-        # networkByteOrderByteLimit = socket.htonl(byteLimit) # convert to network byte order
-        # self.TCP_client.sendall(pickle.dumps(networkByteOrderByteLimit)) # send length over
-        # return self.TCP_client.sendall(encryptedData) # send actual
+        # find how many bytes encrypted data is
+        encryptedData = self.sec.RSA_encrypt(data)
+        intData = int.from_bytes(encryptedData)
+        byteCount = intData.bit_length() # how many bits it takes to represent our int
+        networkByteOrder = socket.htonl(byteCount)
+        self.TCP_client.sendall(networkByteOrder) # send length
+        return self.TCP_client.sendall(encryptedData) # send actual data
     
 
     # TODO
     # temporary recieving function
     def _recv(self) -> None:
         while True:
-            pass
-
-            # recievedByteLimit = self.TCP_client.recv(2048) # recieve encrypted data
-            # if len(recievedByteLimit) == 0: return # ignore empty length indicator
-            # networkByteOrderByteLimit: int = pickle.loads(recievedByteLimit) # load byte length
-            # byteLimit = socket.ntohl(networkByteOrderByteLimit) # convert to host version
-            # encryptedData = self.TCP_client.recv(byteLimit) # recieve bytes length
-            # if len(encryptedData) == 0: return # ignore empty data
-            # data = self.sec.RSA_decrypt(encryptedData) # decrypt data normally
-            # print('recv:', data) 
+            # recieve how many bytes message is
+            recievedNetworkOrder = self.TCP_client.recv(1024)
+            byteCount = socket.ntohl(recievedNetworkOrder)
+            if byteCount == 0: continue
+            # recieve byteCount amount of bytes of data
+            recievedData = self.TCP_client.recv(byteCount)
+            decryptedData = self.sec.RSA_decrypt(recievedData)
+            print('recv:', decryptedData)
