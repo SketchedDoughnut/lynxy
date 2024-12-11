@@ -12,11 +12,19 @@ consider:
 - https://stackoverflow.com/questions/50216417/why-use-socket-io-and-not-just-socket
 - https://github.com/MagicStack/uvloop?tab=Apache-2.0-1-ov-file
 - https://stackoverflow.com/questions/27435284/multiprocessing-vs-multithreading-vs-asyncio
+- https://stackoverflow.com/questions/34252273/what-is-the-difference-between-socket-send-and-socket-sendall
+
+Info about byte order:
+- https://www.ibm.com/docs/ja/zvm/7.2?topic=domains-network-byte-order-host-byte-order
+- https://stackoverflow.com/questions/71695996/can-you-give-some-practical-uses-of-socket-ntohlx-in-socket-programming-in
 '''
 
 # included modules
 import socket
 import random
+
+# external modules
+from rich import print
 
 # files
 from .sec import Sec
@@ -147,7 +155,7 @@ class Comm:
     def _handshake(self, is_first: bool) -> None:
         if is_first:
             # we send our public key
-            self.TCP_client.send(self.sec.int_pub_key)
+            self.TCP_client.sendall(self.sec.int_pub_key)
             # then recieve their public key
             recievedPubKey = self.TCP_client.recv(1024)
             self.sec.load_RSA(recievedPubKey)
@@ -156,7 +164,7 @@ class Comm:
             recievedPubKey = self.TCP_client.recv(1024)
             self.sec.load_RSA(recievedPubKey)
             # then send our public key
-            self.TCP_client.send(self.sec.int_pub_key)
+            self.TCP_client.sendall(self.sec.int_pub_key)
         return None
     
 
@@ -167,3 +175,31 @@ class Comm:
         self.__regen_TCP()
         self.UDP_binded = False
         return
+
+
+    # this function sends data to the other machine
+    def _send(self, data: any) -> int:
+        # first, send length of data
+        encryptedData = self.sec.RSA_encrypt(data) # encrypt our data
+        print('encrypted:', encryptedData)
+        intData = int.from_bytes(encryptedData) # convert our data into int
+        print('int data:', intData)
+        byteLimit = int.bit_length(intData) # finds out how many bytes it takes to represent our int
+        print('byte requirement:', byteLimit)
+        networkByteOrderByteLimit= socket.htonl(byteLimit) # convert to network byte order
+        print('network byte order byte limit:', networkByteOrderByteLimit)
+        encryptedByteLimit = self.sec.RSA_encrypt(networkByteOrderByteLimit) # encrypt for sending
+        print('encrypted network byte limit:', encryptedByteLimit)
+        self.TCP_client.sendall(encryptedByteLimit) # send length over
+        print('sent 1')
+        self.TCP_client.sendall(encryptedData)
+        print('sent 2')
+    
+
+    # TODO
+    # temporary recieving function
+    def _recv(self) -> None:
+        while True:
+            encryptedData = self.TCP_client.recv(1024)
+            encryptedData = self.sec.RSA_decrypt()
+            socket.ntohs()
