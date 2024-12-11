@@ -59,6 +59,7 @@ class Sec:
         # otherwise we use ext_pub_key
         if use_internal: activeKey = self.int_pub_key
         else: activeKey = self.ext_pub_key
+        print(activeKey == self.ext_pub_key)
         if activeKey == None: raise Exceptions.NoExteralPublicKeyError()
         pickledData = pickle.dumps(data)
         encryptedData = rsa.encrypt(pickledData, activeKey)
