@@ -17,7 +17,6 @@ class Parser:
     def addPadding(self, message: any) -> str: return f'{message}{self.endMarker}'
 
 
-
     # this function splits the messages by the start marker
     # and can optionally discard invalid endings that aren't complete
     def removePadding(self, message: str, remove_invalid: bool = True) -> list:
