@@ -204,4 +204,4 @@ class Comm:
             encryptedData = self.TCP_client.recv(byteLimit) # recieve bytes length
             if len(encryptedData) == 0: return # ignore empty data
             data = self.sec.RSA_decrypt(encryptedData) # decrypt data normally
-            print('recv:', data)
+            print('recv:', data) 
