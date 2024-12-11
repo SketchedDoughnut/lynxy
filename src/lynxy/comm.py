@@ -200,4 +200,3 @@ class Comm:
             networkByteOrderByteLimit = int.from_bytes(encryptedData)
             byteLimit = socket.ntohl(networkByteOrderByteLimit)
             print(byteLimit)
-            socket.ntohs()
