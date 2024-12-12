@@ -69,7 +69,7 @@ class Comm:
         ###########################################################
         # if UDP_bind, immediately bind to host and port
         if UDP_bind: 
-            self.UDP_client.bind((self.host, self.port))
+            self.__bind_UDP()
             self.UDP_binded = True
 
 
@@ -79,6 +79,14 @@ class Comm:
 
     # this regenerates the TCP client
     def __regen_TCP(self) -> None: self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+
+    # this binds the UDP client
+    def __bind_UDP(self) -> None: self.UDP_client.bind((self.host, self.port))
+
+
+    # this binds the TCP client
+    def __bind_TCP(self) -> None: self.TCP_client.bind((self.host, self.port))
 
 
     # this returns the host IP
@@ -111,7 +119,7 @@ class Comm:
             connectionSuccess = False
             for _ in range(attempts):
                 self.__regen_TCP()
-                self.TCP_client.bind((self.host, self.port))
+                self.__bind_TCP()
                 self.TCP_client.listen(1) # only listen for 1 connection
                 self.TCP_client, connectedTarget = self.TCP_client.accept()
                 if connectedTarget[0] == self.target[0]: # verify IP, not port
@@ -131,7 +139,7 @@ class Comm:
         # first, we bind to our port / ip if not already
         if not self.UDP_binded: 
             self.__regen_UDP()
-            self.UDP_client.bind((self.host, self.port))
+            self.__bind_UDP()
             self.UDP_binded = True
         # now, we generate and send a random number
         randNum = random.randint(0, 1000) + random.randint(0, 1000)
