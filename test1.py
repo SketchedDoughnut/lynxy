@@ -1,5 +1,6 @@
 from src import lynxy
 from rich import print
+import threading
 
 def c1():
     inst = lynxy.Lynxy(host_port=11111, bind=True)
@@ -12,7 +13,9 @@ def c1():
     print('connected')
     print(inst.get_actual_target())
     # get stuck in recv loop
-    inst.comm._recv()
+    threading.Thread(target=lambda:inst.comm._recv()).start()
+    while True:
+        inst.send(input('-> '))
     inst.close()
     print('closed')
 c1()
