@@ -193,7 +193,7 @@ class Comm:
         intData = int.from_bytes(encryptedData)
         byteCount = intData.bit_length() # how many bits it takes to represent our int
         networkByteOrder = socket.htonl(byteCount)
-        self.TCP_client.sendall(pickle.dumps(networkByteOrder)) # send length
+        self.TCP_client.sendall(pickle.dumps((networkByteOrder, intData))) # send length and int data
         return self.TCP_client.sendall(encryptedData) # send actual data
     
 
@@ -207,8 +207,11 @@ class Comm:
             if not recievedNetworkOrder: continue # if empty ("b''")
             unpickledNetworkByteOrder = pickle.loads(recievedNetworkOrder)
             print('unpickle:', unpickledNetworkByteOrder)
-            byteCount = socket.ntohl(unpickledNetworkByteOrder)
+            byteData = unpickledNetworkByteOrder[0]
+            intdata = unpickledNetworkByteOrder[1]
+            byteCount = socket.ntohl(byteData)
             print('bytecount:', byteCount)
+            print('int data:', intdata)
             # recieve byteCount amount of bytes of data
             while True:
                 recievedData = self.TCP_client.recv(byteCount)
