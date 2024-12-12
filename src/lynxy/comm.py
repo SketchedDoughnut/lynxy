@@ -32,6 +32,7 @@ from rich import print
 
 # files
 from .sec import Sec
+from .parser import Parser
 from .exceptions import Exceptions
 
 ####################################################
@@ -42,6 +43,7 @@ class Comm:
         # this is an instance of the security manager
         self.sec = Sec()
         # this is an instance of the parser
+        self.parser = Parser()
         # this is the internal client used for sending and recieving
         if len(host) > 0: self.host = host
         else: self.host = socket.gethostbyname(socket.gethostname())
