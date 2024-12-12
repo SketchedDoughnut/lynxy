@@ -212,6 +212,7 @@ class Comm:
             # recieve byteCount amount of bytes of data
             while True:
                 recievedData = self.TCP_client.recv(byteCount)
+                print('recieved in loop:', recievedData)
                 if not recievedData: continue # if empty ("b''") 
                 break
             print('actual:', recievedData)
