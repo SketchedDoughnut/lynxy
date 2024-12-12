@@ -207,11 +207,13 @@ class Comm:
 
         # find how many bytes encrypted data is
         encryptedData = self.sec.RSA_encrypt(data)
-        intData = int.from_bytes(encryptedData)
+        paddedData = self.parser.addPadding(encryptedData)
+        encodedData = paddedData.encode()
+        intData = int.from_bytes(encodedData) # originally encryptedData
         byteCount = intData.bit_length() # how many bits it takes to represent our int
         networkByteOrder = socket.htonl(byteCount)
         self.TCP_client.sendall(pickle.dumps(networkByteOrder)) # send length
-        self.TCP_client.sendall(encryptedData) # send actual data
+        self.TCP_client.sendall(encodedData) # send actual data # originally encryptedData
         return
     
 
@@ -234,5 +236,9 @@ class Comm:
                 if not recievedData: continue # if empty ("b''") 
                 break
             # print('actual:', recievedData)
+            decodedData = recievedData.decode()
+            unpaddedData = self.parser.removePadding(decodedData)
+            print(unpaddedData)
+            continue
             decryptedData = self.sec.RSA_decrypt(recievedData)
             print('recv:', decryptedData)
