@@ -183,7 +183,9 @@ class Comm:
 
     # TODO
     # this function sends data to the other machine
-    def _send(self, data: any) -> int:
+    def _send(self, data: any, ignore_errors: bool = False) -> int:
+        # if empty raise error
+        if data is None and not ignore_errors: raise Exceptions.EmptyDataError()
         # find how many bytes encrypted data is
         encryptedData = self.sec.RSA_encrypt(data)
         intData = int.from_bytes(encryptedData)
