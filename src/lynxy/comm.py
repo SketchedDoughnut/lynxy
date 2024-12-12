@@ -201,9 +201,13 @@ class Comm:
         while True:
             # recieve how many bytes message is
             recievedNetworkOrder = self.TCP_client.recv(1024)
-            byteCount = socket.ntohl(pickle.loads(recievedNetworkOrder))
-            if byteCount == 0: continue
+            if not recievedNetworkOrder: continue # if empty ("b''")
+            unpickledNetworkByteOrder = pickle.loads(recievedNetworkOrder)
+            byteCount = socket.ntohl(unpickledNetworkByteOrder)
             # recieve byteCount amount of bytes of data
-            recievedData = self.TCP_client.recv(byteCount)
+            while True:
+                recievedData = self.TCP_client.recv(byteCount)
+                if not recievedData: continue # if empty ("b''") 
+                break
             decryptedData = self.sec.RSA_decrypt(recievedData)
             print('recv:', decryptedData)
