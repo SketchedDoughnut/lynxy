@@ -16,10 +16,18 @@ consider:
 - https://stackoverflow.com/questions/1708835/python-socket-receive-incoming-packets-always-have-a-different-size
 - https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
 - https://stackoverflow.com/questions/42415207/send-receive-data-with-python-socket
+- https://stackoverflow.com/questions/2184181/decoding-tcp-packets-using-python
+- https://stackoverflow.com/questions/71547304/python-tcp-socket-is-merging-data
 
 Info about byte order:
 - https://www.ibm.com/docs/ja/zvm/7.2?topic=domains-network-byte-order-host-byte-order
 - https://stackoverflow.com/questions/71695996/can-you-give-some-practical-uses-of-socket-ntohlx-in-socket-programming-in
+
+Scapy stuff:
+- https://scapy.readthedocs.io/en/latest/extending.html#using-scapy-in-your-tools
+- https://scapy.readthedocs.io/en/latest/installation.html
+- https://scapy.net/
+
 '''
 
 # included modules
