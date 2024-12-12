@@ -202,8 +202,9 @@ class Comm:
     # TODO
     # this function sends data to the other machine
     def _send(self, data: any, ignore_errors: bool = False) -> None:
-        # if empty raise error
         # TODO
+        # if empty raise error
+
         # find how many bytes encrypted data is
         encryptedData = self.sec.RSA_encrypt(data)
         intData = int.from_bytes(encryptedData)
@@ -211,12 +212,6 @@ class Comm:
         networkByteOrder = socket.htonl(byteCount)
         self.TCP_client.sendall(pickle.dumps(networkByteOrder)) # send length
         self.TCP_client.sendall(encryptedData) # send actual data
-        # basically just wait for a message before sending again
-        # TODO 
-        # TEMPORARY FIX THIS BY SEPERATING PACKETS ON RECV PROPERLY
-        returnStatus = self.TCP_client.recv(1024) # get return that success
-        loadedReturnStatus = pickle.loads(returnStatus)
-        print('return:', loadedReturnStatus)
         return
     
 
@@ -241,4 +236,3 @@ class Comm:
             print('actual:', recievedData)
             decryptedData = self.sec.RSA_decrypt(recievedData)
             print('recv:', decryptedData)
-            self.TCP_client.sendall(pickle.dumps('success'))
