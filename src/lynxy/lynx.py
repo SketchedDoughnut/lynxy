@@ -60,7 +60,7 @@ class Lynxy:
 
 
     # this sends data
-    def send(self, data: any) -> int: return self.comm._send(data)
+    def send(self, data: any) -> None: return self.comm._send(data)
 
     
     # a function used to distinguish whether or not to print,
