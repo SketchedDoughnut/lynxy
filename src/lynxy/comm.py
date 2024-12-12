@@ -191,7 +191,7 @@ class Comm:
         intData = int.from_bytes(encryptedData)
         byteCount = intData.bit_length() # how many bits it takes to represent our int
         networkByteOrder = socket.htonl(byteCount)
-        self.TCP_client.sendall(networkByteOrder) # send length
+        self.TCP_client.sendall(pickle.dumps(networkByteOrder)) # send length
         return self.TCP_client.sendall(encryptedData) # send actual data
     
 
@@ -201,7 +201,7 @@ class Comm:
         while True:
             # recieve how many bytes message is
             recievedNetworkOrder = self.TCP_client.recv(1024)
-            byteCount = socket.ntohl(recievedNetworkOrder)
+            byteCount = socket.ntohl(pickle.loads(recievedNetworkOrder))
             if byteCount == 0: continue
             # recieve byteCount amount of bytes of data
             recievedData = self.TCP_client.recv(byteCount)
