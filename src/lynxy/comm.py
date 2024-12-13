@@ -206,12 +206,14 @@ class Comm:
         # if empty raise error
 
         # find how many bytes encrypted data is
-        encryptedData = self.sec.RSA_encrypt(data)
-        intData = int.from_bytes(encryptedData)
+        encryptedData = self.sec.RSA_encrypt(data) # encryptdata
+        paddedData = self.parser.addPadding(encryptedData) # pad data
+        encodedData = paddedData.encode() # encode padded data
+        intData = int.from_bytes(encodedData) # get int of encoded data
         byteCount = intData.bit_length() # how many bits it takes to represent our int
-        networkByteOrder = socket.htonl(byteCount)
+        networkByteOrder = socket.htonl(byteCount) # convert to network (universal) order
         self.TCP_client.sendall(pickle.dumps(networkByteOrder)) # send length
-        self.TCP_client.sendall(encryptedData) # send actual data
+        self.TCP_client.sendall(encodedData) # send actual data
         return
     
 
@@ -221,18 +223,18 @@ class Comm:
         while True:
             # recieve how many bytes message is
             recievedNetworkOrder = self.TCP_client.recv(1024)
-            # print('network:', recievedNetworkOrder)
             if not recievedNetworkOrder: continue # if empty ("b''")
             unpickledNetworkByteOrder = pickle.loads(recievedNetworkOrder)
-            # print('unpickle:', unpickledNetworkByteOrder)
             byteCount = socket.ntohl(unpickledNetworkByteOrder)
-            # print('bytecount:', byteCount)
             # recieve byteCount amount of bytes of data
             while True:
                 recievedData = self.TCP_client.recv(byteCount)
-                # print('recieved in loop:', recievedData)
                 if not recievedData: continue # if empty ("b''") 
                 break
-            # print('actual:', recievedData)
-            decryptedData = self.sec.RSA_decrypt(recievedData)
-            print('recv:', decryptedData)
+            # decode and remove padding
+            decodedData = recievedData.decode()
+            unpaddedData = self.parser.removePadding(decodedData)
+            # decrypt each part
+            for indivData in unpaddedData:
+                decryptedData = self.sec.RSA_decrypt(indivData)
+                print('recv:', decryptedData)
