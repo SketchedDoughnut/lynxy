@@ -202,8 +202,9 @@ class Comm:
     # TODO
     # this function sends data to the other machine
     def _send(self, data: any, ignore_errors: bool = False) -> None:
+
         # TODO
-        # if empty raise error
+        # raise error if message is emtpy
 
         # find how many bytes encrypted data is
         encryptedData = self.sec.RSA_encrypt(data) # encryptdata
