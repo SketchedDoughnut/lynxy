@@ -242,7 +242,7 @@ class Comm:
 
                 if recievedByteCount >= targetByteCount: break
             # remove padding
-            unpaddedData = self.parser.removePadding(recievedData)
+            unpaddedData = self.parser.removePadding(recievedData, False)
             # decrypt each part
             for indivData in unpaddedData:
                 decryptedData = self.sec.RSA_decrypt(indivData)
