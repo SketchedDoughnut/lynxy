@@ -25,9 +25,6 @@ class Parser:
     # this function splits the messages by the start marker
     # and can optionally discard invalid endings that aren't complete
     def removePadding(self, message: bytes, remove_empty: bool = True) -> list:
-        # split message by end marker
-        splitMessage = message.split(self.byteEndMarker)
-        # saving incomplete packets
         '''
         basically how this works:
         When we split a message into a list, it has a whitespace where every end marker is.
@@ -35,6 +32,10 @@ class Parser:
         If it is, this means that there was an end marker. Otherwise, this means that that is an incomplete piece,
         and we can save that to self.carry for the next cycle.
         '''
+        # split message by end marker
+        splitMessage = message.split(self.byteEndMarker)
+        print(splitMessage)
+        # saving incomplete packets
         # if last marker is not zero, save to carry and remove
         if len(splitMessage[-1]) != 0: 
             self.carry = splitMessage[-1]
