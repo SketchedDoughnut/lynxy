@@ -18,4 +18,7 @@ def c1():
         inst.send(input('-> '), True)
     inst.close()
     print('closed')
-c1()
+# c1()
+
+inst = lynxy.Lynxy()
+print(inst.comm.parser.endMarker.encode())

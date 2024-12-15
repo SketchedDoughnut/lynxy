@@ -212,12 +212,11 @@ class Comm:
         # find how many bytes encrypted data is
         encryptedData = self.sec.RSA_encrypt(data) # encryptdata
         paddedData = self.parser.addPadding(encryptedData) # pad data
-        encodedData = paddedData.encode() # encode padded data
-        intData = int.from_bytes(encodedData) # get int of encoded data
+        intData = int.from_bytes(paddedData) # get int of encoded data
         byteCount = intData.bit_length() # how many bits it takes to represent our int
         networkByteOrder = socket.htonl(byteCount) # convert to network (universal) order
         self.TCP_client.sendall(pickle.dumps(networkByteOrder)) # send length
-        self.TCP_client.sendall(encodedData) # send actual data
+        self.TCP_client.sendall(paddedData) # send actual data
         return
     
 
@@ -229,12 +228,18 @@ class Comm:
             recievedNetworkOrder = self.TCP_client.recv(1024)
             if recievedNetworkOrder is None: continue # if empty ("b''")
             unpickledNetworkByteOrder = pickle.loads(recievedNetworkOrder)
-            byteCount = socket.ntohl(unpickledNetworkByteOrder)
+            targetByteCount = socket.ntohl(unpickledNetworkByteOrder)
             # recieve byteCount amount of bytes of data
+            # we load leftover to continue where it left off
+            recievedData = b''
             while True:
-                recievedData = self.TCP_client.recv(byteCount)
+                recievedData += self.TCP_client.recv(targetByteCount)
                 if recievedData is None: continue # if empty ("b''") 
-                break
+                # ensure full data recieved
+                intData = int.from_bytes(recievedData)
+                recievedByteCount = intData.bit_length()
+                print(recievedByteCount, targetByteCount)
+                if recievedByteCount >= targetByteCount: break
             # decode and remove padding
             decodedData = recievedData.decode()
             unpaddedData = self.parser.removePadding(decodedData)

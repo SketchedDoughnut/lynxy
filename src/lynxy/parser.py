@@ -11,25 +11,35 @@ from ast import literal_eval
 class Parser:
     def __init__(self): 
         # start marker for message
-        self.endMarker = ':~e~:'
+        self.stringEndMarker = ':~e~:'
+        self.byteEndMarker = ':~e~:'
 
 
     # this function prepares messages to be sent
     # takes in an input of the encrypted data and returns
     # it in a string with the start marker
-    def addPadding(self, message: any) -> str: return f'{message}{self.endMarker}'
+    def addPadding(self, message: bytes) -> bytes: return message + self.byteEndMarker
 
 
     # this function splits the messages by the start marker
     # and can optionally discard invalid endings that aren't complete
-    def removePadding(self, message: str, remove_invalid: bool = True) -> list:
-        # split into list, remove empty entries
-        # only if remove_invalid is True
-        splitMessage = message.split(self.endMarker)
+    def removePadding(self, message: bytes) -> list:
+        # split message by end marker
+        splitMessage = message.split(self.byteEndMarker)
+        # remove empty values at the end, its usually wherever
+        # the split happened
         if len(splitMessage[-1]) == 0: splitMessage.pop(-1)
-        if remove_invalid and not message.endswith(self.endMarker): splitMessage.pop(-1)
-        # go through and convert each message in the list
-        # into bytes instead of strings
+
+        # TODO
+        # handle incomplete packets at end
+        # for now just considered lost
+
+        # decode then,
+        # convert each elem to right type (SAFELY?)
+        # since we filtered only valids this works
         finalList = []
-        for elem in splitMessage: finalList.append(literal_eval(elem))
+        for elem in splitMessage: 
+            decoded = elem.decode()
+            eval_d = literal_eval(decoded) # eval_d = evaluated
+            finalList.append(eval_d)
         return finalList
