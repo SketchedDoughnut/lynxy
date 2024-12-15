@@ -18,8 +18,7 @@ def c1():
     threading.Thread(target=lambda:inst.comm._recv()).start()
     while True:
         # inst.send(input('-> '), True)
-        inst.send(datetime.datetime.strftime(datetime.datetime.now(), "%d/%m/%Y, %H:%M:%S"))
-        time.sleep(0.5)
+        pass
     inst.close()
     print('closed')
 c1()
