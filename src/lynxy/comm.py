@@ -127,7 +127,7 @@ class Comm:
                     connectionSuccess = True
                     break
             # raise error if connection failed
-            if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (attempts:{attempts})') 
+            if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (TCP) (attempts:{attempts})') 
         # do the handshake to exchange RSA keys
         self._handshake(ourRandom > targetRandom)
         return None
@@ -165,7 +165,7 @@ class Comm:
             except TimeoutError: continue
 
         # if no success, raise error
-        if not connectionSuccess: raise Exceptions.ConnectionFailedError('The target port is not in use by another machine.')
+        if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (UDP) (attempts:{attempts})') 
         # we close our UDP and return
         self.UDP_client.close()
         return (randNum, incomingNum)
