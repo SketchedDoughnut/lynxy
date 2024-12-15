@@ -204,11 +204,11 @@ class Comm:
     def _send(self, data: any, ignore_errors: bool = False) -> None:
         # raise error message if data is empty
         # and raise is toggled, otherwise return
-        raiseErrors = False
-        if len(data) == 0: raiseErrors = True
-        if data is None: raiseErrors = True
-        if raiseErrors: raise Exceptions.EmptyDataError()
-        if not ignore_errors: return
+        raiseError = False
+        if len(data) == 0: raiseError = True
+        if data is None: raiseError = True
+        if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
+        if ignore_errors and raiseError: return
         # find how many bytes encrypted data is
         encryptedData = self.sec.RSA_encrypt(data) # encryptdata
         paddedData = self.parser.addPadding(encryptedData) # pad data
