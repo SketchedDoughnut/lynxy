@@ -227,13 +227,13 @@ class Comm:
         while True:
             # recieve how many bytes message is
             recievedNetworkOrder = self.TCP_client.recv(1024)
-            if not recievedNetworkOrder: continue # if empty ("b''")
+            if recievedNetworkOrder is None: continue # if empty ("b''")
             unpickledNetworkByteOrder = pickle.loads(recievedNetworkOrder)
             byteCount = socket.ntohl(unpickledNetworkByteOrder)
             # recieve byteCount amount of bytes of data
             while True:
                 recievedData = self.TCP_client.recv(byteCount)
-                if not recievedData: continue # if empty ("b''") 
+                if recievedData is None: continue # if empty ("b''") 
                 break
             # decode and remove padding
             decodedData = recievedData.decode()
