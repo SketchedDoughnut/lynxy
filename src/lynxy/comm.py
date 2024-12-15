@@ -233,11 +233,12 @@ class Comm:
             recievedData = self.parser.carry
             while True:
                 recievedData += self.TCP_client.recv(targetByteCount)
-                if recievedData is None: continue # if empty ("b''") 
                 # ensure full data recieved
                 intData = int.from_bytes(recievedData)
                 recievedByteCount = intData.bit_length()
+
                 print(recievedByteCount, targetByteCount)
+
                 if recievedByteCount >= targetByteCount: break
             # remove padding
             unpaddedData = self.parser.removePadding(recievedData)
