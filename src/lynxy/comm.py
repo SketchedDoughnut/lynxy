@@ -247,6 +247,7 @@ class Comm:
                 # TODO
                 # fix issue with decryption failing likely due
                 # to a incomplete packet (refer to parser.carry)
+                # not an issue unless a lot is being sent at once
                 decryptedData = self.sec.RSA_decrypt(indivData)
-                
+
                 print(f'recv ({unpaddedData.index(indivData)}):', decryptedData)
