@@ -1,6 +1,7 @@
 from src import lynxy
 from rich import print
 import threading
+import datetime
 
 def c1():
     inst = lynxy.Lynxy(host_port=11111, bind=True)
@@ -15,7 +16,8 @@ def c1():
     # get stuck in recv loop
     threading.Thread(target=lambda:inst.comm._recv()).start()
     while True:
-        inst.send(input('-> '), True)
+        # inst.send(input('-> '), True)
+        inst.send(datetime.datetime.strftime(datetime.datetime.now(), "%d/%m/%Y, %H:%M:%S"))
     inst.close()
     print('closed')
 c1()
