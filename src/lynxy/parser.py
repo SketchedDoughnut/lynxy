@@ -12,7 +12,8 @@ class Parser:
     def __init__(self): 
         # start marker for message
         self.stringEndMarker = ':~e~:'
-        self.byteEndMarker = ':~e~:'
+        self.byteEndMarker = b':~e~:'
+        self.carry = b'' # carry over from previous incomplete packets
 
 
     # this function prepares messages to be sent
@@ -34,12 +35,4 @@ class Parser:
         # handle incomplete packets at end
         # for now just considered lost
 
-        # decode then,
-        # convert each elem to right type (SAFELY?)
-        # since we filtered only valids this works
-        finalList = []
-        for elem in splitMessage: 
-            decoded = elem.decode()
-            eval_d = literal_eval(decoded) # eval_d = evaluated
-            finalList.append(eval_d)
-        return finalList
+        return splitMessage

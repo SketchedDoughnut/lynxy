@@ -210,7 +210,7 @@ class Comm:
         if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
         if ignore_errors and raiseError: return
         # find how many bytes encrypted data is
-        encryptedData = self.sec.RSA_encrypt(data) # encryptdata
+        encryptedData = self.sec.RSA_encrypt(data) # encrypt data
         paddedData = self.parser.addPadding(encryptedData) # pad data
         intData = int.from_bytes(paddedData) # get int of encoded data
         byteCount = intData.bit_length() # how many bits it takes to represent our int
@@ -240,9 +240,8 @@ class Comm:
                 recievedByteCount = intData.bit_length()
                 print(recievedByteCount, targetByteCount)
                 if recievedByteCount >= targetByteCount: break
-            # decode and remove padding
-            decodedData = recievedData.decode()
-            unpaddedData = self.parser.removePadding(decodedData)
+            # remove padding
+            unpaddedData = self.parser.removePadding(recievedData)
             # decrypt each part
             for indivData in unpaddedData:
                 decryptedData = self.sec.RSA_decrypt(indivData)
