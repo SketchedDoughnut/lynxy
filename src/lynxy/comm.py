@@ -205,6 +205,11 @@ class Comm:
 
         # TODO
         # raise error if message is emtpy
+        raiseErrors = False
+        if len(data) == 0: raiseErrors = True
+        if not data: raiseErrors = True
+        if raiseErrors: raise Exceptions.EmptyDataError()
+        if not ignore_errors: return
 
         # find how many bytes encrypted data is
         encryptedData = self.sec.RSA_encrypt(data) # encryptdata
