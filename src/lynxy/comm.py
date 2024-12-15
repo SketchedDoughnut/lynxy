@@ -199,7 +199,6 @@ class Comm:
         return
 
 
-    # TODO
     # this function sends data to the other machine
     def _send(self, data: any, ignore_errors: bool = False) -> None:
         # raise error message if data is empty
@@ -231,7 +230,7 @@ class Comm:
             targetByteCount = socket.ntohl(unpickledNetworkByteOrder)
             # recieve byteCount amount of bytes of data
             # we load leftover to continue where it left off
-            recievedData = b''
+            recievedData = self.parser.carry
             while True:
                 recievedData += self.TCP_client.recv(targetByteCount)
                 if recievedData is None: continue # if empty ("b''") 
@@ -245,4 +244,4 @@ class Comm:
             # decrypt each part
             for indivData in unpaddedData:
                 decryptedData = self.sec.RSA_decrypt(indivData)
-                print('recv:', decryptedData)
+                print(f'recv ({unpaddedData.index(indivData)}):', decryptedData)
