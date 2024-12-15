@@ -127,7 +127,7 @@ class Comm:
                     connectionSuccess = True
                     break
             # raise error if connection failed
-            if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'The incorrect target machine connected to this machine {attempts} times.') 
+            if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (attempts:{attempts})') 
         # do the handshake to exchange RSA keys
         self._handshake(ourRandom > targetRandom)
         return None
