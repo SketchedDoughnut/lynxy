@@ -215,6 +215,7 @@ class Comm:
         byteCount = intData.bit_length() # how many bits it takes to represent our int
         networkByteOrder = socket.htonl(byteCount) # convert to network (universal) order
         self.TCP_client.sendall(pickle.dumps(networkByteOrder)) # send length
+        print('sending:', paddedData)
         self.TCP_client.sendall(paddedData) # send actual data
         return
     
