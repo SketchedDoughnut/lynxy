@@ -202,15 +202,13 @@ class Comm:
     # TODO
     # this function sends data to the other machine
     def _send(self, data: any, ignore_errors: bool = False) -> None:
-
-        # TODO
-        # raise error if message is emtpy
+        # raise error message if data is empty
+        # and raise is toggled, otherwise return
         raiseErrors = False
         if len(data) == 0: raiseErrors = True
-        if not data: raiseErrors = True
+        if data is None: raiseErrors = True
         if raiseErrors: raise Exceptions.EmptyDataError()
         if not ignore_errors: return
-
         # find how many bytes encrypted data is
         encryptedData = self.sec.RSA_encrypt(data) # encryptdata
         paddedData = self.parser.addPadding(encryptedData) # pad data

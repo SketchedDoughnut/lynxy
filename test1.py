@@ -15,7 +15,7 @@ def c1():
     # get stuck in recv loop
     threading.Thread(target=lambda:inst.comm._recv()).start()
     while True:
-        inst.send(input('-> '))
+        inst.send(input('-> '), True)
     inst.close()
     print('closed')
 c1()

@@ -14,7 +14,7 @@ def c2():
     print(inst.get_actual_target())
     threading.Thread(target=lambda:inst.comm._recv()).start()
     while True:
-        inst.send(input('-> '))
+        inst.send(input('-> '), True)
     inst.close()
     print('closed')
 c2()
