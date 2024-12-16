@@ -28,6 +28,12 @@ Scapy stuff:
 - https://scapy.readthedocs.io/en/latest/installation.html
 - https://scapy.net/
 
+Decorator info:
+- https://realpython.com/primer-on-python-decorators/
+- https://stackoverflow.com/questions/70982565/how-do-i-make-an-event-listener-with-decorators-in-python
+
+Commenting info:
+- https://realpython.com/python-double-underscore/
 '''
 
 # included modules
@@ -42,6 +48,7 @@ from rich import print
 from .sec import Sec
 from .parser import Parser
 from .exceptions import Exceptions
+from .constants import Constants
 
 ####################################################
 
@@ -66,6 +73,8 @@ class Comm:
         self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # TCP
         # this represents if the UDP client is binded or not
         self.UDP_binded = False
+        # this represents a dictionary of event queues
+        self.eventRegistry = {}
         ###########################################################
         # if UDP_bind, immediately bind to host and port
         if UDP_bind: 
@@ -74,19 +83,19 @@ class Comm:
 
 
     # this regenerates the UDP client
-    def __regen_UDP(self) -> None: self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    def _regen_UDP(self) -> None: self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
     # this regenerates the TCP client
-    def __regen_TCP(self) -> None: self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def _regen_TCP(self) -> None: self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
     # this binds the UDP client
-    def __bind_UDP(self) -> None: self.UDP_client.bind((self.host, self.port))
+    def _bind_UDP(self) -> None: self.UDP_client.bind((self.host, self.port))
 
 
     # this binds the TCP client
-    def __bind_TCP(self) -> None: self.TCP_client.bind((self.host, self.port))
+    def _bind_TCP(self) -> None: self.TCP_client.bind((self.host, self.port))
 
 
     # this returns the host IP
@@ -98,6 +107,24 @@ class Comm:
     def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
 
     
+    # this function is a decorator for registering events
+    def event(self, eventType: Constants.Event):
+        # wrapper function that is returned,
+        # i am not quite sure how this works but it wraps around
+        # the inputted function?
+        def wrapper(func): 
+            # make a new entry for this event if it doesn't exist
+            if eventType not in self.eventRegistry.keys(): 
+                self.eventRegistry[eventType] = [func]
+            else: self.eventRegistry[eventType].append(func)
+        return wrapper
+    
+
+    # this function runs the given events
+    def _trigger(self, eventType: Constants.Event, data) -> None:
+        for func in self.eventRegistry[eventType]: func(data)
+
+
     # this function handles the UDP connection that helps make the TCP connection
     def _TCP_connect(self, target_ip: str, target_port: int, timeout: int = 10, attempts: int = 6) -> None:
         # set target machine data
@@ -106,7 +133,7 @@ class Comm:
         ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
         # we then find out whether to bind our TCP
         # or try to connect to the other end
-        self.__regen_TCP()
+        self._regen_TCP()
         # meaning we connect (first)
         if ourRandom > targetRandom: 
             self.TCP_client.connect(self.target)
@@ -118,8 +145,8 @@ class Comm:
             # is not the one we wanted to connect to
             connectionSuccess = False
             for _ in range(attempts):
-                self.__regen_TCP()
-                self.__bind_TCP()
+                self._regen_TCP()
+                self._bind_TCP()
                 self.TCP_client.listen(1) # only listen for 1 connection
                 self.TCP_client, connectedTarget = self.TCP_client.accept()
                 if connectedTarget[0] == self.target[0]: # verify IP, not port
@@ -138,8 +165,8 @@ class Comm:
     def _UDP_connect(self, timeout, attempts) -> tuple[int, int]:
         # first, we bind to our port / ip if not already
         if not self.UDP_binded: 
-            self.__regen_UDP()
-            self.__bind_UDP()
+            self._regen_UDP()
+            self._bind_UDP()
             self.UDP_binded = True
         # now, we generate and send a random number
         randNum = random.randint(0, 1000) + random.randint(0, 1000)
@@ -157,6 +184,7 @@ class Comm:
                 # TODO
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we regen number and keep trying
+                incomingNum = int(data.decode())
 
                 incomingNum = int(data.decode())
                 # otherwise connection was a success, break
@@ -193,8 +221,8 @@ class Comm:
     # this function closes the connection between the two machines
     def _close_connection(self) -> None: 
         self.TCP_client.close()
-        self.__regen_UDP()
-        self.__regen_TCP()
+        self._regen_UDP()
+        self._regen_TCP()
         self.UDP_binded = False
         return
 
@@ -251,3 +279,4 @@ class Comm:
                 print(f'decrypting ({unpaddedData.index(indivData)}):', indivData)
                 decryptedData = self.sec.RSA_decrypt(indivData)
                 print(f'recv ({unpaddedData.index(indivData)}):', decryptedData)
+                self._trigger(Constants.Event.ON_MESSAGE)

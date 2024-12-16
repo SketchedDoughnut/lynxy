@@ -11,13 +11,9 @@ Modules to consider:
     - using cryptography for extra encryption?
 '''
 
-# included modules
-import os
-
 # files
+from .comm import Comm as _Comm
 from .constants import Constants
-from .exceptions import Exceptions
-from .comm import Comm
 
 ####################################################
 
@@ -40,15 +36,15 @@ class Lynxy:
         #     Constants.Config.DO_PRINT: False
         # }
         # this is the manager for communications
-        self.comm = Comm(host_ip, host_port, bind)
+        self._comm = _Comm(host_ip, host_port, bind)
 
 
     # this function connects to the other machine
-    def connect(self, target_ip, target_port) -> None: self.comm._TCP_connect(target_ip, target_port)
+    def connect(self, target_ip, target_port) -> None: self._comm._TCP_connect(target_ip, target_port)
 
 
     # this function closes connections
-    def close(self) -> None: self.comm._close_connection()
+    def close(self) -> None: self._comm._close_connection()
 
 
     # this gets the host 
@@ -56,11 +52,11 @@ class Lynxy:
 
 
     # this gets the target info
-    def get_actual_target(self) -> tuple[str, int]: return self.comm._get_actual_target()
+    def get_actual_target(self) -> tuple[str, int]: return self._comm._get_actual_target()
 
 
     # this sends data
-    def send(self, data: any, ignore_errors: bool = False) -> None: return self.comm._send(data, ignore_errors)
+    def send(self, data: any, ignore_errors: bool = False) -> None: return self._comm._send(data, ignore_errors)
 
     
     # a function used to distinguish whether or not to print,
