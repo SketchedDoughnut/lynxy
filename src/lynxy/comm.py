@@ -105,19 +105,6 @@ class Comm:
     # this returns the actual target
     # that target being the active TCP connection
     def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
-
-    
-    # this function is a decorator for registering events
-    def event(self, eventType: Constants.Event):
-        # wrapper function that is returned,
-        # i am not quite sure how this works but it wraps around
-        # the inputted function?
-        def wrapper(func): 
-            # make a new entry for this event if it doesn't exist
-            if eventType not in self.eventRegistry.keys(): 
-                self.eventRegistry[eventType] = [func]
-            else: self.eventRegistry[eventType].append(func)
-        return wrapper
     
 
     # this function runs the given events

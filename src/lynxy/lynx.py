@@ -59,6 +59,15 @@ class Lynxy:
     def send(self, data: any, ignore_errors: bool = False) -> None: return self._comm._send(data, ignore_errors)
 
     
-    # a function used to distinguish whether or not to print,
-    # different from the default printing function but not overwriting it
-    # def pprint(self, data: str) -> None: print(data) if self.do_print else print('', end='')
+    # this function sets up decorators for events,
+    # basically making integration with comm easier
+    def event(self, eventType: Constants.Event):
+        # wrapper function that is returned,
+        # i am not quite sure how this works but it wraps around
+        # the inputted function?
+        def wrapper(func): 
+            # make a new entry for this event if it doesn't exist
+            if eventType not in self._comm.eventRegistry.keys(): 
+                self._comm.eventRegistry[eventType] = [func]
+            else: self._comm.eventRegistry[eventType].append(func)
+        return wrapper
