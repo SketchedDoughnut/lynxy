@@ -22,5 +22,3 @@ def c1():
     inst.close()
     print('closed')
 c1()
-
-# 10 screen off, 30 pc sleep

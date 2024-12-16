@@ -232,18 +232,22 @@ class Comm:
             # recieve byteCount amount of bytes of data
             # we load leftover to continue where it left off
             recievedData = self.parser.carry
+
+            print('starting with:', recievedData)
+
             while True:
                 recievedData += self.TCP_client.recv(targetByteCount)
                 # ensure full data recieved
                 intData = int.from_bytes(recievedData)
                 recievedByteCount = intData.bit_length()
 
-                print(recievedByteCount, targetByteCount)
+                print(f'{recievedByteCount}, {targetByteCount}, {recievedData}')
 
                 if recievedByteCount >= targetByteCount: break
             # remove padding
-            unpaddedData = self.parser.removePadding(recievedData, False)
+            unpaddedData = self.parser.removePadding(recievedData)
             # decrypt each part
             for indivData in unpaddedData:
+                print(f'decrypting ({unpaddedData.index(indivData)}):', indivData)
                 decryptedData = self.sec.RSA_decrypt(indivData)
                 print(f'recv ({unpaddedData.index(indivData)}):', decryptedData)
