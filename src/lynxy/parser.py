@@ -53,6 +53,8 @@ class Parser:
                 print('last entry in list not empty')
                 self.carry = splitMessage.pop(-1)
         # if toggled, remove all empty entries
+        else:
+            self.carry = b''
         if remove_empty:
             index = 0
             for elem in splitMessage:

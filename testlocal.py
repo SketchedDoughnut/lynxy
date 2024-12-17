@@ -14,13 +14,15 @@ msg1_half2 = msg1_pad[len(msg1_pad) // 2:]
 msg2_half2 = msg2_pad[len(msg2_pad) // 2:]
 
 
-parsed = inst._comm.parser.removePadding(msg1_pad + msg1_half1)
+parsed = inst._comm.parser.removePadding(msg1_pad + msg2_half1)
 for ind in parsed:
     dec = inst._comm.sec.RSA_decrypt(ind)
     print('dec1:', dec)
 
+print('carry:', inst._comm.parser.carry)
+print('second half:', msg2_half2)
 
-parsed = inst._comm.parser.removePadding(msg1_half2)
+parsed = inst._comm.parser.removePadding(inst._comm.parser.carry + msg2_half2)
 for ind in parsed:
     dec = inst._comm.sec.RSA_decrypt(ind)
     print('dec2:', dec)
