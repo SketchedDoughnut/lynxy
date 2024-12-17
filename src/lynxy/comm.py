@@ -109,7 +109,8 @@ class Comm:
 
     # this function runs the given events
     def _trigger(self, eventType: Constants.Event, data) -> None:
-        for func in self.eventRegistry[eventType]: func(data)
+        for func in self.eventRegistry[eventType]: 
+            func(data)
 
 
     # this function handles the UDP connection that helps make the TCP connection

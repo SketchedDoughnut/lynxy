@@ -65,9 +65,10 @@ class Lynxy:
         # wrapper function that is returned,
         # i am not quite sure how this works but it wraps around
         # the inputted function?
-        def wrapper(func): 
+        def wrapper(func):
             # make a new entry for this event if it doesn't exist
             if eventType not in self._comm.eventRegistry.keys(): 
                 self._comm.eventRegistry[eventType] = [func]
+            # append function
             else: self._comm.eventRegistry[eventType].append(func)
         return wrapper
