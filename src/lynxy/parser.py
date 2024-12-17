@@ -6,17 +6,17 @@ PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
 # from ast import literal_eval
 
 # external modules
-pass
+from rich import print
 
 ####################################################
 
 # this is the main class for the parser 
 class Parser:
     def __init__(self): 
-        # start marker for message
-        self.stringEndMarker = ':~e~:'
+        # end marker for message
         self.byteEndMarker = b':~e~:'
-        self.carry = b'' # carry over from previous incomplete packets
+        # carry over from previous incomplete packets
+        self.carry = b''
 
 
     # this function prepares messages to be sent
@@ -37,21 +37,27 @@ class Parser:
         '''
         # split message by end marker
         splitMessage = message.split(self.byteEndMarker)
+        print('split:', splitMessage)
         # if not ending with end marker
         if not message.endswith(self.byteEndMarker):
             # if len(splitMessage) == 1, which means we have one
             # incomplete packet, add to carry and return empty list
+            print('message doesnt end with marker')
             if len(splitMessage) == 1:
                 self.carry = message
+                print('singular unfinished to carry')
                 return []
             # otherwise, if the last entry is not empty
             # then remove and add that to carry
-            if splitMessage[-1] != b'':
+            if splitMessage[-1] != b"":
+                print('last entry in list not empty')
                 self.carry = splitMessage.pop(-1)
         # if toggled, remove all empty entries
         if remove_empty:
             index = 0
             for elem in splitMessage:
-                if len(elem) == 0: splitMessage.pop(index)
+                if elem == b"": splitMessage.pop(index)
                 index += 1
+            print('removed empty:', splitMessage)
+        print('carry:', self.carry)
         return splitMessage
