@@ -2,9 +2,9 @@ from src import lynxy
 import threading
 from rich import print
 
-inst = lynxy.Lynxy(bind=True)
+inst = lynxy.Lynxy(host_port=11112, bind=True)
 host = inst.get_host()
-target = ('', 0)
+target = ('192.168.68.130', 11111)
 print(f'host: {host}')
 print(f'target: {target}')
 print('connecting...')
