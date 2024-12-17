@@ -37,9 +37,17 @@ class Parser:
         '''
         # split message by end marker
         splitMessage = message.split(self.byteEndMarker)
-        # saving incomplete packets
-        # if last marker is not zero, save to carry and remove
-        if not message.endswith(self.byteEndMarker): self.carry = splitMessage.pop(-1)
+        # if not ending with end marker
+        if not message.endswith(self.byteEndMarker):
+            # if len(splitMessage) == 1, which means we have one
+            # incomplete packet, add to carry and return empty list
+            if len(splitMessage) == 1:
+                self.carry = message
+                return []
+            # otherwise, if the last entry is not empty
+            # then remove and add that to carry
+            if splitMessage[-1] != b'':
+                self.carry = splitMessage.pop(-1)
         # if toggled, remove all empty entries
         if remove_empty:
             index = 0
