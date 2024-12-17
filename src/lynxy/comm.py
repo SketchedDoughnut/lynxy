@@ -233,7 +233,6 @@ class Comm:
         byteCount = intData.bit_length() # how many bits it takes to represent our int
         networkByteOrder = socket.htonl(byteCount) # convert to network (universal) order
         self.TCP_client.sendall(pickle.dumps(networkByteOrder)) # send length
-        print('sending:', paddedData)
         self.TCP_client.sendall(paddedData) # send actual data
         return
     
@@ -296,11 +295,12 @@ class Comm:
         recieved = b''
         while True:
             recieved += self.TCP_client.recv(1024)
-            print('recieved:', recieved)
+            # print('recieved:', recieved)
             unpadded = self.parser.removePadding(recieved)
-            print('unpadded:', unpadded)
+            # print('unpadded:', unpadded)
             for indiv in unpadded:
                 try: decrypted = self.sec.RSA_decrypt(indiv)
                 except rsa.DecryptionError: print('decryption failed')
-                self._trigger(Constants.Event.ON_MESSAGE, decrypted)
+                # self._trigger(Constants.Event.ON_MESSAGE, decrypted)
                 recieved = self.parser.carry
+                print('carried:', recieved)

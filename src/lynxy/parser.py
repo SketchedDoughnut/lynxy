@@ -5,9 +5,6 @@ PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
 # included modules
 from ast import literal_eval
 
-# external modules
-from rich import print
-
 ####################################################
 
 # this is the main class for the parser 
@@ -39,7 +36,7 @@ class Parser:
         splitMessage = message.split(self.byteEndMarker)
         # saving incomplete packets
         # if last marker is not zero, save to carry and remove
-        if splitMessage[-1]: self.carry = splitMessage.pop(-1)
+        if splitMessage[-1] != b'': self.carry = splitMessage.pop(-1)
         # if toggled, remove all empty entries
         if remove_empty:
             index = 0
