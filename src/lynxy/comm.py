@@ -301,5 +301,4 @@ class Comm:
             for indiv in unpadded:
                 decrypted = self.sec.RSA_decrypt(indiv)
                 self._trigger(Constants.Event.ON_MESSAGE, decrypted)
-                # if success, remove 
-                unpadded.remove(unpadded.index(indiv))
+                recieved = b''
