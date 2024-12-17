@@ -3,9 +3,9 @@ import threading
 from rich import print
 import datetime
 
-inst = lynxy.Lynxy(host_port=11111, bind=True)
+inst = lynxy.Lynxy(host_port=11112, bind=True)
 host = inst.get_host()
-target = ('192.168.68.114', 11112)
+target = ('192.168.68.130', 11111)
 print(f'host: {host}')
 print(f'target: {target}')
 print('connecting...')
