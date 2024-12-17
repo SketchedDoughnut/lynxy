@@ -21,6 +21,12 @@ class Exceptions:
             super().__init__(message)
 
     
+    class EmptyDataError(Exception):
+        def __init__(self, message='The data you attempted to send is empty.'):
+            self.message = message
+            super().__init__(message)
+
+            
     class InvalidPortError(Exception):
         def __init__(self, message=None):
             self.message = message
@@ -28,12 +34,6 @@ class Exceptions:
 
 
     class ConnectionFailedError(Exception):
-        def __init__(self, message='Connection to the target machine failed.'):
-            self.message = message
-            super().__init__(message)
-
-
-    class EmptyDataError(Exception):
-        def __init__(self, message='The data you attempted to send is empty.'):
+        def __init__(self, message=None):
             self.message = message
             super().__init__(message)
