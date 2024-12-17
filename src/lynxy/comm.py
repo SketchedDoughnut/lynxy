@@ -78,7 +78,7 @@ class Comm:
         ###########################################################
         # if UDP_bind, immediately bind to host and port
         if UDP_bind: 
-            self.__bind_UDP()
+            self._bind_UDP()
             self.UDP_binded = True
 
 
