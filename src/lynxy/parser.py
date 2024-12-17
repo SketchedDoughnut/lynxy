@@ -36,13 +36,13 @@ class Parser:
         and we can save that to self.carry for the next cycle.
         '''
         # add the previous data to current data
-        message = self.carry + message
+        stitched = self.carry + message
         # split message by end marker
-        split = message.split(self.byteEndMarker)
+        split = stitched.split(self.byteEndMarker)
         # print('split:', split)
         # if the end characters is the end marker, then that means
         # we only have complete messages so we can reset carry
-        if message.endswith(self.byteEndMarker):
+        if stitched.endswith(self.byteEndMarker):
             # print('ends with marker, clearing carry')
             self.carry = b''
         # otherwise, we analyze further
@@ -54,7 +54,7 @@ class Parser:
                 # save the message to carry and return
                 # empty list
                 # print('length is 1, saving to carry')
-                self.carry = message
+                self.carry = stitched
                 return []
             # else, if the last entry of the list is not empty,
             # that means there is an incomplete packet there
