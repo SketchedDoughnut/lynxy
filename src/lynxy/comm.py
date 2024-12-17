@@ -215,6 +215,7 @@ class Comm:
         return
 
 
+    # TODO
     # this function sends data to the other machine
     def _send(self, data: any, ignore_errors: bool = False) -> None:
         # raise error message if data is empty
@@ -235,6 +236,24 @@ class Comm:
         self.TCP_client.sendall(paddedData) # send actual data
         return
     
+
+    # TODO
+    # this is a second sending function without sending length
+    def _send2(self, data: any, ignore_errors: bool = False) -> None:
+        # raise error message if data is empty
+        # and raise is toggled, otherwise return
+        raiseError = False
+        if len(data) == 0: raiseError = True
+        if data is None: raiseError = True
+        if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
+        if ignore_errors and raiseError: return
+        # find how many bytes encrypted data is
+        encryptedData = self.sec.RSA_encrypt(data) # encrypt data
+        paddedData = self.parser.addPadding(encryptedData) # pad data
+        print('sending:', paddedData)
+        self.TCP_client.sendall(paddedData) # send actual data
+        return
+
 
     # TODO
     # temporary recieving function

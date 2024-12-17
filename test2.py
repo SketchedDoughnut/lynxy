@@ -16,4 +16,4 @@ print('recieving')
 def recv(msg): 
     print(msg)
 while True:
-    inst.send(input('-> '))
+    inst._comm._send2(input('-> '))
