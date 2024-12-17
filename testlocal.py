@@ -19,9 +19,6 @@ for ind in parsed:
     dec = inst._comm.sec.RSA_decrypt(ind)
     print('dec1:', dec)
 
-print('carry:', inst._comm.parser.carry)
-print('second half:', msg2_half2)
-
 parsed = inst._comm.parser.removePadding(inst._comm.parser.carry + msg2_half2)
 for ind in parsed:
     dec = inst._comm.sec.RSA_decrypt(ind)

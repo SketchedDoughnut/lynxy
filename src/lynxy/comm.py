@@ -292,19 +292,18 @@ class Comm:
     # TODO
     # second recieving function with just constant byte stream
     def _recv2(self) -> None:
-        packets = 0
+        success = 0
         total = 0
         while True:
             recieved = self.parser.carry
             recieved += self.TCP_client.recv(1024)
             unpadded = self.parser.removePadding(recieved)
-            print(unpadded)
             for indiv in unpadded:
                 total += 1
                 try: decrypted = self.sec.RSA_decrypt(indiv)
                 except rsa.DecryptionError: 
                     print('encryption error')
                     continue
-                packets += 1
-                loss = 1.00 - packets / total
-                self._trigger(Constants.Event.ON_MESSAGE, f'({round(loss * 100, 3)}%, {packets}/{total}) {decrypted}')
+                success += 1
+                loss = 1.00 - success / total
+                self._trigger(Constants.Event.ON_MESSAGE, f'({round(loss * 100, 3)}%, {success}/{total}) {decrypted}')

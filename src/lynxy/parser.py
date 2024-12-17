@@ -36,30 +36,38 @@ class Parser:
         and we can save that to self.carry for the next cycle.
         '''
         # split message by end marker
-        splitMessage = message.split(self.byteEndMarker)
-        print('split:', splitMessage)
-        # if not ending with end marker
-        if not message.endswith(self.byteEndMarker):
-            # if len(splitMessage) == 1, which means we have one
-            # incomplete packet, add to carry and return empty list
-            print('message doesnt end with marker')
-            if len(splitMessage) == 1:
-                self.carry = message
-                print('singular unfinished to carry')
-                return []
-            # otherwise, if the last entry is not empty
-            # then remove and add that to carry
-            if splitMessage[-1] != b"":
-                print('last entry in list not empty')
-                self.carry = splitMessage.pop(-1)
-        # if toggled, remove all empty entries
-        else:
+        split = message.split(self.byteEndMarker)
+        print('split:', split)
+        # if the end characters is the end marker, then that means
+        # we only have complete messages so we can reset carry
+        if message.endswith(self.byteEndMarker):
+            print('ends with marker, clearing carry')
             self.carry = b''
+        # otherwise, we analyze further
+        else:
+            # if the length of the list is 0, then we have nothing
+            # if the length of the list is 1, the we only have
+            # a singular incomplete packet
+            if len(split) <= 1:
+                # save the message to carry and return
+                # empty list
+                print('length is 1, saving to carry')
+                self.carry = message
+                return []
+            # else, if the last entry of the list is empty
+            # if it is empty, this means there was a split there
+            # if it isn't empty, that means there is an incomplete packet
+            elif split[-1]: # meaning there is content
+                # take the last thing of content and save to carry
+                print('content found in last entry, saving to carry')
+                self.carry = split.pop(-1)
+        # if requested, go ahead and remove all white spaces
         if remove_empty:
             index = 0
-            for elem in splitMessage:
-                if elem == b"": splitMessage.pop(index)
+            for elem in split:
+                if not elem: 
+                    print('removing:', index)
+                    split.pop(index)
                 index += 1
-            print('removed empty:', splitMessage)
-        print('carry:', self.carry)
-        return splitMessage
+        print('returning:', split)
+        return split
