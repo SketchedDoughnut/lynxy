@@ -1,6 +1,7 @@
 from src import lynxy
 import threading
 from rich import print
+import datetime
 
 inst = lynxy.Lynxy(host_port=11111, bind=True)
 host = inst.get_host()
@@ -16,4 +17,8 @@ print('recieving')
 def recv(msg): 
     print(msg)
 while True:
-    inst._comm._send2(input('-> '))
+    # inst._comm._send2(input('-> '))
+    current = datetime.datetime.strftime(datetime.datetime.now(), "%d/%m/%Y, %H:%M:%S")
+    inst._comm._send2(current)
+    print('sending:', current)
+    input('-> ')
