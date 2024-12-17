@@ -295,7 +295,7 @@ class Comm:
         success = 0
         total = 0
         while True:
-            recieved = self.parser.carry
+            recieved = b''
             recieved += self.TCP_client.recv(1024)
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:

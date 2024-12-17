@@ -35,13 +35,15 @@ class Parser:
         If it is, this means that there was an end marker. Otherwise, this means that that is an incomplete piece,
         and we can save that to self.carry for the next cycle.
         '''
+        # add the previous data to current data
+        message = self.carry + message
         # split message by end marker
         split = message.split(self.byteEndMarker)
-        print('split:', split)
+        # print('split:', split)
         # if the end characters is the end marker, then that means
         # we only have complete messages so we can reset carry
         if message.endswith(self.byteEndMarker):
-            print('ends with marker, clearing carry')
+            # print('ends with marker, clearing carry')
             self.carry = b''
         # otherwise, we analyze further
         else:
@@ -51,23 +53,23 @@ class Parser:
             if len(split) <= 1:
                 # save the message to carry and return
                 # empty list
-                print('length is 1, saving to carry')
+                # print('length is 1, saving to carry')
                 self.carry = message
                 return []
             # else, if the last entry of the list is not empty,
             # that means there is an incomplete packet there
             elif split[-1]:
                 # take the last packet which is incomplete and save to carry
-                print('content found in last entry, saving to carry')
+                # print('content found in last entry, saving to carry')
                 self.carry = split.pop(-1)
         # if requested, go ahead and remove all white spaces
         if remove_empty:
             index = 0
             for elem in split:
                 if not elem: 
-                    print('removing:', index)
+                    # print('removing:', index)
                     split.pop(index)
                 index += 1
         # return our final formatted list of messages
-        print('returning:', split)
+        # print('returning:', split)
         return split
