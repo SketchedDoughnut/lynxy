@@ -14,6 +14,7 @@ threading.Thread(target=lambda:inst._comm._recv2()).start()
 print('recieving')
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
 def recv(msg): 
-    print(msg)
+    # print(msg)
+    pass
 while True:
     inst._comm._send2(input('-> '))

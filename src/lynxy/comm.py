@@ -298,6 +298,7 @@ class Comm:
             recieved = self.parser.carry
             recieved += self.TCP_client.recv(1024)
             unpadded = self.parser.removePadding(recieved)
+            print(unpadded)
             for indiv in unpadded:
                 total += 1
                 try: decrypted = self.sec.RSA_decrypt(indiv)
