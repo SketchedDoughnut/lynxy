@@ -15,7 +15,7 @@ while True:
     padded = inst._comm.parser.addPadding(encrypted)
     # print('original:', padded)
     while padded:
-        randNum = random.randint(1, len(padded))
+        randNum = random.randint(0, len(padded))
         chars = padded[:randNum]
         padded = padded.removeprefix(chars)
         # print('current:', padded)
