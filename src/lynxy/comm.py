@@ -43,6 +43,7 @@ import pickle
 
 # external modules
 from rich import print
+import rsa
 
 # files
 from .sec import Sec
@@ -299,6 +300,7 @@ class Comm:
             unpadded = self.parser.removePadding(recieved)
             print('unpadded:', unpadded)
             for indiv in unpadded:
-                decrypted = self.sec.RSA_decrypt(indiv)
+                try: decrypted = self.sec.RSA_decrypt(indiv)
+                except rsa.DecryptionError: print('decryption failed')
                 self._trigger(Constants.Event.ON_MESSAGE, decrypted)
                 recieved = self.parser.carry
