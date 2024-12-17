@@ -54,11 +54,10 @@ class Parser:
                 print('length is 1, saving to carry')
                 self.carry = message
                 return []
-            # else, if the last entry of the list is empty
-            # if it is empty, this means there was a split there
-            # if it isn't empty, that means there is an incomplete packet
-            elif split[-1]: # meaning there is content
-                # take the last thing of content and save to carry
+            # else, if the last entry of the list is not empty,
+            # that means there is an incomplete packet there
+            elif split[-1]:
+                # take the last packet which is incomplete and save to carry
                 print('content found in last entry, saving to carry')
                 self.carry = split.pop(-1)
         # if requested, go ahead and remove all white spaces
@@ -69,5 +68,6 @@ class Parser:
                     print('removing:', index)
                     split.pop(index)
                 index += 1
+        # return our final formatted list of messages
         print('returning:', split)
         return split
