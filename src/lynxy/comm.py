@@ -295,12 +295,8 @@ class Comm:
         recieved = b''
         while True:
             recieved += self.TCP_client.recv(1024)
-            # print('recieved:', recieved)
             unpadded = self.parser.removePadding(recieved)
-            # print('unpadded:', unpadded)
             for indiv in unpadded:
-                try: decrypted = self.sec.RSA_decrypt(indiv)
-                except rsa.DecryptionError: print('decryption failed')
-                # self._trigger(Constants.Event.ON_MESSAGE, decrypted)
+                decrypted = self.sec.RSA_decrypt(indiv)
+                self._trigger(Constants.Event.ON_MESSAGE, decrypted)
                 recieved = self.parser.carry
-                print('carried:', recieved)
