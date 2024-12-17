@@ -267,4 +267,18 @@ class Comm:
                 print(f'decrypting ({unpaddedData.index(indivData)}):', indivData)
                 decryptedData = self.sec.RSA_decrypt(indivData)
                 print(f'recv ({unpaddedData.index(indivData)}):', decryptedData)
-                self._trigger(Constants.Event.ON_MESSAGE)
+                self._trigger(Constants.Event.ON_MESSAGE, decryptedData)
+
+
+    # TODO
+    # second recieving function with just constant byte stream
+    def _recv2(self) -> None:
+        recieved = b''
+        while True:
+            recieved += self.TCP_client.recv(1024)
+            unpadded = self.parser.removePadding(recieved)
+            for indiv in unpadded:
+                decrypted = self.sec.RSA_decrypt(indiv)
+                self._trigger(Constants.Event.ON_MESSAGE, decrypted)
+                # if success, remove 
+                unpadded.remove(unpadded.index(indiv))

@@ -1,24 +1,15 @@
 from src import lynxy
-from rich import print
 import threading
-import datetime
-import time
+from rich import print
 
-def c2():
-    inst = lynxy.Lynxy(host_port=11112, bind=True)
-    print('initialized...')
-    print(inst.get_host())
-    connect_ip = '192.168.68.130' #
-    connect_port = 11111 #
-    print('connecting...')
-    inst.connect(connect_ip, connect_port)
-    print('connected')
-    print(inst.get_actual_target())
-    threading.Thread(target=lambda:inst.comm._recv()).start()
-    while True:
-        # inst.send(input('-> '), True)
-        inst.send(datetime.datetime.strftime(datetime.datetime.now(), "%d/%m/%Y, %H:%M:%S"))
-        time.sleep(0.5)
-    inst.close()
-    print('closed')
-c2()
+inst = lynxy.Lynxy(bind=True)
+host = inst.get_host()
+target = ('', 0)
+print(f'host: {host}')
+print(f'target: {target}')
+inst.connect(target[0], target[1])
+threading.Thread(target=inst._comm._recv2()).start()
+@inst.event(lynxy.Constants.Event.ON_MESSAGE)
+def recv(msg): print(msg)
+while True:
+    inst.send(input('-> '))

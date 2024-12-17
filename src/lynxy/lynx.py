@@ -31,11 +31,6 @@ class Lynxy:
         - bind: defaulting to False, says whether or not Lynxy should immediately bind to the ip and port. 
                     This is recommended if you want to connect quickly.
         '''
-        # this decides certain configurable stuff
-        # self.config = {
-        #     Constants.Config.DO_PRINT: False
-        # }
-        # this is the manager for communications
         self._comm = _Comm(host_ip, host_port, bind)
 
 
@@ -48,7 +43,7 @@ class Lynxy:
 
 
     # this gets the host 
-    def get_host(self) -> tuple[str, int]: return self.comm._get_host()
+    def get_host(self) -> tuple[str, int]: return self._comm._get_host()
 
 
     # this gets the target info
