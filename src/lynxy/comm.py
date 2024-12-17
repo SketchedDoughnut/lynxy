@@ -276,7 +276,9 @@ class Comm:
         recieved = b''
         while True:
             recieved += self.TCP_client.recv(1024)
+            print('recieved:', recieved)
             unpadded = self.parser.removePadding(recieved)
+            print('unpadded:', unpadded)
             for indiv in unpadded:
                 decrypted = self.sec.RSA_decrypt(indiv)
                 self._trigger(Constants.Event.ON_MESSAGE, decrypted)
