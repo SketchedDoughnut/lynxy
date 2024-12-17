@@ -21,4 +21,4 @@ while True:
     current = datetime.datetime.strftime(datetime.datetime.now(), "%d/%m/%Y, %H:%M:%S")
     inst._comm._send2(current)
     print('sending:', current)
-    input('-> ')
+    # input('-> ')

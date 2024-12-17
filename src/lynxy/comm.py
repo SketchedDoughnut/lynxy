@@ -250,7 +250,7 @@ class Comm:
         # find how many bytes encrypted data is
         encryptedData = self.sec.RSA_encrypt(data) # encrypt data
         paddedData = self.parser.addPadding(encryptedData) # pad data
-        print('sending:', paddedData)
+        print(f'sending: {data} -> {paddedData}')
         self.TCP_client.sendall(paddedData) # send actual data
         return
 
