@@ -10,8 +10,10 @@ print(f'target: {target}')
 print('connecting...')
 inst.connect(target[0], target[1])
 print('connected')
-threading.Thread(target=inst._comm._recv2()).start()
+threading.Thread(target=lambda:inst._comm._recv2()).start()
+print('recieving')
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
-def recv(msg): print(msg)
+def recv(msg): 
+    print(msg)
 while True:
     inst.send(input('-> '))
