@@ -62,6 +62,15 @@ class Lynxy:
         return self._comm._get_actual_target()
 
 
+    # this function sets behaviors for when connection is lost
+    def set_connection(self, connectionType: Constants.ConnectionType) -> None:
+        # filter out invalid types
+        if type(connectionType) != Constants.ConnectionType: raise TypeError('Invalid connection type')
+        # set connection type
+        self._comm.connectionType = connectionType
+        return None
+
+
     # this function connects to the other machine
     def connect(self, target: tuple[str, int], start_recv: bool = True) -> None: 
         '''
@@ -90,6 +99,7 @@ class Lynxy:
         '''
         self._comm._TCP_connect(target[0], target[1])
         if start_recv: self.recv()
+        return None
 
 
     # this function closes connections
@@ -100,6 +110,7 @@ class Lynxy:
         ends.
         '''
         self._comm._close_connection()
+        return None
 
 
     # this sends data
@@ -136,6 +147,7 @@ class Lynxy:
             recv()
         '''
         if not self._recv_thread.is_alive: self._recv_thread.start()
+        return None
 
     
     # TODO 
@@ -152,10 +164,8 @@ class Lynxy:
         >>> lynxy.Constants.Event
 
         Every time the given event is triggered, the function that you provide
-        below the event will be ran. Each different event passes in a different type of object,
-        which can be found at:
-
-        >>> lynxy.Pool
+        below the event will be ran. Each event has data that it will pass in to your function.
+        More information about data types can be found in the documentation on Github.
 
         Below is an working example of something you might do:
 
@@ -163,8 +173,6 @@ class Lynxy:
             @inst.event(lynxy.Constants.Event.ON_MESSAGE)
             def do_stuff(data: lynxy.Pool.Message):
                 print('stuff is done!')
-
-        More information can be found on the documentation on the Github repository.
         '''
         # wrapper function that is returned,
         # i am not quite sure how this works but it wraps around

@@ -76,6 +76,8 @@ class Comm:
         self.UDP_binded = False
         # this represents a dictionary of event queues
         self.eventRegistry = {}
+        # this represents the connection type
+        self.connectionType = Constants.ConnectionType.EVENT
         ###########################################################
         # if UDP_bind, immediately bind to host and port
         if UDP_bind: 
@@ -107,6 +109,16 @@ class Comm:
     # that target being the active TCP connection
     def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
+
+    # this function manages what happens when connection goes wrong
+    def _manage_connection_error(self, error: Exception | None = None) -> None:
+        if self.connectionType == Constants.ConnectionType.EVENT:
+            self._trigger(Constants.Event.ON_CLOSE, error)
+        elif self.connectionType == Constants.ConnectionType.ERROR:
+            raise error
+        elif self.connectionType == Constants.ConnectionType.RETRY:
+            self._TCP_connect(self.target[0], self.target[1])
+
 
     # this function runs the given events
     def _trigger(self, eventType: Constants.Event, data) -> None:

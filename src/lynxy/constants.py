@@ -14,4 +14,15 @@ class Constants:
         '''
         This class contains all constants pertaining to events.
         '''
-        ON_MESSAGE = 'on_message'
+        ON_MESSAGE = 'on message'
+        ON_CLOSE ='on close'
+
+    
+    # class for all connection types
+    class ConnectionType(Enum):
+        '''
+        This class contains all conatins pertaining to different connection types
+        '''
+        RETRY = 'retry'
+        ERROR = 'error'
+        EVENT = 'event'

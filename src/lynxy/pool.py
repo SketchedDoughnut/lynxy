@@ -16,7 +16,7 @@ class Pool:
         def _format_time() -> str: return datetime.strftime(datetime.now(), "%d/%m/%Y, %H:%M:%S")
         
 
-    # this is a class for creating message objects
+    # this is a class for message objects
     class Message:
         '''
         This class represents a Lynxy.Message object, which is what is

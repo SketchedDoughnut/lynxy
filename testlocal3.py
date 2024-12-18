@@ -20,3 +20,8 @@ def event(data: lynxy.Pool.Message):
     print(data.created_at)
     print(data.recieved_at)
     print(data.public_key)
+
+# set up a decorator for the on_close event
+@inst.event(lynxy.Constants.Event.ON_CLOSE)
+def close(data):
+    print(data)
