@@ -145,6 +145,27 @@ class Lynxy:
     # this function sets up decorators for events,
     # basically making integration with comm easier
     def event(self, eventType: Constants.Event):
+        '''
+        This function is made to be used as a decorator for different events.
+        These events can be found at:
+
+        >>> lynxy.Constants.Event
+
+        Every time the given event is triggered, the function that you provide
+        below the event will be ran. Each different event passes in a different type of object,
+        which can be found at:
+
+        >>> lynxy.Pool
+
+        Below is an working example of something you might do:
+
+        >>> inst = lynxy.Lynxy()
+            @inst.event(lynxy.Constants.Event.ON_MESSAGE)
+            def do_stuff(data: lynxy.Pool.Message):
+                print('stuff is done!')
+
+        More information can be found on the documentation on the Github repository.
+        '''
         # wrapper function that is returned,
         # i am not quite sure how this works but it wraps around
         # the inputted function?
