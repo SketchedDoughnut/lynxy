@@ -5,13 +5,6 @@ inst = lynxy.Lynxy()
 # inst.connect('', 0)
 # inst.send('test')
 
-inst.event
-inst.get_actual_target
-inst.get_host
-inst.recv
-inst.send
-inst.set_connection
-
 # set up a decorator for the on_message event
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
 def event(data: lynxy.Pool.Message):
@@ -22,8 +15,5 @@ def event(data: lynxy.Pool.Message):
 
 # set up a decorator for the on_close event
 @inst.event(lynxy.Constants.Event.ON_CLOSE)
-def close(data):
+def close(data: Exception):
     print(data)
-
-inst.set_connection(lynxy.Constants.ConnectionType.ERROR)
-inst._comm._manage_connection_error(None)

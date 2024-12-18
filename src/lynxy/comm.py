@@ -110,6 +110,16 @@ class Comm:
     def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
 
+
+
+
+
+
+
+
+
+
+
     # this function manages what happens when connection goes wrong
     def _connection_error(self, error: Exception | None = None) -> None:
         if self.connectionType == Constants.ConnectionType.EVENT:
@@ -118,6 +128,19 @@ class Comm:
             raise error
         elif self.connectionType == Constants.ConnectionType.RETRY:
             self._TCP_connect(self.target[0], self.target[1])
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     # this function runs the given events
