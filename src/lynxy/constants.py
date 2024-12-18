@@ -11,4 +11,7 @@ class Constants:
     
     # class for all events
     class Event(Enum):
+        '''
+        This class contains all constants pertaining to events.
+        '''
         ON_MESSAGE = 'on_message'

@@ -12,12 +12,29 @@ import rsa
 class Pool:
 
     # this is a class of tools
-    class Tools:
+    class _Tools:
         def _format_time() -> str: return datetime.strftime(datetime.now(), "%d/%m/%Y, %H:%M:%S")
         
 
     # this is a class for creating message objects
     class Message:
+        '''
+        This class represents a Lynxy.Message object, which is what is
+        used for sending data from one machine to the other. The Message object
+        has 4 attributes:
+
+        content: any
+        - the actual data that was meant to be sent
+
+        created_at: str
+        - the timestamp for when the message object was created on the sending side
+
+        recieved_at: str
+        - the timestamp for when the message object was recieved on the recieving side
+
+        public_key: rsa.PublicKey
+        - the public key used to encrypt this message object when sent
+        '''
         def __init__(self, data, pub_key: rsa.PublicKey):
             self.content = data
             self.created_at = Pool.Tools._format_time()

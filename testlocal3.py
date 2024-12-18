@@ -2,6 +2,8 @@ from src import lynxy
 
 # set up instance
 inst = lynxy.Lynxy()
+inst.connect('', 0)
+inst.send('test')
 
 # set up a decorator for the on_message event
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
