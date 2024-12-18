@@ -232,6 +232,7 @@ class Comm:
         # handle data bigger then RSA can encrypt, consider
         # byte segment markers? (parser in sec.py)
         encryptedMessage = self.sec.RSA_encrypt(messageObject) # encrypt data
+        
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
         self.TCP_client.sendall(paddedMessage) # send actual data
         return

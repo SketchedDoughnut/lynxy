@@ -16,6 +16,9 @@ from .comm import Comm as _Comm
 from .constants import Constants
 from .pool import Pool
 
+# inccluded modules
+import threading
+
 ####################################################
 
 # the main class for the keeping everything together
@@ -35,14 +38,6 @@ class Lynxy:
         self._comm = _Comm(host_ip, host_port, bind)
 
 
-    # this function connects to the other machine
-    def connect(self, target_ip, target_port) -> None: self._comm._TCP_connect(target_ip, target_port)
-
-
-    # this function closes connections
-    def close(self) -> None: self._comm._close_connection()
-
-
     # this gets the host 
     def get_host(self) -> tuple[str, int]: return self._comm._get_host()
 
@@ -51,8 +46,22 @@ class Lynxy:
     def get_actual_target(self) -> tuple[str, int]: return self._comm._get_actual_target()
 
 
+    # this function connects to the other machine
+    def connect(self, target_ip, target_port) -> None: self._comm._TCP_connect(target_ip, target_port)
+
+
+    # this function closes connections
+    def close(self) -> None: self._comm._close_connection()
+
+
     # this sends data
     def send(self, data: any, ignore_errors: bool = False) -> None: return self._comm._send(data, ignore_errors)
+
+
+    # this starts recieving data
+    def recv(self) -> None:
+        self._recv_thread = threading.Thread(target=lambda:self._comm._recv(), daemon=True)
+        self._recv_thread.start()
 
     
     # this function sets up decorators for events,
