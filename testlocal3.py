@@ -5,6 +5,14 @@ inst = lynxy.Lynxy()
 inst.connect('', 0)
 inst.send('test')
 
+inst.close
+inst.connect
+inst.event
+inst.get_actual_target
+inst.get_host
+inst.recv
+inst.send
+
 # set up a decorator for the on_message event
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
 def event(data: lynxy.Pool.Message):
