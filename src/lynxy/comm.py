@@ -76,7 +76,7 @@ class Comm:
         self.UDP_binded = False
         # this represents a dictionary of event queues
         self.eventRegistry = {}
-        # this represents the connection type
+        # this represents the connection type for when errors occur
         self.connectionType = Constants.ConnectionType.EVENT
         ###########################################################
         # if UDP_bind, immediately bind to host and port
@@ -110,16 +110,6 @@ class Comm:
     def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
 
-
-
-
-
-
-
-
-
-
-
     # this function manages what happens when connection goes wrong
     def _connection_error(self, error: Exception | None = None) -> None:
         if self.connectionType == Constants.ConnectionType.EVENT:
@@ -128,19 +118,6 @@ class Comm:
             raise error
         elif self.connectionType == Constants.ConnectionType.RETRY:
             self._TCP_connect(self.target[0], self.target[1])
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     # this function runs the given events
@@ -209,12 +186,11 @@ class Comm:
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we regen number and keep trying
                 incomingNum = int(data.decode())
-
                 # otherwise connection was a success, break
                 connectionSuccess = True
                 break
-            except TimeoutError: continue
 
+            except TimeoutError: continue
         # if no success, raise error
         if not connectionSuccess: 
             raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (UDP) (attempts:{attempts})') 
@@ -251,7 +227,6 @@ class Comm:
         return
     
 
-    # TODO
     # this is a function to send data to the other end
     def _send(self, data: any, ignore_errors: bool = False) -> None:
         # raise error message if data is empty
@@ -278,7 +253,6 @@ class Comm:
         return
 
 
-    # TODO
     # this is a recieving function for recieving data
     def _recv(self) -> None:
         while True:

@@ -155,12 +155,11 @@ class Lynxy:
         return None
 
     
+    # this function sets up decorators for events,
+    # basically making integration with comm easier
     # TODO 
     # MAKE EVENT FOR DISCONNECTING? GIVE OPTION
     # TO RAISE ERROR INSTEAD
-    # END TODO
-    # this function sets up decorators for events,
-    # basically making integration with comm easier
     def event(self, eventType: Constants.Event):
         '''
         This function is made to be used as a decorator for different events.
