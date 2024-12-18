@@ -26,7 +26,13 @@ class Exceptions:
             self.message = message
             super().__init__(message)
 
-            
+
+    class TerminationSuccessError(Exception):
+        def __init__(self, message='Connection was terminated successfully!'):
+            self.message = message
+            super().__init__(message)
+
+         
     class InvalidPortError(Exception):
         def __init__(self, message=None):
             self.message = message

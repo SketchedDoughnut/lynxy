@@ -17,3 +17,7 @@ def event(data: lynxy.Pool.Message):
 @inst.event(lynxy.Constants.Event.ON_CLOSE)
 def close(data: Exception):
     print(data)
+
+
+inst.set_connection(lynxy.Constants.ConnectionType.EVENT)
+inst._comm._connection_error(lynxy.Exceptions.TerminationSuccessError)

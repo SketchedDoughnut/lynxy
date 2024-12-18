@@ -7,7 +7,6 @@ consider:
 - https://pythontic.com/modules/socket/udp-client-server-example
 - https://www.geeksforgeeks.org/python-simple-port-scanner-with-sockets/
 - https://www.geeksforgeeks.org/python-binding-and-listening-with-sockets/
-- making decorators for when someone else wants to connect
 - https://stackoverflow.com/questions/2470971/fast-way-to-test-if-a-port-is-in-use-using-python
 - https://stackoverflow.com/questions/50216417/why-use-socket-io-and-not-just-socket
 - https://github.com/MagicStack/uvloop?tab=Apache-2.0-1-ov-file
@@ -61,7 +60,7 @@ class Comm:
         # this is an instance of the parser
         self.parser = Parser()
         # this is the internal client used for sending and recieving
-        if len(host) > 0: self.host = host
+        if not host: self.host = host
         else: self.host = socket.gethostbyname(socket.gethostname())
         self.port = port
         # this is the target info
@@ -257,15 +256,15 @@ class Comm:
     def _recv(self) -> None:
         while True:
             recieved = b''
-            
+            try: recieved += self.TCP_client.recv(1024)
+
             # TODO
             # catch error when other machine stops abruptly and redirect to 
             # connection error
-            # TODO
-            # if recieved is empty, connection was properly ended,
-            # so redirect to connection error with None error
-            recieved += self.TCP_client.recv(1024)
+            except:
+                pass
 
+            if not recieved: self._connection_error(Exceptions.TerminationSuccessError) # b''
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.RSA_decrypt(indiv)

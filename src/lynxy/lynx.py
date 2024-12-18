@@ -15,6 +15,7 @@ Modules to consider:
 from .comm import Comm as _Comm
 from .constants import Constants
 from .pool import Pool
+from .exceptions import Exceptions
 
 # inccluded modules
 import threading
