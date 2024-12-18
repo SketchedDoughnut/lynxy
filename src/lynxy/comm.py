@@ -214,10 +214,10 @@ class Comm:
         self._regen_TCP()
         self.UDP_binded = False
         return
-
+    
 
     # TODO
-    # this function sends data to the other machine
+    # this is a function to send data to the other end
     def _send(self, data: any, ignore_errors: bool = False) -> None:
         # raise error message if data is empty
         # and raise is toggled, otherwise return
@@ -226,28 +226,11 @@ class Comm:
         if data is None: raiseError = True
         if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
         if ignore_errors and raiseError: return
-        # find how many bytes encrypted data is
-        encryptedData = self.sec.RSA_encrypt(data) # encrypt data
-        paddedData = self.parser.addPadding(encryptedData) # pad data
-        intData = int.from_bytes(paddedData) # get int of encoded data
-        byteCount = intData.bit_length() # how many bits it takes to represent our int
-        networkByteOrder = socket.htonl(byteCount) # convert to network (universal) order
-        self.TCP_client.sendall(pickle.dumps(networkByteOrder)) # send length
-        self.TCP_client.sendall(paddedData) # send actual data
-        return
-    
-
-    # TODO
-    # this is a second sending function without sending length
-    def _send2(self, data: any, ignore_errors: bool = False) -> None:
-        # raise error message if data is empty
-        # and raise is toggled, otherwise return
-        raiseError = False
-        if len(data) == 0: raiseError = True
-        if data is None: raiseError = True
-        if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
-        if ignore_errors and raiseError: return
         messageObject = Pool.Message(data, self.sec.ext_pub_key) # create message object
+
+        # TODO
+        # handle data bigger then RSA can encrypt, consider
+        # byte segment markers? (parser in sec.py)
         encryptedMessage = self.sec.RSA_encrypt(messageObject) # encrypt data
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
         self.TCP_client.sendall(paddedMessage) # send actual data
@@ -255,52 +238,13 @@ class Comm:
 
 
     # TODO
-    # temporary recieving function
+    # this is a recieving function for recieving data
     def _recv(self) -> None:
-        while True:
-            # recieve how many bytes message is
-            recievedNetworkOrder = self.TCP_client.recv(1024)
-            if recievedNetworkOrder is None: continue # if empty ("b''")
-            unpickledNetworkByteOrder = pickle.loads(recievedNetworkOrder)
-            targetByteCount = socket.ntohl(unpickledNetworkByteOrder)
-            # recieve byteCount amount of bytes of data
-            # we load leftover to continue where it left off
-            recievedData = self.parser.carry
-
-            print('starting with:', recievedData)
-
-            while True:
-                recievedData += self.TCP_client.recv(targetByteCount)
-                # ensure full data recieved
-                intData = int.from_bytes(recievedData)
-                recievedByteCount = intData.bit_length()
-
-                print(f'{recievedByteCount}, {targetByteCount}, {recievedData}')
-
-                if recievedByteCount >= targetByteCount: break
-            # remove padding
-            unpaddedData = self.parser.removePadding(recievedData)
-            # decrypt each part
-            for indivData in unpaddedData:
-                print(f'decrypting ({unpaddedData.index(indivData)}):', indivData)
-                decryptedData = self.sec.RSA_decrypt(indivData)
-                print(f'recv ({unpaddedData.index(indivData)}):', decryptedData)
-                self._trigger(Constants.Event.ON_MESSAGE, decryptedData)
-
-
-    # TODO
-    # second recieving function with just constant byte stream
-    def _recv2(self) -> None:
-        success = 0
-        total = 0
         while True:
             recieved = b''
             recieved += self.TCP_client.recv(1024)
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
-                total += 1
                 decrypted: Pool.Message = self.sec.RSA_decrypt(indiv)
                 decrypted.recieved_at = Pool.Tools._format_time()
-                success += 1
-                loss = 1.00 - success / total
-                self._trigger(Constants.Event.ON_MESSAGE, f'({round(loss * 100, 3)}%, {success}/{total}) {decrypted}')
+                self._trigger(Constants.Event.ON_MESSAGE, decrypted)#
