@@ -79,7 +79,7 @@ class Lynxy:
     # this function connects to the other machine
     def connect(self, target: tuple[str, int], start_recv: bool = True) -> None: 
         '''
-        Connects to the target machine. This function is a short hand for a variety
+        Connects to the target machine. This function is a shorthand for a variety
         of functions found in _comm. This function has 2 inputs:
 
         target: tuple[str, int]
@@ -111,8 +111,8 @@ class Lynxy:
     def close(self) -> None: 
         '''
         This closes the connection with the target machine. This does not send a message
-        to the target machine, which means that an error will be raised when the connection
-        ends.
+        to the target machine, which means that the disconnection will be handled depending
+        on how the other machine is configured.
         '''
         self._comm._close_connection()
         return None

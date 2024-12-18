@@ -110,14 +110,11 @@ class Comm:
     def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
 
-    # TODO
-    # find out what error is raised, catch it in send / recv,
-    # redirect error to here
     # this function manages what happens when connection goes wrong
-    def _manage_connection_error(self, error: Exception | None = None) -> None:
+    def _connection_error(self, error: Exception | None = None) -> None:
         if self.connectionType == Constants.ConnectionType.EVENT:
             self._trigger(Constants.Event.ON_CLOSE, error)
-        elif self.connectionType == Constants.ConnectionType.ERROR:
+        elif self.connectionType == Constants.ConnectionType.ERROR: 
             raise error
         elif self.connectionType == Constants.ConnectionType.RETRY:
             self._TCP_connect(self.target[0], self.target[1])
@@ -190,14 +187,14 @@ class Comm:
                 # if they are, we regen number and keep trying
                 incomingNum = int(data.decode())
 
-                incomingNum = int(data.decode())
                 # otherwise connection was a success, break
                 connectionSuccess = True
                 break
             except TimeoutError: continue
 
         # if no success, raise error
-        if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (UDP) (attempts:{attempts})') 
+        if not connectionSuccess: 
+            raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (UDP) (attempts:{attempts})') 
         # we close our UDP and return
         self.UDP_client.close()
         return (randNum, incomingNum)
@@ -249,7 +246,12 @@ class Comm:
         encryptedMessage = self.sec.RSA_encrypt(messageObject) # encrypt data
         
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
+
+        # TODO
+        # catch error when other machine stops abruptly and redirect to
+        # connection error 
         self.TCP_client.sendall(paddedMessage) # send actual data
+
         return
 
 
@@ -258,8 +260,17 @@ class Comm:
     def _recv(self) -> None:
         while True:
             recieved = b''
+            
+            # TODO
+            # catch error when other machine stops abruptly and redirect to 
+            # connection error
+            # TODO
+            # if recieved is empty, connection was properly ended,
+            # so redirect to connection error with None error
             recieved += self.TCP_client.recv(1024)
-            for indiv in self.parser.removePadding(recieved):
+
+            unpadded = self.parser.removePadding(recieved)
+            for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.RSA_decrypt(indiv)
                 decrypted.recieved_at = Pool._Tools._format_time()
                 self._trigger(Constants.Event.ON_MESSAGE, decrypted)
