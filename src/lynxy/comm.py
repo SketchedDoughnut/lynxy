@@ -110,6 +110,9 @@ class Comm:
     def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
 
+    # TODO
+    # find out what error is raised, catch it in send / recv,
+    # redirect error to here
     # this function manages what happens when connection goes wrong
     def _manage_connection_error(self, error: Exception | None = None) -> None:
         if self.connectionType == Constants.ConnectionType.EVENT:

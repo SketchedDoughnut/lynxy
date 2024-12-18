@@ -64,6 +64,11 @@ class Lynxy:
 
     # this function sets behaviors for when connection is lost
     def set_connection(self, connectionType: Constants.ConnectionType) -> None:
+        '''
+        Sets the connection type. This is used to determine what to do after 
+        the other machine stops communicating. Information about the individual
+        information types can be found on the Github documentation. (TODO)
+        '''
         # filter out invalid types
         if type(connectionType) != Constants.ConnectionType: raise TypeError('Invalid connection type')
         # set connection type
@@ -165,7 +170,7 @@ class Lynxy:
 
         Every time the given event is triggered, the function that you provide
         below the event will be ran. Each event has data that it will pass in to your function.
-        More information about data types can be found in the documentation on Github.
+        More information about data types can be found in the documentation on Github. (TODO)
 
         Below is an working example of something you might do:
 
