@@ -28,13 +28,6 @@ class Parser:
     # this function splits the messages by the start marker
     # and can optionally discard invalid endings that aren't complete
     def removePadding(self, message: bytes, remove_empty: bool = True) -> list:
-        '''
-        basically how this works:
-        When we split a message into a list, it has a whitespace where every end marker is.
-        This is an empty entry in the list. We can check if the last entry in the list is empty.
-        If it is, this means that there was an end marker. Otherwise, this means that that is an incomplete piece,
-        and we can save that to self.carry for the next cycle.
-        '''
         # add the previous data to current data
         stitched = self.carry + message
         # split message by end marker
