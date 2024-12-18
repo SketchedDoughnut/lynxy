@@ -243,8 +243,7 @@ class Comm:
         while True:
             recieved = b''
             recieved += self.TCP_client.recv(1024)
-            unpadded = self.parser.removePadding(recieved)
-            for indiv in unpadded:
+            for indiv in self.parser.removePadding(recieved):
                 decrypted: Pool.Message = self.sec.RSA_decrypt(indiv)
                 decrypted.recieved_at = Pool.Tools._format_time()
-                self._trigger(Constants.Event.ON_MESSAGE, decrypted)#
+                self._trigger(Constants.Event.ON_MESSAGE, decrypted)
