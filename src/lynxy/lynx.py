@@ -14,6 +14,7 @@ Modules to consider:
 # files
 from .comm import Comm as _Comm
 from .constants import Constants
+from .pool import Pool
 
 ####################################################
 

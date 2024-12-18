@@ -43,13 +43,13 @@ import pickle
 
 # external modules
 from rich import print
-import rsa
 
 # files
 from .sec import Sec
 from .parser import Parser
 from .exceptions import Exceptions
 from .constants import Constants
+from .pool import Pool
 
 ####################################################
 
@@ -247,10 +247,10 @@ class Comm:
         if data is None: raiseError = True
         if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
         if ignore_errors and raiseError: return
-        # find how many bytes encrypted data is
-        encryptedData = self.sec.RSA_encrypt(data) # encrypt data
-        paddedData = self.parser.addPadding(encryptedData) # pad data
-        self.TCP_client.sendall(paddedData) # send actual data
+        messageObject = Pool.Message(data, self.sec.ext_pub_key) # create message object
+        encryptedMessage = self.sec.RSA_encrypt(messageObject) # encrypt data
+        paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
+        self.TCP_client.sendall(paddedMessage) # send actual data
         return
 
 
@@ -299,10 +299,8 @@ class Comm:
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
                 total += 1
-                try: decrypted = self.sec.RSA_decrypt(indiv)
-                except rsa.DecryptionError: 
-                    print('encryption error')
-                    continue
+                decrypted: Pool.Message = self.sec.RSA_decrypt(indiv)
+                decrypted.recieved_at = Pool.Tools._format_time()
                 success += 1
                 loss = 1.00 - success / total
                 self._trigger(Constants.Event.ON_MESSAGE, f'({round(loss * 100, 3)}%, {success}/{total}) {decrypted}')
