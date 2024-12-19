@@ -2,11 +2,12 @@ from src import lynxy
 from rich import print
 
 inst = lynxy.Lynxy(['', 11111], bind=True)
+print('initialized')
 host = inst.get_host()
 target = ('192.168.68.114', 11112)
 inst.connect(target)
-
 print('connected')
+
 print(f'host: {host}')
 print(f'target: {target}')
 
