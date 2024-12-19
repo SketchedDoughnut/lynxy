@@ -39,6 +39,7 @@ Commenting info:
 import socket
 import random
 import pickle
+import threading
 
 # external modules
 from rich import print
@@ -77,6 +78,10 @@ class Comm:
         self.eventRegistry = {}
         # this represents the connection type for when errors occur
         self.connectionType = Constants.ConnectionType.EVENT
+        # this is the thread for the recieving function
+        self.recvThread = threading.Thread(target=lambda:self._recv(), daemon=True)
+        # this represents a var for stopping thread
+        self.stopThread = False
         ###########################################################
         # if UDP_bind, immediately bind to host and port
         if UDP_bind: 
@@ -109,15 +114,19 @@ class Comm:
     def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
 
+    # this starts the recv thread
+    def _start_recv(self) -> None: 
+        if not self.recvThread.is_alive(): self.recvThread.start()
+
+
     # this function manages what happens when connection goes wrong
     def _connection_error(self, error: ConnectionRefusedError | None = None) -> None:
+        self._close_connection()
         if self.connectionType == Constants.ConnectionType.EVENT:
             try: self._trigger(Constants.Event.ON_CLOSE, error)
-            except KeyError: raise Exceptions.NoEventError(f'No event function, additional error: {error()}')
-        elif self.connectionType == Constants.ConnectionType.ERROR: 
-            raise error
-        elif self.connectionType == Constants.ConnectionType.RETRY:
-            self._TCP_connect(self.target[0], self.target[1])
+            except KeyError: raise Exceptions.NoEventError(f'No event function, error: {error}')
+        elif self.connectionType == Constants.ConnectionType.ERROR: raise error
+        elif self.connectionType == Constants.ConnectionType.RETRY: self._TCP_connect(self.target[0], self.target[1])
 
 
     # this function runs the given events
@@ -220,6 +229,7 @@ class Comm:
 
     # this function closes the connection between the two machines
     def _close_connection(self) -> None: 
+        self.stopThread = True
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
@@ -256,10 +266,14 @@ class Comm:
     # this is a recieving function for recieving data
     def _recv(self) -> None:
         while True:
-            recieved = b''
-            try: recieved += self.TCP_client.recv(1024)
-            except ConnectionResetError as e: self._connection_error(e)
-            if not recieved: self._connection_error(Exceptions.TerminationSuccessError) # b''
+            if self.stopThread: break
+            try: recieved = self.TCP_client.recv(1024)
+            except ConnectionResetError as e: 
+                self._connection_error(e)
+                return
+            if not recieved: 
+                self._connection_error(Exceptions.TerminationSuccessError) # b''
+                return
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.RSA_decrypt(indiv)

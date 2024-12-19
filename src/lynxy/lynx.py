@@ -152,7 +152,7 @@ class Lynxy:
             connect(start_recv = False)
             recv()
         '''
-        if not self._recv_thread.is_alive(): self._recv_thread.start()
+        self._comm._start_recv()
         return None
 
     
