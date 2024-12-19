@@ -126,7 +126,6 @@ class Comm:
             try: self._trigger(Constants.Event.ON_CLOSE, error)
             except KeyError: raise Exceptions.NoEventError(f'No event function, error: {error}')
         elif self.connectionType == Constants.ConnectionType.ERROR: raise error
-        elif self.connectionType == Constants.ConnectionType.RETRY: self._TCP_connect(self.target[0], self.target[1])
 
 
     # this function runs the given events

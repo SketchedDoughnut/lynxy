@@ -23,6 +23,5 @@ class Constants:
         '''
         This class contains all conatins pertaining to different connection types
         '''
-        RETRY = 'retry'
         ERROR = 'error'
         EVENT = 'event'
