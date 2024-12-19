@@ -60,7 +60,7 @@ class Comm:
         # this is an instance of the parser
         self.parser = Parser()
         # this is the internal client used for sending and recieving
-        if not host: self.host = host
+        if host: self.host = host
         else: self.host = socket.gethostbyname(socket.gethostname())
         self.port = port
         # this is the target info
