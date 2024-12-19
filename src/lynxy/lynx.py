@@ -24,7 +24,7 @@ import threading
 
 # the main class for the keeping everything together
 class Lynxy:
-    def __init__(self, host: tuple[str, int] = ['', 56774], bind: bool = False, encryption_size: int = 1024):
+    def __init__(self, host: tuple[str, int] = ['', 56774], bind: bool = False, encryption_size: int = 2048):
         '''
         This class keeps everything together with your client and the connection with the other machine.
         It is designed for a TCP communication with the other end.
