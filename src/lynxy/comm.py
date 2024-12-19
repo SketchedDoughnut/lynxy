@@ -234,8 +234,7 @@ class Comm:
 
     # this function closes the connection between the two machines
     def _close_connection(self) -> None: 
-        # wait for thread to stop
-        while self.recvThread.is_alive(): self.stopThread = True
+        self.stopThread = True
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
@@ -272,11 +271,15 @@ class Comm:
     # this is a recieving function for recieving data
     def _recv(self) -> None:
         while True:
-            if self.stopThread: break
             try: recieved = self.TCP_client.recv(1024)
-            except ConnectionResetError as e: 
+            except ConnectionResetError as e: # other end quit
                 self._connection_error(e)
                 return
+            except ConnectionAbortedError as e: # this end quit and thread is running
+                self._connection_error(e)
+                return
+            except: 
+                if self.stopThread: return # stop regardless if wanted
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.RSA_decrypt(indiv)
