@@ -17,11 +17,13 @@ from .exceptions import Exceptions
 # the main class for managing
 # security layers
 class Sec:
-    def __init__(self):
+    def __init__(self, rsa_keysize: int):
         ############## 
         # FOR RSA ENCRYPTION
         # AKA ASYMMETRICAL
         ##############
+        # represents the size of the RSA keys
+        self.rsa_keysize = rsa_keysize
         # represents internal public and private keys
         # for this end of communication
         self.int_pub_key, self.int_priv_key = self._gen_access_keys()
@@ -39,7 +41,7 @@ class Sec:
 
     
     # generates public/private keys for encryption
-    def _gen_access_keys(self) -> tuple[rsa.PublicKey, rsa.PrivateKey]: return rsa.newkeys(2048)
+    def _gen_access_keys(self) -> tuple[rsa.PublicKey, rsa.PrivateKey]: return rsa.newkeys(self.rsa_keysize)
 
 
     # function that loads RSA public key

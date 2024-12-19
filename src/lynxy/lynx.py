@@ -24,19 +24,25 @@ import threading
 
 # the main class for the keeping everything together
 class Lynxy:
-    def __init__(self, host_ip: str = '', host_port: int = 56774, bind: bool = False):
+    def __init__(self, host: tuple[str, int] = ['', 56774], bind: bool = False, encryption_size: int = 1024):
         '''
         This class keeps everything together with your client and the connection with the other machine.
         It is designed for a TCP communication with the other end.
-        This class has all the configuration and management for your client instance. \n
+        This class has all the configuration and management for your client instance.
+
         This class takes 3 arguments:
-        - ip: a string of the IP to connect to. This will be set automatically to this machines
-              address if not specified.
-        - port: an integer of the port to connect to
-        - bind: defaulting to False, says whether or not Lynxy should immediately bind to the ip and port. 
+
+        host: tuple[str, int] = ['', 56774]
+        - the host information of this machine to bind to. If the IP is left empty, it will automatically be set to the proper IP.
+
+        bind: bool = False
+        - defaulting to False, says whether or not Lynxy should immediately bind to the IP and port. 
                     This is recommended if you want to connect quickly.
+
+        encryption_size: int = 1024
+        - this is how big of an RSA key to generate. The smaller it is, the quicker it takes. However, this also means you can encrypt and send less data.
         '''
-        self._comm = _Comm(host_ip, host_port, bind)
+        self._comm = _Comm(host, bind, encryption_size)
 
 
     # this gets the host 

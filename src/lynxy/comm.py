@@ -55,15 +55,17 @@ from .pool import Pool
 
 # this is the main class for the connection
 class Comm:
-    def __init__(self, host: str, port: int, UDP_bind: bool):
+    def __init__(self, host: tuple[str, int], UDP_bind: bool, encryptionSize: int):
+        # this is the size of the RSA encryption token generated
+        self.encryptionSize = encryptionSize
         # this is an instance of the security manager
-        self.sec = Sec()
+        self.sec = Sec(self.encryptionSize)
         # this is an instance of the parser
         self.parser = Parser()
         # this is the internal client used for sending and recieving
-        if host: self.host = host
+        if host[0]: self.host = host[0]
         else: self.host = socket.gethostbyname(socket.gethostname())
-        self.port = port
+        self.port = host[1]
         # this is the target info
         self.target = ('', 0)
         # this is the actual connected target info (FOR TCP)
@@ -219,12 +221,12 @@ class Comm:
             # we send our public key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
             # then recieve their public key
-            recievedPubKey = self.TCP_client.recv(2048)
+            recievedPubKey = self.TCP_client.recv(self.encryptionSize)
             properPubKey = pickle.loads(recievedPubKey)
             self.sec.load_RSA(properPubKey)
         else:
             # we recieve their public key
-            recievedPubKey = self.TCP_client.recv(2048)
+            recievedPubKey = self.TCP_client.recv(self.encryptionSize)
             properPubKey = pickle.loads(recievedPubKey)
             self.sec.load_RSA(properPubKey)
             # then send our public key
