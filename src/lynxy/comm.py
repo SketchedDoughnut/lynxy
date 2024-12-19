@@ -288,6 +288,6 @@ class Comm:
                 if self.stopThread: return # stop regardless if wanted
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
-                decrypted: Pool.Message = self.sec.RSA_decrypt(indiv)
+                decrypted: Pool.Message = self.sec.Fernet_decrypt(indiv)
                 decrypted.recieved_at = Pool._Tools._format_time()
                 self._trigger(Constants.Event.ON_MESSAGE, decrypted)
