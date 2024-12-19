@@ -12,7 +12,8 @@ print(f'target: {target}')
 
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
 def recv(msg: lynxy.Pool.Message): 
-    print(msg.content)
+    # print(msg.content)
+    print(f'{msg.created_at} -> {msg.recieved_at}')
 
 @inst.event(lynxy.Constants.Event.ON_CLOSE)
 def close(msg):
