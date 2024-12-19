@@ -39,4 +39,4 @@ class Pool:
             self.content = data
             self.created_at = Pool._Tools._format_time()
             self.recieved_at = None # set on recieving end
-            self.public_key = pub_key
+            # self.public_key = pub_key
