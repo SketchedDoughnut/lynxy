@@ -286,6 +286,7 @@ class Comm:
                 return
             except: 
                 if self.stopThread: return # stop regardless if wanted
+            print(recieved)
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.Fernet_decrypt(indiv)

@@ -12,6 +12,8 @@ print(f'target: {target}')
 inst.connect(target)
 print('connected')
 
+inst.set_connection(lynxy.Constants.ConnectionType.ERROR)
+
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
 def recv(msg: lynxy.Pool.Message): 
     # print(msg.content)
@@ -29,8 +31,11 @@ def close(msg):
 #         break
 #     inst._comm._send(msg)
 
+print('opened')
 # https://courses.cs.washington.edu/courses/cse163/20wi/files/lectures/L04/bee-movie.txt
 with open(r'D:\VScode\packages\lynxy\bee.txt', 'r') as f:
     contents = f.read()
+print(contents)
 inst.send(contents)
+print('sent')
 inst.close()
