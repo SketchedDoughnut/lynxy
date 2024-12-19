@@ -82,6 +82,8 @@ class Comm:
         self.recvThread = threading.Thread(target=lambda:self._recv(), daemon=True)
         # this represents a var for stopping thread
         self.stopThread = False
+        # this represents if we have an active connected
+        self.connected = True
         ###########################################################
         # if UDP_bind, immediately bind to host and port
         if UDP_bind: 
@@ -120,12 +122,15 @@ class Comm:
 
 
     # this function manages what happens when connection goes wrong
-    def _connection_error(self, error: ConnectionRefusedError | None = None) -> None:
-        self._close_connection()
-        if self.connectionType == Constants.ConnectionType.EVENT:
-            try: self._trigger(Constants.Event.ON_CLOSE, error)
-            except KeyError: raise Exceptions.NoEventError(f'No event function, error: {error}')
-        elif self.connectionType == Constants.ConnectionType.ERROR: raise error
+    def _connection_error(self, error: Exception | None = None) -> None:
+        if self.connected:
+            self._close_connection()
+            self.connected = False
+            if self.connectionType == Constants.ConnectionType.EVENT:
+                try: self._trigger(Constants.Event.ON_CLOSE, error)
+                except KeyError: raise Exceptions.NoEventError(f'No event function, error: {error}')
+            elif self.connectionType == Constants.ConnectionType.ERROR: raise error
+        return None
 
 
     # this function runs the given events
