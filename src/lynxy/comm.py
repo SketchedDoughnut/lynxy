@@ -110,10 +110,10 @@ class Comm:
     
 
     # this function manages what happens when connection goes wrong
-    def _connection_error(self, error: Exception | None = None) -> None:
+    def _connection_error(self, error: ConnectionRefusedError | None = None) -> None:
         if self.connectionType == Constants.ConnectionType.EVENT:
             try: self._trigger(Constants.Event.ON_CLOSE, error)
-            except KeyError: raise error
+            except KeyError: raise Exceptions.NoEventError(f'No event function, additional error: {error()}')
         elif self.connectionType == Constants.ConnectionType.ERROR: 
             raise error
         elif self.connectionType == Constants.ConnectionType.RETRY:
