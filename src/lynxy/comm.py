@@ -252,19 +252,15 @@ class Comm:
         if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
         if ignore_errors and raiseError: return
         messageObject = Pool.Message(data, self.sec.ext_pub_key) # create message object
-
+        if not self.connected: raise Exceptions.ClientNotConnectedError()
         # TODO
         # handle data bigger then RSA can encrypt, consider
         # byte segment markers? (parser in sec.py)
         encryptedMessage = self.sec.RSA_encrypt(messageObject) # encrypt data
         
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
-
-        # TODO
-        # catch error when other machine stops abruptly and redirect to
-        # connection error 
         try: self.TCP_client.sendall(paddedMessage) # send actual data
-        except ConnectionResetError as e: self._connection_error(e)
+        except ConnectionResetError as e: self._connection_error(e) # other end quit
         return
 
 
