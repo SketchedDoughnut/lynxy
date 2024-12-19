@@ -35,4 +35,7 @@ def close(msg):
 with open(r'D:\VScode\packages\lynxy\bee.txt', 'r') as f:
     contents = f.read()
 inst.send(contents)
-# inst.close()
+while True:
+    input('-> ')
+    break
+inst.close()
