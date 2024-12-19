@@ -37,6 +37,6 @@ class Pool:
         '''
         def __init__(self, data, pub_key: rsa.PublicKey):
             self.content = data
-            self.created_at = Pool.Tools._format_time()
+            self.created_at = Pool._Tools._format_time()
             self.recieved_at = None # set on recieving end
             self.public_key = pub_key
