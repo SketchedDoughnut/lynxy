@@ -5,11 +5,12 @@ inst = lynxy.Lynxy(('', 11112), bind=True)
 print('initialized')
 host = inst.get_host()
 target = ('192.168.68.130', 11111)
-inst.connect(target)
-print('connected')
 
 print(f'host: {host}')
 print(f'target: {target}')
+
+inst.connect(target)
+print('connected')
 
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
 def recv(msg: lynxy.Pool.Message): 
