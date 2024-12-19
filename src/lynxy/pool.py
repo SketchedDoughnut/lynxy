@@ -35,7 +35,7 @@ class Pool:
         public_key: rsa.PublicKey
         - the public key used to encrypt this message object when sent
         '''
-        def __init__(self, data, pub_key: rsa.PublicKey):
+        def __init__(self, data):
             self.content = data
             self.created_at = Pool._Tools._format_time()
             self.recieved_at = None # set on recieving end

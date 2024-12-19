@@ -251,8 +251,9 @@ class Comm:
         if data is None: raiseError = True
         if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
         if ignore_errors and raiseError: return
-        messageObject = Pool.Message(data, self.sec.ext_pub_key) # create message object
+        messageObject = Pool.Message(data) # create message object
         if not self.connected: raise Exceptions.ClientNotConnectedError()
+
         # TODO
         # handle data bigger then RSA can encrypt, consider
         # byte segment markers? (parser in sec.py)
