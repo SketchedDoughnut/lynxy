@@ -26,3 +26,4 @@ class Constants:
         '''
         ERROR = 'error'
         EVENT = 'event'
+        NONE = 'none'

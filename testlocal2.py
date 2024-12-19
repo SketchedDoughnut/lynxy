@@ -1,23 +1,27 @@
-from src.lynxy import Lynxy
-from rich import print
-import random
-import datetime
+from src import lynxy
 
-inst = Lynxy()
-def recv(data):
-    unpad = inst._comm.parser.removePadding(data)
-    for dat in unpad:
-        dec = inst._comm.sec.RSA_decrypt(dat)
-        print('dec:', dec)
-while True:
-    current = datetime.datetime.strftime(datetime.datetime.now(), "%d/%m/%Y, %H:%M:%S")
-    encrypted = inst._comm.sec.RSA_encrypt(current, True)
-    padded = inst._comm.parser.addPadding(encrypted)
-    # print('original:', padded)
-    while padded:
-        randNum = random.randint(0, len(padded))
-        chars = padded[:randNum]
-        padded = padded.removeprefix(chars)
-        # print('current:', padded)
-        # print('selected chars:', chars)
-        recv(chars)
+# set up instance
+inst = lynxy.Lynxy()
+# inst.connect('', 0)
+# inst.send('test')
+
+# set up a decorator for the on_message event
+@inst.event(lynxy.Constants.Event.ON_MESSAGE)
+def event(data: lynxy.Pool.Message):
+    print(data.content)
+    print(data.created_at)
+    print(data.recieved_at)
+
+# set up a decorator for the on_close event
+@inst.event(lynxy.Constants.Event.ON_CLOSE)
+def close(data):
+    print(data)
+
+# set up a decorator for the on_connect event
+@inst.event(lynxy.Constants.Event.ON_CONNECT)
+def connect(data):
+    print(data)
+
+inst.set_connection(lynxy.Constants.ConnectionType.EVENT)
+inst._comm._trigger(lynxy.Constants.Event.ON_CONNECT, True)
+inst._comm._trigger(lynxy.Constants.Event.ON_MESSAGE, lynxy.Pool.Message('message data!'))

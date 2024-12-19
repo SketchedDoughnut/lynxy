@@ -126,9 +126,10 @@ class Comm:
         if self.connected:
             self._close_connection()
             self.connected = False
-            if self.connectionType == Constants.ConnectionType.EVENT:
-                self._trigger(Constants.Event.ON_CLOSE, error)
-            elif self.connectionType == Constants.ConnectionType.ERROR: raise error
+        if self.connectionType == Constants.ConnectionType.EVENT:
+            self._trigger(Constants.Event.ON_CLOSE, error)
+        elif self.connectionType == Constants.ConnectionType.ERROR: 
+            raise error
         return None
 
 
