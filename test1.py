@@ -22,9 +22,15 @@ def close(msg):
     print('connection closed:', msg)
     inst.close()
 
-while True:
-    msg = input('-> ')
-    if msg == 'exit': 
-        inst.close()
-        break
-    inst._comm._send(msg)
+# while True:
+#     msg = input('-> ')
+#     if msg == 'exit': 
+#         inst.close()
+#         break
+#     inst._comm._send(msg)
+
+# https://courses.cs.washington.edu/courses/cse163/20wi/files/lectures/L04/bee-movie.txt
+with open(r'D:\VScode\packages\lynxy\bee.txt', 'r') as f:
+    contents = f.read()
+inst.send(contents)
+inst.close()
