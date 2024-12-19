@@ -37,7 +37,6 @@ class Lynxy:
                     This is recommended if you want to connect quickly.
         '''
         self._comm = _Comm(host_ip, host_port, bind)
-        self._recv_thread = threading.Thread(target=lambda:self._comm._recv(), daemon=True)
 
 
     # this gets the host 

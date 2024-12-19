@@ -1,6 +1,5 @@
 from src import lynxy
 from rich import print
-import threading
 
 inst = lynxy.Lynxy(host_port=11111, bind=True)
 host = inst.get_host()

@@ -83,7 +83,7 @@ class Comm:
         # this represents a var for stopping thread
         self.stopThread = False
         # this represents if we have an active connected
-        self.connected = True
+        self.connected = False
         ###########################################################
         # if UDP_bind, immediately bind to host and port
         if UDP_bind: 
@@ -171,6 +171,7 @@ class Comm:
             if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (TCP) (attempts:{attempts})') 
         # do the handshake to exchange RSA keys
         self._handshake(ourRandom > targetRandom)
+        self.connected = True
         return None
 
 
@@ -233,7 +234,8 @@ class Comm:
 
     # this function closes the connection between the two machines
     def _close_connection(self) -> None: 
-        self.stopThread = True
+        # wait for thread to stop
+        while self.recvThread.is_alive(): self.stopThread = True
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
