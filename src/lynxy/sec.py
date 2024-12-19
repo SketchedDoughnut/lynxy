@@ -39,7 +39,7 @@ class Sec:
 
     
     # generates public/private keys for encryption
-    def _gen_access_keys(self) -> tuple[rsa.PublicKey, rsa.PrivateKey]: return rsa.newkeys(1024)
+    def _gen_access_keys(self) -> tuple[rsa.PublicKey, rsa.PrivateKey]: return rsa.newkeys(2048)
 
 
     # function that loads RSA public key

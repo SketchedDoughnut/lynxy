@@ -204,12 +204,12 @@ class Comm:
             # we send our public key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
             # then recieve their public key
-            recievedPubKey = self.TCP_client.recv(1024)
+            recievedPubKey = self.TCP_client.recv(2048)
             properPubKey = pickle.loads(recievedPubKey)
             self.sec.load_RSA(properPubKey)
         else:
             # we recieve their public key
-            recievedPubKey = self.TCP_client.recv(1024)
+            recievedPubKey = self.TCP_client.recv(2048)
             properPubKey = pickle.loads(recievedPubKey)
             self.sec.load_RSA(properPubKey)
             # then send our public key
