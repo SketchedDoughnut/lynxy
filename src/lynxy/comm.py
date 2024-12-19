@@ -275,9 +275,6 @@ class Comm:
             except ConnectionResetError as e: 
                 self._connection_error(e)
                 return
-            if not recieved: 
-                self._connection_error(Exceptions.TerminationSuccessError) # b''
-                return
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.RSA_decrypt(indiv)
