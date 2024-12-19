@@ -1,7 +1,7 @@
 from src import lynxy
 from rich import print
 
-inst = lynxy.Lynxy(('', 11112), bind=True)
+inst = lynxy.Lynxy(('', 11112), True, 2048)
 print('initialized')
 host = inst.get_host()
 target = ('192.168.68.130', 11111)
