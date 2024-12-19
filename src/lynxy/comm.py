@@ -247,8 +247,8 @@ class Comm:
         # TODO
         # catch error when other machine stops abruptly and redirect to
         # connection error 
-        self.TCP_client.sendall(paddedMessage) # send actual data
-
+        try: self.TCP_client.sendall(paddedMessage) # send actual data
+        except ConnectionResetError as e: self._connection_error(e)
         return
 
 
@@ -257,13 +257,7 @@ class Comm:
         while True:
             recieved = b''
             try: recieved += self.TCP_client.recv(1024)
-
-            # TODO
-            # catch error when other machine stops abruptly and redirect to 
-            # connection error
-            except:
-                pass
-
+            except ConnectionResetError as e: self._connection_error(e)
             if not recieved: self._connection_error(Exceptions.TerminationSuccessError) # b''
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
