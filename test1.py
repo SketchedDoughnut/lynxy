@@ -16,8 +16,8 @@ inst.set_connection(lynxy.Constants.ConnectionType.ERROR)
 
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
 def recv(msg: lynxy.Pool.Message): 
-    # print(msg.content)
-    print(f'{msg.created_at} -> {msg.recieved_at}: {msg.content}')
+    print(f'{msg.created_at} -> {msg.recieved_at}')
+    # print(f'{msg.created_at} -> {msg.recieved_at}: {msg.content}')
 
 @inst.event(lynxy.Constants.Event.ON_CLOSE)
 def close(msg):
