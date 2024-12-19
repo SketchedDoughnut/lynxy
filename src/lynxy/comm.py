@@ -127,16 +127,17 @@ class Comm:
             self._close_connection()
             self.connected = False
             if self.connectionType == Constants.ConnectionType.EVENT:
-                try: self._trigger(Constants.Event.ON_CLOSE, error)
-                except KeyError: raise Exceptions.NoEventError(f'No event function, error: {error}')
+                self._trigger(Constants.Event.ON_CLOSE, error)
             elif self.connectionType == Constants.ConnectionType.ERROR: raise error
         return None
 
 
     # this function runs the given events
     def _trigger(self, eventType: Constants.Event, data) -> None:
-        for func in self.eventRegistry[eventType]: 
-            func(data)
+        try:
+            for func in self.eventRegistry[eventType]: 
+                func(data)
+        except KeyError: return
 
 
     # this function handles the UDP connection that helps make the TCP connection
@@ -172,6 +173,7 @@ class Comm:
         # do the handshake to exchange RSA keys
         self._handshake(ourRandom > targetRandom)
         self.connected = True
+        self._trigger(Constants.Event.ON_CONNECT, True)
         return None
 
 
@@ -200,6 +202,10 @@ class Comm:
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we regen number and keep trying
                 incomingNum = int(data.decode())
+                if randNum == incomingNum:  
+                    randNum = random.randint(0, 1000) + random.randint(0, 1000)
+                    continue
+
                 # otherwise connection was a success, break
                 connectionSuccess = True
                 break
@@ -216,22 +222,20 @@ class Comm:
     # this function manages handshakes
     def _handshake(self, is_first: bool) -> None:
         if is_first:
-            # we send our public key
+            # we send our public RSA key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
-            # then recieve their public key
+            # then recieve their public RSA key
             recievedPubKey = self.TCP_client.recv(1024)
-            properPubKey = pickle.loads(recievedPubKey)
-            self.sec.load_RSA(properPubKey)
-            # now we send our symmetrical token for actual encryption
-            # since we are first
-            # we don't need to recieve since the keys are the same
+            self.sec.load_RSA(pickle.loads(recievedPubKey))
+            # now we send our Fernet key for actual encryption
+            # since we are first, we don't need to recieve 
+            # since the keys are the same
             encryptedFernet = self.sec.RSA_encrypt(self.sec.fernet_key)
             self.TCP_client.sendall(encryptedFernet)
         else:
             # we recieve their public key
             recievedPubKey = self.TCP_client.recv(1024)
-            properPubKey = pickle.loads(recievedPubKey)
-            self.sec.load_RSA(properPubKey)
+            self.sec.load_RSA(pickle.loads(recievedPubKey))
             # then send our public key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
             # now we recieve the other ends symmetrical token for actual encryption
@@ -253,8 +257,8 @@ class Comm:
 
     # this is a function to send data to the other end
     def _send(self, data: any, ignore_errors: bool = False) -> None:
-        # raise error message if data is empty
-        # and raise is toggled, otherwise return
+        # raise error message if data is empty and ignore is disabled,
+        # otherwise return
         raiseError = False
         if len(data) == 0: raiseError = True
         if data is None: raiseError = True
@@ -262,12 +266,7 @@ class Comm:
         if ignore_errors and raiseError: return
         messageObject = Pool.Message(data) # create message object
         if not self.connected: raise Exceptions.ClientNotConnectedError()
-
-        # TODO
-        # handle data bigger then RSA can encrypt, consider
-        # byte segment markers? (parser in sec.py)
         encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
-        
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
         try: self.TCP_client.sendall(paddedMessage) # send actual data
         except ConnectionResetError as e: self._connection_error(e) # other end quit

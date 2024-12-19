@@ -5,9 +5,6 @@ PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
 # included modules
 # from ast import literal_eval
 
-# external modules
-from rich import print
-
 ####################################################
 
 # this is the main class for the parser 

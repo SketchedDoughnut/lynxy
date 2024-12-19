@@ -15,7 +15,8 @@ class Constants:
         This class contains all constants pertaining to events.
         '''
         ON_MESSAGE = 'on message'
-        ON_CLOSE ='on close'
+        ON_CLOSE = 'on close'
+        ON_CONNECT = 'on connect'
 
     
     # class for all connection types

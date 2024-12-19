@@ -5,9 +5,6 @@ PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
 # included modules
 from datetime import datetime
 
-# external modules
-import rsa
-
 # the main class for containing all of the types of stuff
 class Pool:
 
@@ -39,4 +36,3 @@ class Pool:
             self.content = data
             self.created_at = Pool._Tools._format_time()
             self.recieved_at = None # set on recieving end
-            # self.public_key = pub_key
