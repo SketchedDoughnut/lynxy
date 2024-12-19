@@ -55,11 +55,9 @@ from .pool import Pool
 
 # this is the main class for the connection
 class Comm:
-    def __init__(self, host: tuple[str, int], UDP_bind: bool, encryptionSize: int):
-        # this is the size of the RSA encryption token generated
-        self.encryptionSize = encryptionSize
+    def __init__(self, host: tuple[str, int], UDP_bind: bool):
         # this is an instance of the security manager
-        self.sec = Sec(self.encryptionSize)
+        self.sec = Sec()
         # this is an instance of the parser
         self.parser = Parser()
         # this is the internal client used for sending and recieving
@@ -221,16 +219,25 @@ class Comm:
             # we send our public key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
             # then recieve their public key
-            recievedPubKey = self.TCP_client.recv(self.encryptionSize)
+            recievedPubKey = self.TCP_client.recv(1024)
             properPubKey = pickle.loads(recievedPubKey)
             self.sec.load_RSA(properPubKey)
+            # now we send our symmetrical token for actual encryption
+            # since we are first
+            # we don't need to recieve since the keys are the same
+            encryptedFernet = self.sec.RSA_encrypt(self.sec.fernet_key)
+            self.TCP_client.sendall(encryptedFernet)
         else:
             # we recieve their public key
-            recievedPubKey = self.TCP_client.recv(self.encryptionSize)
+            recievedPubKey = self.TCP_client.recv(1024)
             properPubKey = pickle.loads(recievedPubKey)
             self.sec.load_RSA(properPubKey)
             # then send our public key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
+            # now we recieve the other ends symmetrical token for actual encryption
+            # since we are second
+            encryptedFernet = self.TCP_client.recv(1024)
+            self.sec.load_Fernet(self.sec.RSA_decrypt(encryptedFernet))
         return None
     
 
@@ -259,7 +266,7 @@ class Comm:
         # TODO
         # handle data bigger then RSA can encrypt, consider
         # byte segment markers? (parser in sec.py)
-        encryptedMessage = self.sec.RSA_encrypt(messageObject) # encrypt data
+        encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
         
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
         try: self.TCP_client.sendall(paddedMessage) # send actual data
