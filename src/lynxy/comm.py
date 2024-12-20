@@ -8,9 +8,6 @@ import random
 import pickle
 import threading
 
-# external modules
-from rich import print
-
 # files
 from .sec import Sec
 from .parser import Parser
