@@ -31,9 +31,9 @@ def close(msg):
 #     inst._comm._send(msg)
 
 # https://courses.cs.washington.edu/courses/cse163/20wi/files/lectures/L04/bee-movie.txt
-with open(r'D:\VScode\packages\lynxy\bee.txt', 'r') as f:
-    contents = f.read()
-inst.send(contents * 100)
+# with open(r'D:\VScode\packages\lynxy\bee.txt', 'r') as f:
+#     contents = f.read()
+# inst.send(contents * 100)
 while True:
     input('-> ')
     break
