@@ -33,6 +33,9 @@ Decorator info:
 
 Commenting info:
 - https://realpython.com/python-double-underscore/
+
+Server implementations:
+- https://www.geeksforgeeks.org/socket-programming-multi-threading-python/
 '''
 
 # included modules
