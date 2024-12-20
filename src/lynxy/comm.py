@@ -188,10 +188,6 @@ class Comm:
             self.UDP_binded = True
         # now, we generate and send a random number
         randNum = random.randint(0, 1000) + random.randint(0, 1000)
-
-        randNum = 100
-        print('generated:', randNum)
-
         # we try "attempts" times to connect and wait "timeout" seconds for a response
         connectionSuccess = False
         self.UDP_client.settimeout(timeout)
@@ -207,19 +203,10 @@ class Comm:
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we regen number and keep trying
                 incomingNum = int(data.decode())
-
-                print(randNum, incomingNum)
-                if randNum == incomingNum:  
-                    randNum = random.randint(0, 1000) + random.randint(0, 1000)
-
-                    print('regen:', randNum)
-
-                    continue
-
+                if incomingNum == randNum: raise Exceptions.ConnectionFailedError('Role number generations were equal.')
                 # otherwise connection was a success, break
                 connectionSuccess = True
                 break
-
             except TimeoutError: continue
         # if no success, raise error
         if not connectionSuccess: 
