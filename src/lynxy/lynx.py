@@ -17,9 +17,6 @@ from .constants import Constants
 from .pool import Pool
 from .exceptions import Exceptions
 
-# inccluded modules
-import threading
-
 ####################################################
 
 # the main class for the keeping everything together
@@ -48,7 +45,7 @@ class Lynxy:
         Gets the information of what IP and port the current host machine is on,
         and returns it in a tuple where the first entry is the IP in a string 
         and the second entry is the port in an integer. For example,
-        >>> ('127.0.0.1,', '11111')
+        >>> ('019.78.654.321,', '11111')
         '''
         return self._comm._get_host()
 
@@ -60,7 +57,7 @@ class Lynxy:
         in a tuple. Note that the actual port used for communication is different then the one 
         passed into the connect function, but the IP stays the same. Below is an example of a 
         returned tuple:
-        >>> ('192.168.68.111', 54454)
+        >>> ('123.456.78.910', 54454)
         '''
         return self._comm._get_actual_target()
 

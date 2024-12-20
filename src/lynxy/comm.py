@@ -198,10 +198,8 @@ class Comm:
                 self.UDP_client.sendto(str(randNum).encode(), self.target)
                 data, self.target = self.UDP_client.recvfrom(1024)
                 self.UDP_client.sendto(str(randNum).encode(), self.target) # make sure data got through
-
-                # TODO
                 # we decode the incoming value to make sure the two values aren't equal
-                # if they are, we regen number and keep trying
+                # if they are, we raise error (the chances are very low for this to happen)
                 incomingNum = int(data.decode())
                 if incomingNum == randNum: raise Exceptions.ConnectionFailedError('Role number generations were equal.')
                 # otherwise connection was a success, break
