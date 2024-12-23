@@ -32,3 +32,6 @@ Commenting info:
 
 Server implementations:
 - https://www.geeksforgeeks.org/socket-programming-multi-threading-python/
+
+Optimizing data:
+- https://youtu.be/CO6s86eIFzk
