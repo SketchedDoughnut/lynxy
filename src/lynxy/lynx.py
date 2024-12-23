@@ -89,7 +89,7 @@ class Lynxy:
         Lynxy can raise errors either when attempting the UDP connection, or afterwards
         when attempting to form a TCP connection.
 
-        This function has 4 inputs:
+        This function has 4 arguments:
 
         target: tuple[str, int]
         - a tuple of the target machines IP as a string, and the target machines
@@ -147,7 +147,9 @@ class Lynxy:
     def send(self, data: any, ignore_errors: bool = False) -> None: 
         '''
         This sends data to the target machine, and only works after connected.
-        You are able to send data without recieving data. This function has 2 inputs:
+        You are able to send data without recieving data. 
+        
+        This function has 2 arguments:
 
         data: any
         - the data can be any type, and it is encrypted using RSA asymmetrical encryption.
