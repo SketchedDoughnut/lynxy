@@ -19,7 +19,7 @@ from .pool import Pool
 
 # this is the main class for the connection
 class Comm:
-    def __init__(self, host: tuple[str, int], UDP_bind: bool):
+    def __init__(self, host: tuple[str, int] = ['', 56774], UDP_bind: bool = False):
         # this is an instance of the security manager
         self.sec = Sec()
         # this is an instance of the parser
@@ -43,7 +43,7 @@ class Comm:
         # this represents the connection type for when errors occur
         self.connectionType = Constants.ConnectionType.EVENT
         # this is the thread for the recieving function
-        self.recvThread = threading.Thread(target=lambda:self._recv(), daemon=True)
+        self.recvThread = threading.Thread(target=lambda:self.recv(), daemon=True)
         # this represents a var for stopping thread
         self.stopThread = False
         # this represents if we have an active connected
@@ -72,22 +72,22 @@ class Comm:
 
 
     # this returns the host IP
-    def _get_host(self) -> tuple[str, int]: return self.host, self.port
+    def get_host(self) -> tuple[str, int]: return self.host, self.port
 
 
     # this returns the actual target
     # that target being the active TCP connection
-    def _get_actual_target(self) -> tuple[str, int]: return self.actual_target
+    def get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
 
     # this starts the recv thread
-    def _start_recv(self) -> None: self.recvThread.start() if self.recvThread.is_alive() else None
+    def start_recv(self) -> None: self.recvThread.start() if self.recvThread.is_alive() else None
 
 
     # this function manages what happens when connection goes wrong
     def _connection_error(self, error: Exception | None = None) -> None:
         if self.connected:
-            self._close_connection()
+            self.close_connection()
             self.connected = False
         if self.connectionType == Constants.ConnectionType.EVENT:
             self._trigger(Constants.Event.ON_CLOSE, error)
@@ -108,10 +108,10 @@ class Comm:
 
 
     # this function handles the UDP connection that helps make the TCP connection
-    def _TCP_connect(self, 
+    def TCP_connect(self, 
                      target_ip: str, 
                      target_port: int, 
-                     timeout: int = 10, 
+                     timeout: int = 10,
                      attempts: int = 6
                      ) -> None:
         # set target machine data
@@ -212,7 +212,9 @@ class Comm:
     
 
     # this function closes the connection between the two machines
-    def _close_connection(self) -> None: 
+    # TODO
+    # implement system to signify other end that is closing?
+    def close_connection(self) -> None: 
         self.stopThread = True
         self.TCP_client.close()
         self._regen_UDP()
@@ -222,7 +224,7 @@ class Comm:
     
 
     # this is a function to send data to the other end
-    def _send(self, data: any, ignore_errors: bool = False) -> None:
+    def send(self, data: any, ignore_errors: bool = False) -> None:
         # raise error message if data is empty and ignore is disabled,
         # otherwise return
         raiseError = False
@@ -240,8 +242,9 @@ class Comm:
 
 
     # this is a recieving function for recieving data
-    # TODO FIX ERROR HANDLING
-    def _recv(self) -> None:
+    # TODO 
+    # fix error handling, its way too vague right now and isn't coded well
+    def recv(self) -> None:
         while True:
             try: recieved = self.TCP_client.recv(1024)
             except ConnectionResetError as e: # other end quit

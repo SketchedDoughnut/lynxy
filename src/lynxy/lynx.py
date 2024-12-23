@@ -19,31 +19,31 @@ from .exceptions import Exceptions
 class Lynxy:
     def __init__(self, host: tuple[str, int] = ['', 56774], bind: bool = False):
         '''
-        This class keeps everything together with your client and the connection with the other machine.
-        It is designed and mainly uses a TCP connectoin.
-        This class has all the configuration and management for your client instance.
+        This class creates an instance of Lynxy for use with communication with the other machine.
+        It is designed for usage with a TCP connection.
 
-        This class takes 2 arguments:
-
+        ## Arguments
         host: tuple[str, int] = ['', 56774]
         - the host information of this machine to bind to. If the IP is left empty, it will automatically be set to the proper IP.
+          the binded information can be acquired with the function get_host().
 
         bind: bool = False
-        - defaulting to False, says whether or not Lynxy should immediately bind to the IP and port. 
-                    This is recommended if you want to connect quickly.
+        - Says whether or not Lynxy should immediately bind to the given IP and port. This is recommended if you want to connect quickly.
         '''
         self._comm = _Comm(host, bind)
 
 
-    # this gets the host 
+    # this gets the host information
     def get_host(self) -> tuple[str, int]: 
         '''
         Gets the information of what IP and port the current host machine is on,
-        and returns it in a tuple where the first entry is the IP in a string 
-        and the second entry is the port in an integer. For example,
+        and returns it in a tuple. Below is an example:
+
         >>> ('019.78.654.321,', '11111')
+
+        If the client has not binded, then this will return a tuple of (None, None).
         '''
-        return self._comm._get_host()
+        return self._comm.get_host()
 
 
     # this gets the target info
@@ -53,9 +53,12 @@ class Lynxy:
         in a tuple. Note that the actual port used for communication is different then the one 
         passed into the connect function, but the IP stays the same. Below is an example of a 
         returned tuple:
+
         >>> ('123.456.78.910', 54454)
+
+        If the client has not connected, then this will return a tuple of (None, None).
         '''
-        return self._comm._get_actual_target()
+        return self._comm.get_actual_target()
 
 
     # this function sets behaviors for when connection is lost
@@ -122,7 +125,7 @@ class Lynxy:
           >>> Lynxy.Exceptions.ConnectionFailedError(f'Failed to connect to target machine ((UDP/TCP)) (attempts:{attempts})') 
 
         '''
-        self._comm._TCP_connect(
+        self._comm.TCP_connect(
             target_ip = target[0], 
             target_port = target[1], 
             timeout = timeout, 
@@ -135,11 +138,9 @@ class Lynxy:
     # this function closes connections
     def close(self) -> None: 
         '''
-        This closes the connection with the target machine. This does not send a message
-        to the target machine, which means that the disconnection will be handled depending
-        on how the other machine is configured.
+        This closes the connection with the target machine.
         '''
-        self._comm._close_connection()
+        self._comm.close_connection()
         return None
 
 
@@ -152,8 +153,8 @@ class Lynxy:
         This function has 2 arguments:
 
         data: any
-        - the data can be any type, and it is encrypted using RSA asymmetrical encryption.
-          Everytime you recieve a message, it is in the form of a message object.
+        - the data can be any type, and it is encrypted using AES Fernet encryption.
+          Everytime you recieve a message, it is in the form of a message object:
 
         >>> Lynxy.Pool.Message
 
@@ -163,7 +164,7 @@ class Lynxy:
 
         >>> Lynxy.Exceptions.EmptyDataError()
         '''
-        return self._comm._send(data, ignore_errors)
+        return self._comm.send(data, ignore_errors)
 
 
     # this starts recieving data
@@ -178,7 +179,7 @@ class Lynxy:
             connect(start_recv = False)
             recv()
         '''
-        self._comm._start_recv()
+        self._comm.start_recv()
         return None
 
     
