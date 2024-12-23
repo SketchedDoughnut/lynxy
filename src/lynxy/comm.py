@@ -106,7 +106,12 @@ class Comm:
 
 
     # this function handles the UDP connection that helps make the TCP connection
-    def _TCP_connect(self, target_ip: str, target_port: int, timeout: int = 10, attempts: int = 6) -> None:
+    def _TCP_connect(self, 
+                     target_ip: str, 
+                     target_port: int, 
+                     timeout: int = 10, 
+                     attempts: int = 6
+                     ) -> None:
         # set target machine data
         self.target = (target_ip, target_port)
         # we use UDP to get the random number

@@ -77,7 +77,11 @@ class Lynxy:
 
 
     # this function connects to the other machine
-    def connect(self, target: tuple[str, int], start_recv: bool = True) -> None: 
+    def connect(self, target: tuple[str, int], 
+                start_recv: bool = True, 
+                timeout: int = 10,
+                attempts: int = 6
+                ) -> None: 
         '''
         Connects to the target machine. This function is a shorthand for a variety
         of functions found in _comm. This function has 2 inputs:
@@ -102,7 +106,12 @@ class Lynxy:
             # when you want to start,
             inst.recv()
         '''
-        self._comm._TCP_connect(target[0], target[1])
+        self._comm._TCP_connect(
+            target_ip = target[0], 
+            target_port = target[1], 
+            timeout = timeout, 
+            attempts = attempts
+            )
         if start_recv: self.recv()
         return None
 
