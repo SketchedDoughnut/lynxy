@@ -155,7 +155,7 @@ class Lynxy:
         - the data can be any type, and it is encrypted using RSA asymmetrical encryption.
           Everytime you recieve a message, it is in the form of a message object.
 
-        >>> data: Lynxy.Pool.Message
+        >>> Lynxy.Pool.Message
 
         ignore_errors: bool = True
         - if your data you try to send is empty and this boolean is True, then the following error
