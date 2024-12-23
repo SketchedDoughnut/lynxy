@@ -1,14 +1,10 @@
 '''
-PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
+FOR ANYONE LOOKING AT THE SOURCE CODE:
 
-Modules included and their uses:
-    - socket: for managing connections
-    - pickle: for encoding data
-    - rsa: for encrypting data
-
-Modules to consider:
-    - some multithreading module
-    - using cryptography for extra encryption?
+This is the main Lynxy file which provides the functions used by people.
+A majority of the code is in comm.py, and Lynxy sometimes just does a little logic before
+passing on function inputs to the ones further down in comm. I am not sure why I made it this way,
+but it looks nice and works well so if it works don't fix it, right?
 '''
 
 # files
@@ -24,10 +20,10 @@ class Lynxy:
     def __init__(self, host: tuple[str, int] = ['', 56774], bind: bool = False):
         '''
         This class keeps everything together with your client and the connection with the other machine.
-        It is designed for a TCP communication with the other end.
+        It is designed and mainly uses a TCP connectoin.
         This class has all the configuration and management for your client instance.
 
-        This class takes 3 arguments:
+        This class takes 2 arguments:
 
         host: tuple[str, int] = ['', 56774]
         - the host information of this machine to bind to. If the IP is left empty, it will automatically be set to the proper IP.
@@ -77,14 +73,23 @@ class Lynxy:
 
 
     # this function connects to the other machine
-    def connect(self, target: tuple[str, int], 
+    def connect(self, 
+                target: tuple[str, int], 
                 start_recv: bool = True, 
                 timeout: int = 10,
                 attempts: int = 6
                 ) -> None: 
         '''
         Connects to the target machine. This function is a shorthand for a variety
-        of functions found in _comm. This function has 2 inputs:
+        of functions found in _comm.
+
+        When Lynxy tries to connect to another client, it first uses UDP to determine which client will
+        be first and second (for simplifying connecting). Next, it uses TCP for the actual
+        connection, exchanging some initial data such as encryption keys. For this reason,
+        Lynxy can raise errors either when attempting the UDP connection, or afterwards
+        when attempting to form a TCP connection.
+
+        This function has 4 inputs:
 
         target: tuple[str, int]
         - a tuple of the target machines IP as a string, and the target machines
@@ -105,6 +110,17 @@ class Lynxy:
         >>> inst.connect(start_recv = False)
             # when you want to start,
             inst.recv()
+
+        timeout: int = 10
+        - when attempting to connect, the timeout is used to determine how long to wait before the 
+          connection fails, and it should try again. It will try (attempts) amount of times to connect.
+
+        attempts: int = 6
+        - when attempting to connect, lynxy will try (attempts) times. An attempt fails after (timeout) seconds passes.
+          If Lynxy fails to form a UDP / TCP connection after all attempts fail, then it will raise the following error:
+
+          >>> Lynxy.Exceptions.ConnectionFailedError(f'Failed to connect to target machine ((UDP/TCP)) (attempts:{attempts})') 
+
         '''
         self._comm._TCP_connect(
             target_ip = target[0], 
@@ -140,10 +156,10 @@ class Lynxy:
         >>> data: Lynxy.Pool.Message
 
         ignore_errors: bool = True
-        - if your data you try to send is empty and this boolean is True, then an error
-          will be raised.
+        - if your data you try to send is empty and this boolean is True, then the following error
+        will be raised:
 
-        >>> raise Lynxy.Exceptions.EmptyDataError()
+        >>> Lynxy.Exceptions.EmptyDataError()
         '''
         return self._comm._send(data, ignore_errors)
 

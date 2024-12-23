@@ -29,9 +29,9 @@ class Comm:
         else: self.host = socket.gethostbyname(socket.gethostname())
         self.port = host[1]
         # this is the target info
-        self.target = ('', 0)
+        self.target = (None, None)
         # this is the actual connected target info (FOR TCP)
-        self.actual_target = ('', 0)
+        self.actual_target = (None, None)
         # this is the client for UDP for finding out who goes first
         self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         # this is the main client for communication
@@ -81,8 +81,7 @@ class Comm:
     
 
     # this starts the recv thread
-    def _start_recv(self) -> None: 
-        if not self.recvThread.is_alive(): self.recvThread.start()
+    def _start_recv(self) -> None: self.recvThread.start() if self.recvThread.is_alive() else None
 
 
     # this function manages what happens when connection goes wrong
@@ -99,9 +98,12 @@ class Comm:
 
     # this function runs the given events
     def _trigger(self, eventType: Constants.Event, data) -> None:
+        # run every function set up under the event
         try:
             for func in self.eventRegistry[eventType]: 
                 func(data)
+        # if no functions then ther will be a key error, this is fine
+        # so we can ignore
         except KeyError: return
 
 
@@ -216,7 +218,7 @@ class Comm:
         self._regen_UDP()
         self._regen_TCP()
         self.UDP_binded = False
-        return
+        return None
     
 
     # this is a function to send data to the other end
@@ -234,10 +236,11 @@ class Comm:
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
         try: self.TCP_client.sendall(paddedMessage) # send actual data
         except ConnectionResetError as e: self._connection_error(e) # other end quit
-        return
+        return None
 
 
     # this is a recieving function for recieving data
+    # TODO FIX ERROR HANDLING
     def _recv(self) -> None:
         while True:
             try: recieved = self.TCP_client.recv(1024)
