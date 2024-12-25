@@ -80,7 +80,8 @@ class Lynxy:
                 target: tuple[str, int], 
                 start_recv: bool = True, 
                 timeout: int = 10,
-                attempts: int = 6
+                attempts: int = 6,
+                connection_bias: Constants.ConnectionBias = Constants.ConnectionBias.NONE
                 ) -> None: 
         '''
         Connects to the target machine. This function is a shorthand for a variety
@@ -123,13 +124,21 @@ class Lynxy:
           If Lynxy fails to form a UDP / TCP connection after all attempts fail, then it will raise the following error:
 
           >>> Lynxy.Exceptions.ConnectionFailedError(f'Failed to connect to target machine ((UDP/TCP)) (attempts:{attempts})') 
+        
+        connection_bias: Constants.ConnectionBias = Constants.ConnectionBias.NONE
+        - Typically, Lynxy will use UDP to determine who will be first and who will be second to connect. However, if you have a connection
+          bias, that will overrule using UDP and instead use the preferred method. For example, a connection bias of "FIRST" will always
+          set your client to first. A connection bias of "LAST" will set your client to last, and a connection bias of "NONE" will use UDP
+          as normal. You can find biases here:
 
+          >>> Lynxy.Constants.ConnectionBias
         '''
         self._comm.TCP_connect(
             target_ip = target[0], 
             target_port = target[1], 
             timeout = timeout, 
-            attempts = attempts
+            attempts = attempts,
+            connection_bias = connection_bias
             )
         if start_recv: self.recv()
         return None

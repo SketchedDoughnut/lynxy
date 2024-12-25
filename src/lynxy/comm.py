@@ -112,21 +112,29 @@ class Comm:
                      target_ip: str, 
                      target_port: int, 
                      timeout: int = 10,
-                     attempts: int = 6
+                     attempts: int = 6,
+                     connection_bias: Constants.ConnectionBias = Constants.ConnectionBias.NONE
                      ) -> None:
         # set target machine data
         self.target = (target_ip, target_port)
-        # we use UDP to get the random number
-        ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
+        # determine whether or not to use UDP
+        if connection_bias != Constants.ConnectionBias.NONE: 
+            # UDP is only used to determine who goes first / second
+            # so if we can determine if we are not using it by the connection bias
+            first = connection_bias
+        else:
+            # we use UDP to get the random number
+            ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
+            # if True meaning we connect, they recv
+            # if False, we recv and they connect
+            first = ourRandom > targetRandom
         # we then find out whether to bind our TCP
         # or try to connect to the other end
         self._regen_TCP()
-        # meaning we connect (first)
-        if ourRandom > targetRandom: 
+        if first:
             self.TCP_client.connect(self.target)
             self.actual_target = self.target
-        # meaning we bind (second)
-        elif ourRandom < targetRandom:
+        else:
             # we try (attempts) times to connect
             # an invalid connection is if the client that connects
             # is not the one we wanted to connect to

@@ -22,8 +22,18 @@ class Constants:
     # class for all connection types
     class ConnectionType(Enum):
         '''
-        This class contains all conatins pertaining to different connection types
+        This class contains all constants pertaining to different connection types
         '''
         ERROR = 'error'
         EVENT = 'event'
         NONE = 'none'
+
+
+    # class for all connection biases
+    class ConnectionBias:
+        '''
+        This class contains all constants pertaining to the bias of who goes first when connecting with Lynxy
+        '''
+        FIRST = True
+        LAST = False
+        NONE = None
