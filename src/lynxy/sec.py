@@ -1,5 +1,7 @@
 '''
-PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
+This is the sec file, which contains all of the encryption tools. There are functions for both encryption and decryption
+for RSA and Fernet (AES with a 128 bit key). RSA is only used for exchanging Fernet keys when the two machines
+connect to each other.
 '''
 
 # included modules

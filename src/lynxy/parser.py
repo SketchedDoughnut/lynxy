@@ -1,5 +1,7 @@
 '''
-PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
+this is the parser file, which includes all of the tools for managing messages.
+The parser handles adding and removing the padding in messages, and isolating full message packets
+relatively quickly. It also has a variety of customization.
 '''
 
 # included modules

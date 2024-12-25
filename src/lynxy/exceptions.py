@@ -1,5 +1,6 @@
 '''
-PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
+This is the exceptions file, which contains all of the Exceptions that are raised throughout the code.
+These are helpful to know in case you want to catch any errors when doing a variety of different functions.
 '''
 
 # this is the class for all errors

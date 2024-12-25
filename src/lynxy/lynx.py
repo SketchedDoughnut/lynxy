@@ -1,10 +1,7 @@
 '''
-FOR ANYONE LOOKING AT THE SOURCE CODE:
-
 This is the main Lynxy file which provides the functions for public use.
-A majority of the code is in the comm.py file, and Lynxy just extends the necessary files.
-The rest can be found in the _comm class object.
-
+A majority of the code is in the comm.py file, and Lynxy just extends the necessary functions.
+The rest can be found in the "_comm" class object.
 I know this is probably a clunky way to do this but, if it's not broken then don't fix it, right?
 '''
 

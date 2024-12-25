@@ -1,5 +1,7 @@
 '''
-PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
+This is the comm file, which manages the sockets and communication.
+The encryption tools is in the sec.py file, which can be accessed with the "sec" class object. 
+The parser tools is in the parser.py file, which can be accessed with the "parser" class object.
 '''
 
 # included modules

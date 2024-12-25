@@ -1,5 +1,6 @@
 '''
-PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
+This is the pool file, which contains a variety of different types of objects used for variables or recieved data.
+For example, on the client ON_MESSAGE, the data you recieve is a Pool.Message object.
 '''
 
 # included modules

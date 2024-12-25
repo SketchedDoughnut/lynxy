@@ -1,5 +1,6 @@
 '''
-PUT INTRODUCTORY HEADER HERE, INCLUDE ANY OTHER INFORMATION
+This is the constants file, which contains all of the constants, either as Enums or literals.
+They are used often in function inputs to signifiy different things that are done.
 '''
 
 # included modules
