@@ -29,7 +29,3 @@ def close(data):
 @inst.event(lynxy.Constants.Event.ON_CONNECT)
 def connect(data):
     print(data)
-
-inst.set_connection(lynxy.Constants.ConnectionType.EVENT)
-inst._comm._trigger(lynxy.Constants.Event.ON_CONNECT, True)
-inst._comm._trigger(lynxy.Constants.Event.ON_MESSAGE, lynxy.Pool.Message('message data!'))
