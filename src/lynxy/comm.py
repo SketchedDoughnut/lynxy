@@ -122,7 +122,6 @@ class Comm:
             # UDP is only used to determine who goes first / second
             # so if we can determine if we are not using it by the connection bias
             first = connection_bias
-            print('bias applied:', first)
         else:
             # we use UDP to get the random number
             ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
