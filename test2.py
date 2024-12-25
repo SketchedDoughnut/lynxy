@@ -27,4 +27,4 @@ while True:
     if msg == 'exit': 
         inst.close()
         break
-    inst._comm._send(msg)
+    inst.send(msg)

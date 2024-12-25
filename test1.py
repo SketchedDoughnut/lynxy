@@ -4,7 +4,7 @@ from rich import print
 inst = lynxy.Lynxy(('', 11111), True)
 print('initialized')
 host = inst.get_host()
-target = ('192.168.68.114', 11112)
+target = ('192.168.68.124', 11112)
 
 print(f'host: {host}')
 print(f'target: {target}')
