@@ -2,8 +2,9 @@ from src import lynxy
 import pyautogui
 
 client = lynxy.Lynxy(bind=True)
-print('host:', client.get_host())
 target = ['192.168.68.113', 56774]
+print('host:', client.get_host())
+print('target:', target)
 client.connect(target)
 
 @client.event(lynxy.Constants.Event.ON_MESSAGE)
