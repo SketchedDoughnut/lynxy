@@ -87,7 +87,7 @@ class Comm:
 
 
     # this function manages what happens when connection goes wrong
-    def _connection_error(self, error: Exception | None = None) -> None:
+    def _handle_error(self, error: Exception | None = None) -> None:
         if self.connected:
             self.close_connection()
             self.connected = False
