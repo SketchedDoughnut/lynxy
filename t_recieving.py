@@ -3,7 +3,7 @@ import pyautogui
 
 client = lynxy.Lynxy(bind=True)
 print('host:', client.get_host())
-target = ['', 56774]
+target = ['192.168.68.113', 56774]
 client.connect(target)
 
 @client.event(lynxy.Constants.Event.ON_MESSAGE)
