@@ -242,7 +242,9 @@ class Comm:
         if not self.connected: raise Exceptions.ClientNotConnectedError()
         encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
-        self.TCP_client.sendall(paddedMessage) # send actual data
+        try: self.TCP_client.sendall(paddedMessage) # send actual data
+        except ConnectionResetError as e: # other machine quit
+            self._handle_error(e)
 
 
     # this is a recieving function for recieving data
@@ -250,7 +252,13 @@ class Comm:
     # fix error handling
     def recv(self) -> None:
         while True:
-            recieved = self.TCP_client.recv(1024)
+            try: recieved = self.TCP_client.recv(1024)
+            except ConnectionResetError as e: # other machine quit
+                self._handle_error(e)
+                return
+            except ConnectionAbortedError as e: # host client closed
+                self._handle_error(e)
+                return
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.Fernet_decrypt(indiv)

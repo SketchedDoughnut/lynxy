@@ -13,4 +13,6 @@ def on_message(data: lynxy.Pool.Message):
     print('recv:', data.content)
     # pyautogui.press(data.content)
 
-while True: pass
+while True: 
+    input('- >')
+    client.close()
