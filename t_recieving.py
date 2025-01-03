@@ -8,6 +8,7 @@ client.connect(target)
 
 @client.event(lynxy.Constants.Event.ON_MESSAGE)
 def on_message(data: lynxy.Pool.Message):
-    pyautogui.press(data.content)
+    print('recv:', data.content)
+    # pyautogui.press(data.content)
 
 while True: pass

