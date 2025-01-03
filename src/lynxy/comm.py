@@ -219,8 +219,6 @@ class Comm:
     
 
     # this function closes the connection between the two machines
-    # TODO
-    # implement system to signify other end that is closing?
     def close_connection(self) -> None: 
         self.stopThread = True
         self.TCP_client.close()
@@ -229,9 +227,7 @@ class Comm:
         self.UDP_binded = False
     
 
-    # this is a function to send data to the other end
-    # TODO
-    # fix error handling
+    # this is a function to send data to the other machine
     def send(self, data: any, ignore_errors: bool = False) -> None:
         # raise error message if data is empty and ignore is disabled,
         # otherwise return
@@ -248,8 +244,6 @@ class Comm:
 
 
     # this is a recieving function for recieving data
-    # TODO 
-    # fix error handling
     def recv(self) -> None:
         while True:
             try: recieved = self.TCP_client.recv(1024)
