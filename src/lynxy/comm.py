@@ -235,10 +235,9 @@ class Comm:
     def send(self, data: any, ignore_errors: bool = False) -> None:
         # raise error message if data is empty and ignore is disabled,
         # otherwise return
-        raiseError = False
-        if len(data) == 0: raiseError = True
-        if data is None: raiseError = True
-        if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
+        if len(data) == 0 or data is None:
+            if ignore_errors: return
+            raise Exceptions.EmptyDataError()
         messageObject = Pool.Message(data) # create message object
         if not self.connected: raise Exceptions.ClientNotConnectedError()
         encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
