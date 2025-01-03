@@ -239,7 +239,6 @@ class Comm:
         if len(data) == 0: raiseError = True
         if data is None: raiseError = True
         if not ignore_errors and raiseError: raise Exceptions.EmptyDataError()
-        if ignore_errors and raiseError: return
         messageObject = Pool.Message(data) # create message object
         if not self.connected: raise Exceptions.ClientNotConnectedError()
         encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
