@@ -83,7 +83,7 @@ class Comm:
     
 
     # this starts the recv thread
-    def start_recv(self) -> None: self.recvThread.start() if self.recvThread.is_alive() else None
+    def start_recv(self) -> None: self.recvThread.start() if not self.recvThread.is_alive() else None
 
 
     # this function manages what happens when connection goes wrong
