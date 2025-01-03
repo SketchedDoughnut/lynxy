@@ -104,7 +104,7 @@ class Comm:
         try:
             for func in self.eventRegistry[eventType]: 
                 func(data)
-        # if no functions then ther will be a key error, this is fine
+        # if no functions then there will be a key error, this is fine
         # so we can ignore
         except KeyError: return
 
@@ -253,18 +253,10 @@ class Comm:
 
     # this is a recieving function for recieving data
     # TODO 
-    # fix error handling, its way too vague right now and isn't coded well
+    # fix error handling
     def recv(self) -> None:
         while True:
-            try: recieved = self.TCP_client.recv(1024)
-            except ConnectionResetError as e: # other end quit
-                self._connection_error(e)
-                return
-            except ConnectionAbortedError as e: # this end quit and thread is running
-                self._connection_error(e)
-                return
-            except: 
-                if self.stopThread: return # stop regardless if wanted
+            recieved = self.TCP_client.recv(1024)
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.Fernet_decrypt(indiv)
