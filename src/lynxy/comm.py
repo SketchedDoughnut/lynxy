@@ -91,11 +91,9 @@ class Comm:
         if self.connected:
             self.close_connection()
             self.connected = False
-        if self.connectionType == Constants.ConnectionType.EVENT:
-            self._trigger(Constants.Event.ON_CLOSE, error)
-        elif self.connectionType == Constants.ConnectionType.ERROR: 
-            raise error
-        return None
+        # handle the error according to how client is configured
+        if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
+        elif self.connectionType == Constants.ConnectionType.ERROR: raise error
 
 
     # this function runs the given events
@@ -155,8 +153,8 @@ class Comm:
         # do the handshake to exchange RSA keys
         self._handshake(ourRandom > targetRandom)
         self.connected = True
+        # trigger connect event
         self._trigger(Constants.Event.ON_CONNECT, True)
-        return None
 
 
     # this function manages finding out who goes first with making a TCP connection
@@ -190,7 +188,7 @@ class Comm:
         # if no success, raise error
         if not connectionSuccess: 
             raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (UDP) (attempts:{attempts})') 
-        # we close our UDP and return
+        # we close our UDP and return the two numbers
         self.UDP_client.close()
         return (randNum, incomingNum)
     
@@ -218,7 +216,6 @@ class Comm:
             # since we are second
             encryptedFernet = self.TCP_client.recv(1024)
             self.sec.load_Fernet(self.sec.RSA_decrypt(encryptedFernet))
-        return None
     
 
     # this function closes the connection between the two machines
@@ -230,10 +227,11 @@ class Comm:
         self._regen_UDP()
         self._regen_TCP()
         self.UDP_binded = False
-        return None
     
 
     # this is a function to send data to the other end
+    # TODO
+    # fix error handling
     def send(self, data: any, ignore_errors: bool = False) -> None:
         # raise error message if data is empty and ignore is disabled,
         # otherwise return
@@ -246,9 +244,7 @@ class Comm:
         if not self.connected: raise Exceptions.ClientNotConnectedError()
         encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
-        try: self.TCP_client.sendall(paddedMessage) # send actual data
-        except ConnectionResetError as e: self._connection_error(e) # other end quit
-        return None
+        self.TCP_client.sendall(paddedMessage) # send actual data
 
 
     # this is a recieving function for recieving data

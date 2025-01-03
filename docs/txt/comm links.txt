@@ -35,3 +35,6 @@ Server implementations:
 
 Optimizing data:
 - https://youtu.be/CO6s86eIFzk
+
+For port forwarding:
+- https://github.com/vinodpandey/python-port-forward/blob/master/port-forward.py

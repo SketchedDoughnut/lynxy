@@ -111,6 +111,7 @@ class Lynxy:
         # the inputted function?
         def wrapper(func):
             # make a new entry for this event if it doesn't exist
+            # this function will be ran everytime the event is triggered
             if eventType not in self._comm.eventRegistry.keys(): 
                 self._comm.eventRegistry[eventType] = [func]
             # append function
