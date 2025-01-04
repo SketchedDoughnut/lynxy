@@ -73,11 +73,11 @@ class Lynxy:
 
 
     # this function closes connections
-    def close(self) -> None: 
+    def close(self, force: bool = False) -> None: 
         '''
         TODO WRITE DOCUMENTATION
         '''
-        self._comm.close_connection()
+        self._comm.close_connection(force)
         return None
 
 
