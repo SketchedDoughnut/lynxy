@@ -38,6 +38,11 @@ class Lynxy:
         return self._comm.get_actual_target()
 
 
+    # this function configures heartbeat things for the client
+    def config_heartbeat(self, inactive_delay: int = 60, probe_interval: int = 10, probe_count: int = 5) -> None:
+        self._comm.config_heartbeat(inactive_delay, probe_interval, probe_count)
+
+
     # this function sets behaviors for when connection is lost
     def set_connection(self, connectionType: Constants.ConnectionType) -> None:
         '''

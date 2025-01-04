@@ -91,6 +91,19 @@ class Comm:
     def start_recv(self) -> None: self.recvThread.start() if not self.recvThread.is_alive() else None
 
 
+    # this function configures heartbeat things for the client
+    def config_heartbeat(self, inactive_delay: int = 60, probe_interval: int = 10, probe_count: int = 5) -> None:
+        self.TCP_client.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+        osType = platform.system()
+        if osType == 'Windows': # Windows-specific options
+            keepalive = struct.pack('iii', 1, inactive_delay * 1000, probe_interval * 1000) # On, idle time (ms), interval (ms)
+            self.TCP_client.ioctl(socket.SIO_KEEPALIVE_VALS, keepalive)
+        elif osType == 'Linux' or osType == 'Darwin': # Linux/macOS-specific options
+            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, inactive_delay) # Idle time before sending probes (in seconds)
+            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, probe_interval) # Interval between probes (in seconds)
+            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, probe_count) # Number of failed probes before closing
+    
+
     # this function manages what happens when connection goes wrong
     def _handle_error(self, error: Exception | None = None) -> None:
         if self.connected:
@@ -155,22 +168,8 @@ class Comm:
                     break
             # raise error if connection failed
             if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (TCP) (attempts:{attempts})') 
-
         # set up the settings for heartbeat pings
-        # TODO
-        # make into its own function?
-        self.TCP_client.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-        osType = platform.system()
-        if osType == 'Windows':
-            # Windows-specific options
-            keepalive = struct.pack('iii', 1, 60000, 10000)  # On, idle time (ms), interval (ms)
-            self.TCP_client.ioctl(socket.SIO_KEEPALIVE_VALS, keepalive)
-        elif osType == 'Linux' or osType == 'Darwin': 
-            # Linux/macOS-specific options
-            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60)    # Idle time before sending probes (in seconds)
-            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)   # Interval between probes (in seconds)
-            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)      # Number of failed probes before closing
-
+        self.config_heartbeat()
         # do the handshake to exchange RSA keys
         self._handshake(ourRandom > targetRandom)
         self.connected = True
@@ -274,9 +273,6 @@ class Comm:
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
         try: 
             self.TCP_client.sendall(paddedMessage) # send actual data
-
-            print('sent:', len(paddedMessage))
-
             self.sendLock = False
         except ConnectionResetError as e: # other machine quit
             self.sendLock = False
@@ -293,9 +289,6 @@ class Comm:
             except ConnectionAbortedError as e: # host client closed
                 self._handle_error(e)
                 return
-            
-            print('recv:', len(self.parser.carry))
-            
             # if recieved is empty, then we got an EOF meaning the other socket
             # shutdown
             if not recieved: 
