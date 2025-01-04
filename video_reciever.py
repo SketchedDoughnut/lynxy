@@ -15,3 +15,8 @@ def on_message(data: lynxy.Pool.Message):
     f = open(out, 'wb')
     f.write(data.content)
     f.close()
+
+while True:
+    input('-> ')
+    break
+client.close()
