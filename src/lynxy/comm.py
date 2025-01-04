@@ -41,14 +41,14 @@ class Comm:
         self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         # this is the main client for communication
         self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # TCP
-        # this represents if the UDP client is binded or not
-        self.UDP_binded = False
         # this represents a dictionary of event queues
         self.eventRegistry = {}
         # this represents the connection type for when errors occur
         self.connectionType = Constants.ConnectionType.EVENT
         # this is the thread for the recieving function
         self.recvThread = threading.Thread(target=lambda:self.recv(), daemon=True)
+        # this represents if the UDP client is binded or not
+        self.UDP_binded = False
         # these are booleans for stopping threads
         self.stopRecv = False
         # this is a lock that, while something is sending, other things can not send
@@ -62,36 +62,39 @@ class Comm:
             self.UDP_binded = True
 
 
-    # this regenerates the UDP client
+    # this regenerates the UDP client, making a new object
     def _regen_UDP(self) -> None: self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
-    # this regenerates the TCP client
+    # this regenerates the TCP client, making a new object
     def _regen_TCP(self) -> None: self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
-    # this binds the UDP client
+    # this binds the UDP client to the host machines ip and port
     def _bind_UDP(self) -> None: self.UDP_client.bind((self.host, self.port))
 
 
-    # this binds the TCP client
+    # this binds the TCP client to the host machines ip and port
     def _bind_TCP(self) -> None: self.TCP_client.bind((self.host, self.port))
 
 
-    # this returns the host IP
+    # this returns the host IP and port in a tuple
     def get_host(self) -> tuple[str, int]: return self.host, self.port
 
 
     # this returns the actual target
-    # that target being the active TCP connection
+    # that target being the active TCP connection, not the initial IP and port
+    # before connectin
     def get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
 
     # this starts the recv thread
+    # for recieving messages and triggering events
     def start_recv(self) -> None: self.recvThread.start() if not self.recvThread.is_alive() else None
 
 
     # this function configures heartbeat things for the client
+    # such as when to send them, how long to wait between each one, and how many to send
     def config_heartbeat(self, inactive_delay: int = 60, probe_interval: int = 10, probe_count: int = 5) -> None:
         self.TCP_client.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
         osType = platform.system()
@@ -104,7 +107,8 @@ class Comm:
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, probe_count) # Number of failed probes before closing
     
 
-    # this function manages what happens when connection goes wrong
+    # this function manages what happens when connection goes wrong,
+    # and a connection is closing - typically with an error
     def _handle_close(self, error: Exception | None = None) -> None:
         if self.connected: self.close_connection()
         # handle the error according to how client is configured
@@ -112,7 +116,8 @@ class Comm:
         elif self.connectionType == Constants.ConnectionType.ERROR: raise error
 
 
-    # this function runs the given events
+    # this function runs the given events when requested
+    # events are created using decorators
     def _trigger(self, eventType: Constants.Event, data) -> None:
         # run every function set up under the event
         try:
@@ -124,6 +129,7 @@ class Comm:
 
 
     # this function handles the UDP connection that helps make the TCP connection
+    # as well as the handshake, and the overall connection setup
     def TCP_connect(self, 
                      target_ip: str, 
                      target_port: int, 
@@ -176,7 +182,7 @@ class Comm:
 
 
     # this function manages finding out who goes first with making a TCP connection
-    # and also who is first with exchangin keys
+    # and also who is first with exchanging RSA keys
     def _UDP_connect(self, timeout, attempts) -> tuple[int, int]:
         # first, we bind to our port / ip if not already
         if not self.UDP_binded: 
@@ -211,7 +217,8 @@ class Comm:
         return (randNum, incomingNum)
     
 
-    # this function manages handshakes
+    # this function manages handshakes for exchanging RSA keys
+    # which are exchanged just to exchange symmetrical Fernet keys
     def _handshake(self, is_first: bool) -> None:
         if is_first:
             # we send our public RSA key
@@ -237,6 +244,7 @@ class Comm:
     
 
     # this function closes the connection between the two machines
+    # gracefully :3
     def close_connection(self, force: bool = False) -> None: 
         self.stopRecv = True
 
