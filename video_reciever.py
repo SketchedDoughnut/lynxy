@@ -1,4 +1,5 @@
 from src import lynxy
+import time
 
 # set up lynxy client
 client = lynxy.Lynxy(bind=True)
@@ -15,5 +16,7 @@ def on_message(data: lynxy.Pool.Message):
     f = open(out, 'wb')
     f.write(data.content)
     f.close()
+
+time.sleep(1)
 
 client.close()
