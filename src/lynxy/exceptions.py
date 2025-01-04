@@ -27,6 +27,12 @@ class Exceptions:
             super().__init__(message)
 
 
+    class SendingTimeoutError(BaseLynxyException):
+        def __init__(self, message='The client timed out waiting to send data (send lock).'):
+            self.message = message
+            super().__init__(message)
+
+
     class ConnectionFailedError(BaseLynxyException):
         def __init__(self, message=None):
             self.message = message

@@ -9,6 +9,7 @@ import socket
 import random
 import pickle
 import threading
+import time
 
 # files
 from .sec import Sec
@@ -46,8 +47,10 @@ class Comm:
         self.connectionType = Constants.ConnectionType.EVENT
         # this is the thread for the recieving function
         self.recvThread = threading.Thread(target=lambda:self.recv(), daemon=True)
-        # this represents a var for stopping thread
-        self.stopThread = False
+        # these are booleans for stopping threads
+        self.stopRecv = False
+        # this is a lock that, while something is sending, other things can not send
+        self.sendLock = False
         # this represents if we have an active connected
         self.connected = False
         ###########################################################
@@ -220,7 +223,7 @@ class Comm:
 
     # this function closes the connection between the two machines
     def close_connection(self) -> None: 
-        self.stopThread = True
+        self.stopRecv = True
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
@@ -228,18 +231,33 @@ class Comm:
     
 
     # this is a function to send data to the other machine
-    def send(self, data: any, ignore_errors: bool = False) -> None:
+    def send(self, data: any, ignore_errors: bool = False, lock_timeout: float = 10.0) -> None:
         # raise error message if data is empty and ignore is disabled,
         # otherwise return
         if len(data) == 0 or data is None:
             if ignore_errors: return
             raise Exceptions.EmptyDataError()
+        # raise error if not connected
+        if not self.connected: 
+            if ignore_errors: return
+            raise Exceptions.ClientNotConnectedError()
+        # wait until no longer a lock on sending or if we reach the lock timeout
+        timeout = time.time() + lock_timeout
+        while self.sendLock:
+            if time.time() >= timeout:
+                if ignore_errors: return
+                raise Exceptions.SendingTimeoutError()
+        # set the send lock to True so that any other calls to send
+        # data have to wait to send their data
+        self.sendLock = True
         messageObject = Pool.Message(data) # create message object
-        if not self.connected: raise Exceptions.ClientNotConnectedError()
         encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
-        try: self.TCP_client.sendall(paddedMessage) # send actual data
+        try: 
+            self.TCP_client.sendall(paddedMessage) # send actual data
+            self.sendLock = False
         except ConnectionResetError as e: # other machine quit
+            self.sendLock = False
             self._handle_error(e)
 
 

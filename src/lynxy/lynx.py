@@ -82,11 +82,11 @@ class Lynxy:
 
 
     # this sends data
-    def send(self, data: any, ignore_errors: bool = False) -> None: 
+    def send(self, data: any, ignore_errors: bool = False, lock_timeout: float = 10.0) -> None: 
         '''
         TODO WRITE DOCUMENTATION
         '''
-        return self._comm.send(data, ignore_errors)
+        return self._comm.send(data, ignore_errors, lock_timeout)
 
 
     # this starts recieving data
