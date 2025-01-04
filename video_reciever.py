@@ -5,7 +5,7 @@ client = lynxy.Lynxy(bind=True)
 client.set_connection(lynxy.Constants.ConnectionType.ERROR)
 print(client.get_host())
 
-out = r'D:\VScode\packages\lynxy\recieved.mp4'
+out = r'recieved.mp4'
 
 target = ['192.168.68.129', 56774]
 client.connect(target)
