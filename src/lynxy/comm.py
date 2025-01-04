@@ -11,7 +11,6 @@ import pickle
 import threading
 import time
 import platform
-import struct
 
 # files
 from .sec import Sec
