@@ -47,6 +47,8 @@ class Comm:
         self.connectionType = Constants.ConnectionType.EVENT
         # this is the thread for the recieving function
         self.recvThread = threading.Thread(target=lambda:self.recv(), daemon=True)
+        # this represents the system type
+        self.systemType = platform.system()
         # this represents if the UDP client is binded or not
         self.UDP_binded = False
         # these are booleans for stopping threads
@@ -97,11 +99,10 @@ class Comm:
     # such as when to send them, how long to wait between each one, and how many to send
     def config_heartbeat(self, inactive_delay: int = 60, probe_interval: int = 10, probe_count: int = 5) -> None:
         self.TCP_client.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-        osType = platform.system()
-        if osType == 'Windows': # Windows-specific options
+        if self.systemType == 'Windows': # Windows-specific options
             keepalive = (1, inactive_delay * 1000, probe_interval * 1000) # On, idle time (ms), interval (ms)
             self.TCP_client.ioctl(socket.SIO_KEEPALIVE_VALS, keepalive)
-        elif osType == 'Linux' or osType == 'Darwin': # Linux/macOS-specific options
+        elif self.systemType in ('Linux', 'Darwin'): # Linux/macOS-specific options
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, inactive_delay) # Idle time before sending probes (in seconds)
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, probe_interval) # Interval between probes (in seconds)
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, probe_count) # Number of failed probes before closing
