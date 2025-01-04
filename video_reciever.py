@@ -2,6 +2,7 @@ from src import lynxy
 
 # set up lynxy client
 client = lynxy.Lynxy(bind=True)
+client.set_connection(lynxy.Constants.ConnectionType.ERROR)
 print(client.get_host())
 
 out = r'D:\VScode\packages\lynxy\recieved.mp4'
