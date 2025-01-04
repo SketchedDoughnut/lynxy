@@ -16,8 +16,4 @@ f.close()
 
 client.send(contents)
 
-while True:
-    input('-> ')
-    break
-
 client.close()
