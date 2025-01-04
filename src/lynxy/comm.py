@@ -110,7 +110,9 @@ class Comm:
     # this function manages what happens when connection goes wrong,
     # and a connection is closing - typically with an error
     def _handle_close(self, error: Exception | None = None) -> None:
-        if self.connected: self.close_connection()
+        # since we know an error happened and the connection likely is 
+        # closed, we can force a close 
+        if self.connected: self.close_connection(True)
         # handle the error according to how client is configured
         if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
         elif self.connectionType == Constants.ConnectionType.ERROR: raise error
