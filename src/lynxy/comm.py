@@ -105,7 +105,7 @@ class Comm:
     
 
     # this function manages what happens when connection goes wrong
-    def _handle_error(self, error: Exception | None = None) -> None:
+    def _handle_close(self, error: Exception | None = None) -> None:
         if self.connected: self.close_connection()
         # handle the error according to how client is configured
         if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
@@ -280,10 +280,10 @@ class Comm:
             self.sendLock = False
         except ConnectionResetError as e: # other machine quit
             self.sendLock = False
-            self._handle_error(e)
+            self._handle_close(e)
         except BrokenPipeError as e: # connection was properly closed and sending data was attempted
             self.sendLock = False
-            self._handle_error(e)
+            self._handle_close(e)
 
 
     # this is a recieving function for recieving data
@@ -291,10 +291,10 @@ class Comm:
         while True:
             try: recieved = self.TCP_client.recv(1024)
             except ConnectionResetError as e: # other machine quit
-                self._handle_error(e)
+                self._handle_close(e)
                 return
             except ConnectionAbortedError as e: # host client closed
-                self._handle_error(e)
+                self._handle_close(e)
                 return
             # catch any other error that happens
             # if we are meant to exit thread, just ignore error and exit
@@ -305,7 +305,7 @@ class Comm:
             # if recieved is empty, then we got an EOF meaning the other socket
             # shutdown
             if not recieved: 
-                self._handle_error(EOFError('EOF detected: Remote socket shutdown.'))
+                self._handle_close(EOFError('EOF detected: Remote socket shutdown.'))
                 return
             # remove padding from the recieved data
             unpadded = self.parser.removePadding(recieved)
