@@ -281,6 +281,9 @@ class Comm:
         except ConnectionResetError as e: # other machine quit
             self.sendLock = False
             self._handle_error(e)
+        except BrokenPipeError as e: # connection was properly closed and sending data was attempted
+            self.sendLock = False
+            self._handle_error(e)
 
 
     # this is a recieving function for recieving data
