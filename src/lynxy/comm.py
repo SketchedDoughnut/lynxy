@@ -106,9 +106,7 @@ class Comm:
 
     # this function manages what happens when connection goes wrong
     def _handle_error(self, error: Exception | None = None) -> None:
-        if self.connected:
-            self.close_connection()
-            self.connected = False
+        if self.connected: self.close_connection()
         # handle the error according to how client is configured
         if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
         elif self.connectionType == Constants.ConnectionType.ERROR: raise error
@@ -241,11 +239,16 @@ class Comm:
     # this function closes the connection between the two machines
     def close_connection(self, force: bool = False) -> None: 
         self.stopRecv = True
+
+        # TODO
+        # handle OS error that appears here
+        # when other client forcefully closes
         if not force: self.TCP_client.shutdown(socket.SHUT_RDWR) # shut down read and write
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
         self.UDP_binded = False
+        self.connected = False
     
 
     # this is a function to send data to the other machine
