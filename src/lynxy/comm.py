@@ -277,6 +277,9 @@ class Comm:
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
         try: 
             self.TCP_client.sendall(paddedMessage) # send actual data
+
+            print('sent:', len(paddedMessage))
+
             self.sendLock = False
         except ConnectionResetError as e: # other machine quit
             self.sendLock = False
@@ -293,9 +296,16 @@ class Comm:
             except ConnectionAbortedError as e: # host client closed
                 self._handle_error(e)
                 return
+            
+            print('recv:', len(recieved))
+            
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.Fernet_decrypt(indiv)
                 decrypted.recieved_at = Pool._Tools._format_time()
-                if decrypted == self.parser.heartbeatMarker: continue
+                if decrypted == self.parser.heartbeatMarker: 
+
+                    print('heartbeat detected, ignoring')
+
+                    continue
                 self._trigger(Constants.Event.ON_MESSAGE, decrypted)
