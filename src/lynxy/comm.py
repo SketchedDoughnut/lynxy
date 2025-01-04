@@ -96,7 +96,7 @@ class Comm:
         self.TCP_client.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
         osType = platform.system()
         if osType == 'Windows': # Windows-specific options
-            keepalive = struct.pack('iii', 1, inactive_delay * 1000, probe_interval * 1000) # On, idle time (ms), interval (ms)
+            keepalive = (1, inactive_delay * 1000, probe_interval * 1000) # On, idle time (ms), interval (ms)
             self.TCP_client.ioctl(socket.SIO_KEEPALIVE_VALS, keepalive)
         elif osType == 'Linux' or osType == 'Darwin': # Linux/macOS-specific options
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, inactive_delay) # Idle time before sending probes (in seconds)
