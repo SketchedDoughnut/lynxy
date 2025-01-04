@@ -6,7 +6,7 @@ print(client.get_host())
 
 source = r'D:\VScode\github practice\filter\original\die.mp4'
 
-target = ['', 0]
+target = ['192.168.68.113', 56774]
 client.connect(target)
 
 f = open(source, 'rb')
