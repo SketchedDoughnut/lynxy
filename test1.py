@@ -1,7 +1,7 @@
 from src import lynxy
 from rich import print
 
-inst = lynxy.Lynxy(True)
+inst = lynxy.Lynxy(bind=True)
 print('initialized')
 host = inst.get_host()
 target = ('192.168.68.113', 56774)
@@ -11,7 +11,6 @@ print(f'target: {target}')
 
 inst.connect(target)
 print('connected')
-
 
 @inst.event(lynxy.Constants.Event.ON_MESSAGE)
 def recv(msg: lynxy.Pool.Message): 
@@ -27,7 +26,7 @@ while True:
     if msg == 'exit': 
         inst.close()
         break
-    inst._comm._send(msg)
+    inst.send(msg)
 
 
 ## uncomment for sending bee movie, comming out above while loop
