@@ -297,7 +297,7 @@ class Comm:
                 self._handle_error(e)
                 return
             
-            print('recv:', len(recieved))
+            print('recv:', len(self.parser.carry))
             
             unpadded = self.parser.removePadding(recieved)
             for indiv in unpadded:
