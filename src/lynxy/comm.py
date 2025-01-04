@@ -244,6 +244,9 @@ class Comm:
         # handle OS error that appears here
         # when other client forcefully closes
         if not force: self.TCP_client.shutdown(socket.SHUT_RDWR) # shut down read and write
+
+        # wait for threads to end
+        while self.recvThread.is_alive(): pass
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
@@ -292,6 +295,12 @@ class Comm:
             except ConnectionAbortedError as e: # host client closed
                 self._handle_error(e)
                 return
+            # catch any other error that happens
+            # if we are meant to exit thread, just ignore error and exit
+            # otherwise raise the same exception again
+            except Exception as e:
+                if self.stopRecv: return
+                raise e
             # if recieved is empty, then we got an EOF meaning the other socket
             # shutdown
             if not recieved: 
