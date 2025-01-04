@@ -245,8 +245,6 @@ class Comm:
         # when other client forcefully closes
         if not force: self.TCP_client.shutdown(socket.SHUT_RDWR) # shut down read and write
 
-        # wait for threads to end
-        while self.recvThread.is_alive(): pass
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
