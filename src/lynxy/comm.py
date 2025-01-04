@@ -47,8 +47,10 @@ class Comm:
         self.connectionType = Constants.ConnectionType.EVENT
         # this is the thread for the recieving function
         self.recvThread = threading.Thread(target=lambda:self.recv(), daemon=True)
+        self.heartbeatThread = threading.Thread(target=lambda:self._heartbeat(), daemon=True)
         # these are booleans for stopping threads
         self.stopRecv = False
+        self.stopHeartbeat = False
         # this is a lock that, while something is sending, other things can not send
         self.sendLock = False
         # this represents if we have an active connected
@@ -87,6 +89,23 @@ class Comm:
 
     # this starts the recv thread
     def start_recv(self) -> None: self.recvThread.start() if not self.recvThread.is_alive() else None
+
+
+    # this starts the heartbeat thread
+    def _start_heartbeat(self) -> None: self.heartbeatThread.start() if not self.heartbeatThread.is_alive() else None
+
+
+    # this function manages heartbeat messages so that the other client does not disconnect
+    # due to not recieving anything or whatnot
+    def _heartbeat(self) -> None:
+        delay = 15 * 60 # 15 minutes * 60 seconds for each minute
+        while True:
+            if self.stopHeartbeat: break
+            time.sleep(delay)
+            # if we timeout, its fine because it means something else is being sent
+            # which means a heartbeat is not needed
+            # so we just ignore any errors
+            self.send(self.parser.heartbeatMarker, ignore_errors=True)
 
 
     # this function manages what happens when connection goes wrong
@@ -219,11 +238,14 @@ class Comm:
             # since we are second
             encryptedFernet = self.TCP_client.recv(1024)
             self.sec.load_Fernet(self.sec.RSA_decrypt(encryptedFernet))
+        # start the heartbeat thread
+        self._start_heartbeat()
     
 
     # this function closes the connection between the two machines
     def close_connection(self) -> None: 
         self.stopRecv = True
+        self.stopHeartbeat = True
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
@@ -275,4 +297,5 @@ class Comm:
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.Fernet_decrypt(indiv)
                 decrypted.recieved_at = Pool._Tools._format_time()
+                if decrypted == self.parser.heartbeatMarker: continue
                 self._trigger(Constants.Event.ON_MESSAGE, decrypted)

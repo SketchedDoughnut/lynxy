@@ -14,6 +14,8 @@ class Parser:
     def __init__(self): 
         # end marker for message
         self.byteEndMarker = b':~e~:'
+        # heartbeat marker
+        self.heartbeatMarker = ':~hb~:'
         # carry over from previous incomplete packets
         self.carry = b''
 
