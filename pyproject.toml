@@ -24,7 +24,7 @@ packages = [
 # metadata just about the project in general
 [project]
 name = "lynxy"
-version = "0.2.11" # test pypi release
+version = "0.2.12" # test pypi release
 # version = "0.0.5" # pypi release 
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" }

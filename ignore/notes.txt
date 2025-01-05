@@ -1,13 +1,25 @@
 BUILD INSTRUCTIONS
-- First, if not done so already, install build and twine and update. (python3 -m pip install (build / twine), python3 -m pip install --upgrade (build / twine))
-- Build. (python3 -m build)
+- If not done so already, install build and twine and update:
+    - python3 -m pip install (build / twine)
+    - python3 -m pip install --upgrade (build / twine)
+- Build the package:
+    - python3 -m build
 
 RELEASE INSTRUCTIONS
-- For test pypi: run: python3 -m twine upload --repository testpypi dist/*
-- For normal pypi: python3 -m twine upload --repository pypi dist/*
+- For test pypi:
+    - python3 -m twine upload --repository testpypi dist/*
+- For normal pypi:
+    - python3 -m twine upload --repository pypi dist/*
 
 DOWNLOAD INSTRUCTIONS
-- For test pypi: pip install -i https://test.pypi.org/simple/ lynxy
-- For normal pypi: pip install lynxy
-- NOTE FOR DOWNLOADING:
-    - installing can break if wheel is not installed / updated.
+helpful info: https://packaging.python.org/en/latest/guides/using-testpypi/
+- make sure that wheel is installed / updated:
+    - python3 -m install wheel
+    - python3 -m install --upgrade wheel
+- For test pypi: 
+    - to just install package from test pypi: 
+            - pip install --index-url https://test.pypi.org/simple/ lynxy
+        - to install package from test pypi, but get its dependencies from pypi (RECOMMENDED FOR TESTING): 
+            - pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lynxy
+- For normal pypi: 
+    - pip install lynxy
