@@ -18,7 +18,7 @@ Network <br>
 (the extra y is cosmetic~)</b>
 ***
 
-Lynxy is a client system coded in Python for use of communication. It allows for easy set up for connecting
-clients to each other, as well as a variety of different events and systems.
+Lynxy is a client system coded in Python for ease of communication. It allows for easy set up for connecting
+machines to each other, as well as providing a lot of extra features.
 
-Check out the [Github](https://github.com/SketchedDoughnut/lynxy) to learn how to use Lynxy!
+Check out the [Github](https://github.com/SketchedDoughnut/lynxy) to learn more!

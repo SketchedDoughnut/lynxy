@@ -21,6 +21,8 @@ from .pool import Pool
 
 ####################################################
 
+# TODO ADD LOGGER
+
 # this is the main class for the connection
 class Comm:
     def __init__(self, host: tuple[str, int] = ['', 56774], UDP_bind: bool = False):
