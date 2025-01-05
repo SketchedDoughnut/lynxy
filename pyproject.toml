@@ -8,8 +8,10 @@ requires = [
     'hatchling>=1.27.0',
     # for RSA encryption
     'rsa>=4.9', 
+    'pyasn1>=0.6.1',
     # for cryptography encryption
-    'cryptography>=44.0.0'
+    'cryptography>=44.0.0', 
+    'cffi>=1.17.1'
 ]
 build-backend = "hatchling.build"
 
@@ -22,7 +24,7 @@ packages = [
 # metadata just about the project in general
 [project]
 name = "lynxy"
-version = "0.2.6" # test pypi release
+version = "0.2.7" # test pypi release
 # version = "0.0.5" # pypi release 
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" }
