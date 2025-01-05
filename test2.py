@@ -1,5 +1,5 @@
-# from src import lynxy
-import lynxy
+from src import lynxy
+# import lynxy
 from rich import print
 
 inst = lynxy.Lynxy(bind=True)
