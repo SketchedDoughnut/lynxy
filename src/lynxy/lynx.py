@@ -40,6 +40,9 @@ class Lynxy:
 
     # this function configures heartbeat things for the client
     def config_heartbeat(self, inactive_delay: int = 60, probe_interval: int = 10, probe_count: int = 5) -> None:
+        '''
+        TODO WRITE DOCUMENTATION
+        '''
         self._comm.config_heartbeat(inactive_delay, probe_interval, probe_count)
 
 
