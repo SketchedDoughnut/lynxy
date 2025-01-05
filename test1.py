@@ -29,7 +29,6 @@ while True:
         break
     inst.send(msg)
 
-
 ## uncomment for sending bee movie, comming out above while loop
 
 # # https://courses.cs.washington.edu/courses/cse163/20wi/files/lectures/L04/bee-movie.txt
