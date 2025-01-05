@@ -249,12 +249,10 @@ class Comm:
     # gracefully :3
     def close_connection(self, force: bool = False) -> None: 
         self.stopRecv = True
-
-        # TODO
-        # handle OS error that appears here
-        # when other client forcefully closes
-        if not force: self.TCP_client.shutdown(socket.SHUT_RDWR) # shut down read and write
-
+        # this shuts down the read and write pipes gracefully
+        # making sure that all data is recieved and sent properly
+        # before closing
+        if not force: self.TCP_client.shutdown(socket.SHUT_RDWR)
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
