@@ -1,5 +1,3 @@
-[Home](https://github.com/SketchedDoughnut/lynxy) <br>
-***
 **This changelog was started at 6/3/24**
 ***
 # v0.1.18

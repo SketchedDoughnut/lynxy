@@ -4,6 +4,7 @@
 Network <br>
 (eXchange?) <br>
 (the extra y is cosmetic~)</b>
+
 ***
 
 Lynxy is a client system coded in Python for ease of communication. It allows for easy set up for connecting
