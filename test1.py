@@ -20,7 +20,6 @@ def recv(msg: lynxy.Pool.Message):
 @inst.event(lynxy.Constants.Event.ON_CLOSE)
 def close(msg):
     print('connection closed:', msg)
-    inst.close()
 
 while True:
     msg = input('-> ')
