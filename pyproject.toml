@@ -7,11 +7,11 @@ requires = [
     # for building
     'hatchling',
     # for RSA encryption
-    'rsa', 
-    'pyasn1',
+    'rsa==4.9', 
+    'pyasn1==0.6.1',
     # for cryptography encryption
-    'cryptography', 
-    'cffi'
+    'cryptography==44.0.0', 
+    'cffi==1.17.1'
 ]
 build-backend = "hatchling.build"
 
@@ -39,9 +39,11 @@ classifiers = [
 ]
 dependencies = [
     # for RSA encryption
-    'rsa', 
+    'rsa==4.9', 
+    'pyasn1==0.6.1',
     # for cryptography encryption
-    'cryptography'
+    'cryptography==44.0.0', 
+    'cffi==1.17.1'
 ]
 
 # URLs for project pages
