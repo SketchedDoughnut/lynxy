@@ -1,5 +1,5 @@
 # **What is Lynxy?**
-<b>Local <br>
+<b>Lively <br>
 (Yielding?) <br>
 Network <br>
 (eXchange?) <br>
@@ -7,7 +7,11 @@ Network <br>
 ***
 
 Lynxy is a client system coded in Python for ease of communication. It allows for easy set up for connecting
-machines to each other, as well as providing a lot of extra features.
+machines to each other, as well as providing a lot of extra features. 
+
+The goal of Lynxy is to make it easier for others to set up multiplayer applications, no matter what they intend to make. From texting applications to games to streaming services, the possiblities are endless! Read more to learn the ways you can use Lynxy.
+
+***
 
 Information about functions can be found [here](https://github.com/SketchedDoughnut/lynxy/docs/github/functions.md)!
 

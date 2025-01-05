@@ -11,7 +11,7 @@ Check out the github below to learn how to use Lynxy!
 - [Github](https://github.com/SketchedDoughnut/lynxy) -->
 
 # **What is Lynxy?**
-<b>Local <br>
+<b>Lively <br>
 (Yielding?) <br>
 Network <br>
 (eXchange?) <br>
