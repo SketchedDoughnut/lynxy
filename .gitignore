@@ -1,5 +1,4 @@
 # folders
-.inactive
-.old
 .venv
+dist
 __pycache__/

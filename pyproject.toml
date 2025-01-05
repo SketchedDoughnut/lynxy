@@ -5,11 +5,11 @@
 [build-system]
 requires = [
     # for building
-    'hatchling',
+    'hatchling>=1.27.0',
     # for RSA encryption
-    'rsa', 
+    'rsa>=4.9', 
     # for cryptography encryption
-    'cryptography'
+    'cryptography>=44.0.0'
 ]
 build-backend = "hatchling.build"
 
@@ -22,7 +22,7 @@ packages = [
 # metadata just about the project in general
 [project]
 name = "lynxy"
-version = "0.1.22" # test pypi release
+version = "0.2.6" # test pypi release
 # version = "0.0.5" # pypi release 
 authors = [
   { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" }
@@ -37,11 +37,12 @@ classifiers = [
 ]
 dependencies = [
     # for RSA encryption
-    'rsa', 
+    'rsa>=4.9', 
     # for cryptography encryption
-    'cryptography'
+    'cryptography>=44.0.0'
 ]
 
+# URLs for project pages
 [project.urls]
 Homepage = "https://github.com/SketchedDoughnut/lynxy"
 Issues = "https://github.com/SketchedDoughnut/lynxy/issues"

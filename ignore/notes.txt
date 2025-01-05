@@ -1,5 +1,5 @@
 BUILD INSTRUCTIONS
-- First, if not done so already, install build and twine and update. (python3 -m pip install (build / twine))
+- First, if not done so already, install build and twine and update. (python3 -m pip install (build / twine), python3 -m pip install --upgrade (build / twine))
 - Build. (python3 -m build)
 
 RELEASE INSTRUCTIONS
@@ -9,3 +9,5 @@ RELEASE INSTRUCTIONS
 DOWNLOAD INSTRUCTIONS
 - For test pypi: pip install -i https://test.pypi.org/simple/ lynxy
 - For normal pypi: pip install lynxy
+- NOTE FOR DOWNLOADING:
+    - installing can break if wheel is not installed / updated.
