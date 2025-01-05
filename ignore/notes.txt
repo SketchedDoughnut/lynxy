@@ -23,3 +23,4 @@ helpful info: https://packaging.python.org/en/latest/guides/using-testpypi/
             - pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lynxy
 - For normal pypi: 
     - pip install lynxy
+- To update, add the following tag: --upgrade

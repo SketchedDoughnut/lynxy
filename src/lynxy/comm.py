@@ -250,7 +250,6 @@ class Comm:
     # this function closes the connection between the two machines
     # gracefully :3
     def close_connection(self, force: bool = False) -> None: 
-        if not self.connected: return
         self.stopRecv = True
         # this shuts down the read and write pipes gracefully
         # making sure that all data is recieved and sent properly
