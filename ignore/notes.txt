@@ -1,17 +1,26 @@
-To release to PyPi
-    - put the corresponding pyproject.toml in the root directory (either lynxy or lynxy_server)
-    - run: python3 -m build
-    - run: python3 -m twine upload --repository pypi dist/*
+BUILD INSTRUCTIONS
+- If not done so already, install build and twine and update:
+    - python3 -m pip install (build / twine)
+    - python3 -m pip install --upgrade (build / twine)
+- Build the package:
+    - python3 -m build
 
-To release to test PyPi:
-    - put the corresponding pyproject.toml in the root directory (either lynxy or lynxy_server)
-    - run: python3 -m build
-    - run: python3 -m twine upload --repository testpypi dist/*
+RELEASE INSTRUCTIONS
+- For test pypi:
+    - python3 -m twine upload --repository testpypi dist/*
+- For normal pypi:
+    - python3 -m twine upload --repository pypi dist/*
 
-To download from PyPi:
+DOWNLOAD INSTRUCTIONS
+helpful info: https://packaging.python.org/en/latest/guides/using-testpypi/
+- make sure that wheel is installed / updated:
+    - python3 -m install wheel
+    - python3 -m install --upgrade wheel
+- For test pypi: 
+    - to just install package from test pypi: 
+            - pip install --index-url https://test.pypi.org/simple/ lynxy
+        - to install package from test pypi, but get its dependencies from pypi (RECOMMENDED FOR TESTING): 
+            - pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lynxy
+- For normal pypi: 
     - pip install lynxy
-    - pip install lynxy_server
-
-To download from test PyPi:
-    - pip install -i https://test.pypi.org/simple/ lynxy
-    - pip install -i https://test.pypi.org/simple/ lynxy_server
+- To update, add the following tag: --upgrade

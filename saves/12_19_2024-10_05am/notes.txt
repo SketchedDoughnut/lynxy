@@ -1,0 +1,5 @@
+This save is for the pyproject.toml of lynxy_server, since it is now being removed.
+This also includes the tests/ folder that was never used, so it was moved to the archive.
+The commit for deleting lynxy_server and archiving this is: 592cada
+    - https://github.com/SketchedDoughnut/lynxy/commit/592cada010a19c7b44cc15ec8032349c3ddb3674
+This file (and savepoint) were created at: 12/19/24 at 10:05am

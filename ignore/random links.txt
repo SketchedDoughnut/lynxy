@@ -1,0 +1,9 @@
+- https://stackoverflow.com/questions/48024720/python-how-to-check-if-socket-is-still-connected
+- https://www.geeksforgeeks.org/socket-programming-multi-threading-python/
+- https://discuss.python.org/t/making-a-multi-thread-server-for-a-chat-room-destination-client-sockets-selection/8572/8
+- https://docs.python.org/3/library/socketserver.html
+- https://www.youtube.com/watch?v=n0uJsqFGO4k
+- https://pythonprogramming.net/pickle-objects-sockets-tutorial-python-3/
+
+For pong:
+- https://gamedev.stackexchange.com/questions/4253/in-pong-how-do-you-calculate-the-balls-direction-when-it-bounces-off-the-paddl

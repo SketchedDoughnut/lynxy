@@ -1,0 +1,40 @@
+- https://wiki.python.org/moin/UdpCommunication
+- https://wiki.python.org/moin/TcpCommunication
+- https://pythontic.com/modules/socket/udp-client-server-example
+- https://www.geeksforgeeks.org/python-simple-port-scanner-with-sockets/
+- https://www.geeksforgeeks.org/python-binding-and-listening-with-sockets/
+- https://stackoverflow.com/questions/2470971/fast-way-to-test-if-a-port-is-in-use-using-python
+- https://stackoverflow.com/questions/50216417/why-use-socket-io-and-not-just-socket
+- https://github.com/MagicStack/uvloop?tab=Apache-2.0-1-ov-file
+- https://stackoverflow.com/questions/27435284/multiprocessing-vs-multithreading-vs-asyncio
+- https://stackoverflow.com/questions/34252273/what-is-the-difference-between-socket-send-and-socket-sendall
+- https://stackoverflow.com/questions/1708835/python-socket-receive-incoming-packets-always-have-a-different-size
+- https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
+- https://stackoverflow.com/questions/42415207/send-receive-data-with-python-socket
+- https://stackoverflow.com/questions/2184181/decoding-tcp-packets-using-python
+- https://stackoverflow.com/questions/71547304/python-tcp-socket-is-merging-data
+
+Info about byte order:
+- https://www.ibm.com/docs/ja/zvm/7.2?topic=domains-network-byte-order-host-byte-order
+- https://stackoverflow.com/questions/71695996/can-you-give-some-practical-uses-of-socket-ntohlx-in-socket-programming-in
+
+Scapy stuff:
+- https://scapy.readthedocs.io/en/latest/extending.html#using-scapy-in-your-tools
+- https://scapy.readthedocs.io/en/latest/installation.html
+- https://scapy.net/
+
+Decorator info:
+- https://realpython.com/primer-on-python-decorators/
+- https://stackoverflow.com/questions/70982565/how-do-i-make-an-event-listener-with-decorators-in-python
+
+Commenting info:
+- https://realpython.com/python-double-underscore/
+
+Server implementations:
+- https://www.geeksforgeeks.org/socket-programming-multi-threading-python/
+
+Optimizing data:
+- https://youtu.be/CO6s86eIFzk
+
+For port forwarding:
+- https://github.com/vinodpandey/python-port-forward/blob/master/port-forward.py

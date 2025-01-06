@@ -1,0 +1,54 @@
+# guide for setting up: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+###################################################################################################
+
+# build system info
+[build-system]
+requires = [
+    # for building
+    'hatchling',
+    # for RSA encryption
+    'rsa==4.9', 
+    'pyasn1==0.6.1',
+    # for cryptography encryption
+    'cryptography==44.0.0', 
+    'cffi==1.17.1'
+]
+build-backend = "hatchling.build"
+
+# information about what is actually being built
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/lynxy"
+]
+
+# metadata just about the project in general
+[project]
+name = "lynxy"
+version = "0.2.14" # test pypi release
+# version = "0.0.5" # pypi release 
+authors = [
+  { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" }
+]
+description = "A package made for easy communication and sending of data from one machine to the other."
+readme = "docs/pypi/pypi_info.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    # for RSA encryption
+    'rsa==4.9', 
+    'pyasn1==0.6.1',
+    # for cryptography encryption
+    'cryptography==44.0.0', 
+    'cffi==1.17.1'
+]
+
+# URLs for project pages
+[project.urls]
+Homepage = "https://github.com/SketchedDoughnut/lynxy"
+Changelog = 'https://github.com/SketchedDoughnut/lynxy/docs/github/changelogs/release_changelog.md'
+"Experimental Changelog" = 'https://github.com/SketchedDoughnut/lynxy/docs/github/changelogs/experimental_changelog.md'
+Issues = "https://github.com/SketchedDoughnut/lynxy/issues"

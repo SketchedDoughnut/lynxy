@@ -1,0 +1,2 @@
+This save is just some code for recieving and sending that is not used in comm.py
+This file (and savepoint) were created at: 12/18/24 at 9:52am
