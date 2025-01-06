@@ -1,5 +1,8 @@
 **This changelog was started at 6/3/24**
+- [home](/README.md)
+
 ***
+
 # v0.1.18
 **6/4/24**
 - Added the working asymmetrical encryption to server/client communications, and improved how strings are interpreted into types (dictionary, tuple, etc).
