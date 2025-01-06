@@ -179,7 +179,7 @@ class Comm:
         # set up the settings for heartbeat pings
         self.config_heartbeat()
         # do the handshake to exchange RSA keys
-        self._handshake(ourRandom > targetRandom)
+        self._handshake(first)
         self.connected = True
         # trigger connect event
         self._trigger(Constants.Event.ON_CONNECT, True)
