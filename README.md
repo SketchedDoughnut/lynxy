@@ -21,3 +21,5 @@ Information about data types for events can be found [here](/docs/github/events.
 Changelog can be found [here](/docs/github/changelogs/release_changelog.md)!
 
 Experimental changelog can be found [here](/docs/github/changelogs/experimental_changelog.md)!
+
+Version info can be found [here](/docs/github/version%20key.md)!
