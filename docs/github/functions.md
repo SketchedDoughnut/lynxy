@@ -4,7 +4,7 @@
 
 ***
 
-Here you can find information about the variety of functions that Lynxy offers.
+Here you can find information about the variety of functions that Lynxy offers. Note that the information here is brief, and more information can be found from looking at the functions in a code editor of your choice.
 
 The functions that are immediately available are the ones picked that are meant for public use. These are the only ones that this page will be covering. The rest of the functions can be found if, after making your Lynxy instance, you go into the `_comm` class instance.
     
