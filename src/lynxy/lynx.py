@@ -77,7 +77,7 @@ class Lynxy:
 
 
     # this function sets behaviors for when connection is lost
-    def set_connection(self, connectionType: Constants.ConnectionType) -> None:
+    def set_connection(self, connection_type: Constants.ConnectionType) -> None:
         '''
         The connection type determines what Lynxy will do when a closing event happens. There are three types of connection types.
 
@@ -89,11 +89,13 @@ class Lynxy:
 
         ConnectionType.NONE
         - Lynxy will not do anything when a connection closes.
+
+        Will raise TypeError if connection_type is not a valid Constants.ConnectionType.
         '''
         # filter out invalid types
-        if type(connectionType) != Constants.ConnectionType: raise TypeError('Invalid connection type')
+        if type(connection_type) != Constants.ConnectionType: raise TypeError('Invalid connection type')
         # set connection type
-        self._comm.connectionType = connectionType
+        self._comm.connectionType = connection_type
         return None
 
 
@@ -129,6 +131,8 @@ class Lynxy:
           >>> # client 1 has a bias of first
           >>> # client 2 has to have a bias of second
           >>> # or vice versa
+
+        Will raise Exceptions.ConnectionFailedError if role numbers are equal, or UDP / TCP connection fails.
         '''
         self._comm.TCP_connect(
             target_ip = target[0], 
@@ -147,6 +151,8 @@ class Lynxy:
         When called, Lynxy will wait until all data is sent and all data is recieved before closing.
         However, if you set force to True, Lynxy will immediately terminate the connection. This can result in 
         data being lost.
+
+        Will raise an error if close is called during the ON_CLOSE event, don't do this please :)
         '''
         self._comm.close_connection(force)
         return None
@@ -172,7 +178,6 @@ class Lynxy:
         lock_timeout: float = 10.0
         - if data is being sent and you try to send more data, Lynxy will wait until the current message is done sending. You can set a timeout that,
           once Lynxy waits up to the timeout amount, a SendingTimeoutError will be raised.
-
         '''
         return self._comm.send(data, ignore_errors, lock_timeout)
 
