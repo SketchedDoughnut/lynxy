@@ -18,7 +18,7 @@ Information about functions can be found [here](/docs/github/functions.md)!
 
 Information about general objects and data types can be found [here](/docs/github/data.md)!
 
-Official hangelog can be found [here](/docs/github/changelogs/release_changelog.md)!
+Official changelog can be found [here](/docs/github/changelogs/release_changelog.md)!
 
 Experimental changelog can be found [here](/docs/github/changelogs/experimental_changelog.md)!
 
