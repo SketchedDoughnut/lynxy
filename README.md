@@ -21,7 +21,7 @@ First, lets install Lynxy!
 
     pip install lynxy
 
-If you want to use the test releases, do this intead:
+If you want to use the test releases, do this instead:
 
     - pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lynxy
 ***
