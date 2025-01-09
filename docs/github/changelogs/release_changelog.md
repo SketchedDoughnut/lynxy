@@ -6,7 +6,7 @@
 
 # v0.0.3 - v0.0.6
 **5/28/24 - 6/4/24**
-- Releases for the old system of Lynxy, before the full rewrite of Lynxy (>=1.0.0)
+- Releases for the old system of Lynxy, before the full rewrite of Lynxy (>=1.0.0). This version is drastically different then the full rewrite, and considerably worse.
 - Commit label: None
 
 # v1.0.0
