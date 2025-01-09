@@ -16,7 +16,7 @@ The goal of Lynxy is to make it easier for others to set up multiplayer applicat
 
 Information about functions can be found [here](/docs/github/functions.md)!
 
-Information about general objects and data types can be found [here](/docs/github/data.md)!
+Information about objects and data types can be found [here](/docs/github/data.md)!
 
 Official changelog can be found [here](/docs/github/changelogs/release_changelog.md)!
 
