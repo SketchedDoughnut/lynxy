@@ -1,4 +1,5 @@
 # Functions
+- [Main Github page](https://github.com/SketchedDoughnut/lynxy)
 - [home](/README.md)
 
 ***
