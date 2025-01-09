@@ -111,7 +111,7 @@ class Comm:
 
     # this function manages what happens when connection goes wrong,
     # and a connection is closing - typically with an error
-    def _handle_close(self, error: Exception | None = None) -> None:
+    def _handle_close(self, error: Exceptions.BaseLynxyException | None = None) -> None:
         # since we know an error happened and the connection likely is 
         # closed, we can force a close 
         if self.connected: self.close_connection(force=True)

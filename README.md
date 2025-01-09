@@ -16,10 +16,10 @@ The goal of Lynxy is to make it easier for others to set up multiplayer applicat
 
 Information about functions can be found [here](/docs/github/functions.md)!
 
-Information about data types for events can be found [here](/docs/github/events.md)!
+Information about general objects and data types can be found [here](/docs/github/data.md)!
 
-Changelog can be found [here](/docs/github/changelogs/release_changelog.md)!
+Official hangelog can be found [here](/docs/github/changelogs/release_changelog.md)!
 
 Experimental changelog can be found [here](/docs/github/changelogs/experimental_changelog.md)!
 
-Version info can be found [here](/docs/github/version%20key.md)!
+Version info for releases can be found [here](/docs/github/version%20key.md)!
