@@ -53,6 +53,6 @@ dependencies = [
 # URLs for project pages
 [project.urls]
 Homepage = "https://github.com/SketchedDoughnut/lynxy"
-Changelog = 'https://github.com/SketchedDoughnut/lynxy/docs/github/changelogs/release_changelog.md'
-"Experimental Changelog" = 'https://github.com/SketchedDoughnut/lynxy/docs/github/changelogs/experimental_changelog.md'
+Changelog = 'https://github.com/SketchedDoughnut/lynxy/blob/master/docs/github/changelogs/release_changelog.md'
+"Experimental Changelog" = 'https://github.com/SketchedDoughnut/lynxy/blob/master/docs/github/changelogs/experimental_changelog.md'
 Issues = "https://github.com/SketchedDoughnut/lynxy/issues"
