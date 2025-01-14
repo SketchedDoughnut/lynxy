@@ -1,0 +1,10 @@
+paths:
+ - 'src'
+ 
+paths-ignore:
+ - '**/ignore/**'
+ - '**/saves/**'
+ - '**/tests/**'
+
+# https://stackoverflow.com/questions/74030852/is-there-a-way-to-exclude-files-from-codeql-scanning-on-github
+# https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning#using-a-custom-configuration-file
