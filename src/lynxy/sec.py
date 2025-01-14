@@ -30,6 +30,8 @@ class Sec:
         # represents the external public key, we don't get their private key
         # for other end of communication
         self.ext_pub_key = None
+        # represents the size of the RSA key
+        self.keySizeRSA = 2048
         ##############
         # FOR FERNET ENCRYPTION
         # AKA SYMMETRICAL
@@ -41,7 +43,7 @@ class Sec:
 
     
     # generates public/private keys for encryption
-    def _gen_access_keys(self) -> tuple[rsa.PublicKey, rsa.PrivateKey]: return rsa.newkeys(1024)
+    def _gen_access_keys(self) -> tuple[rsa.PublicKey, rsa.PrivateKey]: return rsa.newkeys(self.keySizeRSA)
 
 
     # function that loads RSA public key

@@ -228,7 +228,7 @@ class Comm:
             # we send our public RSA key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
             # then recieve their public RSA key
-            recievedPubKey = self.TCP_client.recv(1024)
+            recievedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
             self.sec.load_RSA(pickle.loads(recievedPubKey))
             # now we send our Fernet key for actual encryption
             # since we are first, we don't need to recieve 
@@ -237,7 +237,7 @@ class Comm:
             self.TCP_client.sendall(encryptedFernet)
         else:
             # we recieve their public key
-            recievedPubKey = self.TCP_client.recv(1024)
+            recievedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
             self.sec.load_RSA(pickle.loads(recievedPubKey))
             # then send our public key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
