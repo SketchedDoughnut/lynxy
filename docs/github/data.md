@@ -22,10 +22,10 @@ Lynxy uses events to trigger functions for when different things happen. Lynxy a
 Note: Event constants can be found in `lynxy.Constants.Event`
 
 **ON_CONNECT**
-- Input type: Boolean, `True`
+- Input type: Boolean, `True` or `False` depending on state of connection
 
 **ON_MESSAGE**
 - Input type: `lynxy.Pool.Message`
 
 **ON_CLOSE**
-- Input type: Exception from the `Exception` base class
+- Input type: Exception from the `Exception` base class, or `None`
