@@ -24,14 +24,14 @@ class Sec:
         # FOR RSA ENCRYPTION
         # AKA ASYMMETRICAL
         ##############
-        # represents internal public and private keys
-        # for this end of communication
-        self.int_pub_key, self.int_priv_key = self._gen_access_keys()
         # represents the external public key, we don't get their private key
         # for other end of communication
         self.ext_pub_key = None
         # represents the size of the RSA key
         self.keySizeRSA = 2048
+        # represents internal public and private keys
+        # for this end of communication
+        self.int_pub_key, self.int_priv_key = self._gen_access_keys()
         ##############
         # FOR FERNET ENCRYPTION
         # AKA SYMMETRICAL

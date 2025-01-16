@@ -12,6 +12,7 @@ import threading
 import time
 import platform
 import logging
+import os
 
 # files
 from .sec import Sec
@@ -49,6 +50,8 @@ class Comm:
         self.recvThread = threading.Thread(target=lambda:self.recv(), daemon=True)
         # this represents the system type
         self.systemType = platform.system()
+        # this represents the working directory
+        self.wDir = os.path.dirname(os.path.abspath(__file__))
         # this represents if the UDP client is binded or not
         self.UDP_binded = False
         # these are booleans for stopping threads
@@ -73,32 +76,44 @@ class Comm:
 
 
     # this is a function to customize logging info requests
-    def log(self, logType: int, data: any): self.log_calls(logType)(data)
+    def log(self, logType: int, data: any): self.log_calls[logType](data)
 
 
     # this function sets up logging
     def start_logging(self):
-        logging.basicConfig(filename='lynxy.log', level=logging.INFO)
-        message = f'''------------------------------
+        logPath = f'{self.wDir}/_lynxy.log'
+        try: os.remove(logPath)
+        except FileNotFoundError: pass
+        logging.basicConfig(filename=logPath, level=logging.INFO)
+        message = f'''
+------------------------------
 Lynxy logging enabled! 
 ------------------------------'''
         self.log(logging.INFO, message)
         
 
     # this regenerates the UDP client, making a new object
-    def _regen_UDP(self) -> None: self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    def _regen_UDP(self) -> None: 
+        self.log(logging.INFO, 'regenerated UDP')
+        self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
     # this regenerates the TCP client, making a new object
-    def _regen_TCP(self) -> None: self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def _regen_TCP(self) -> None: 
+        self.log(logging.INFO, 'regenerated TCP')
+        self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
     # this binds the UDP client to the host machines ip and port
-    def _bind_UDP(self) -> None: self.UDP_client.bind((self.host, self.port))
+    def _bind_UDP(self) -> None: 
+        self.log(logging.INFO, f'binded UDP to {self.host}:{self.port}')
+        self.UDP_client.bind((self.host, self.port))
 
 
     # this binds the TCP client to the host machines ip and port
-    def _bind_TCP(self) -> None: self.TCP_client.bind((self.host, self.port))
+    def _bind_TCP(self) -> None: 
+        self.log(logging.INFO, f'binded TCP to {self.host}:{self.port}')
+        self.TCP_client.bind((self.host, self.port))
 
 
     # this returns the host IP and port in a tuple
@@ -113,7 +128,9 @@ Lynxy logging enabled!
 
     # this starts the recv thread
     # for recieving messages and triggering events
-    def start_recv(self) -> None: self.recvThread.start() if not self.recvThread.is_alive() else None
+    def start_recv(self) -> None: 
+        self.log(logging.INFO, 'started recv thread')
+        self.recvThread.start() if not self.recvThread.is_alive() else None
 
 
     # this function configures heartbeat things for the client
@@ -127,6 +144,8 @@ Lynxy logging enabled!
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, inactive_delay) # Idle time before sending probes (in seconds)
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, probe_interval) # Interval between probes (in seconds)
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, probe_count) # Number of failed probes before closing
+        self.log(logging.INFO, 'set heartbeat config')
+        self.log(logging.INFO, f'   - inactive_delay: {inactive_delay}s\n    - probe_interval: {probe_interval}s\n    probe_count: {probe_count}')
     
 
     # this function manages what happens when connection goes wrong,
@@ -134,6 +153,8 @@ Lynxy logging enabled!
     def _handle_close(self, error: Exceptions.BaseLynxyException | None = None) -> None:
         # since we know an error happened and the connection likely is 
         # closed, we can force a close 
+        self.log(logging.INFO, 'client closed')
+        self.log(logging.ERROR, f'error: {error}')
         if self.connected: self.close_connection(force=True)
         # handle the error according to how client is configured
         if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
@@ -152,6 +173,7 @@ Lynxy logging enabled!
         except KeyError: return
 
 
+    # TODO ADD LOGGING
     # this function handles the UDP connection that helps make the TCP connection
     # as well as the handshake, and the overall connection setup
     def TCP_connect(self, 
@@ -205,6 +227,7 @@ Lynxy logging enabled!
         self._trigger(Constants.Event.ON_CONNECT, True)
 
 
+    # TODO ADD LOGGING
     # this function manages finding out who goes first with making a TCP connection
     # and also who is first with exchanging RSA keys
     def _UDP_connect(self, timeout, attempts) -> tuple[int, int]:
@@ -241,6 +264,7 @@ Lynxy logging enabled!
         return (randNum, incomingNum)
     
 
+    # TODO ADD LOGGING
     # this function manages handshakes for exchanging RSA keys
     # which are exchanged just to exchange symmetrical Fernet keys
     def _handshake(self, is_first: bool) -> None:
@@ -267,6 +291,7 @@ Lynxy logging enabled!
             self.sec.load_Fernet(self.sec.RSA_decrypt(encryptedFernet))
     
 
+    # TODO ADD LOGGING
     # this function closes the connection between the two machines
     # gracefully :3
     def close_connection(self, force: bool = False) -> None: 
@@ -283,6 +308,7 @@ Lynxy logging enabled!
         self.connected = False
     
 
+    # TODO ADD LOGGING
     # this is a function to send data to the other machine
     def send(self, data: any, ignore_errors: bool = False, lock_timeout: float = 10.0) -> None:
         # raise error message if data is empty and ignore is disabled,
@@ -317,6 +343,7 @@ Lynxy logging enabled!
             self._handle_close(e)
 
 
+    # TODO ADD LOGGING
     # this is a recieving function for recieving data
     def recv(self) -> None:
         while True:
