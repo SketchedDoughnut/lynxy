@@ -42,6 +42,8 @@ It is advised to not mess with the things here unless you know what you are doin
 
 **recv: Function**: Starts the background thread for recieving data.
 
+**start_logging: Function**: Starts the logger which writes to a local file.
+
 ***
 
 # Decorators
