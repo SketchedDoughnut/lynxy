@@ -31,6 +31,8 @@ Information about functions can be found [here](/docs/github/functions.md)!
 
 Information about objects and data types can be found [here](/docs/github/data.md)!
 
+Code examples can be found [here](/docs/github/examples.md)!
+
 Official changelog can be found [here](/docs/github/changelogs/release_changelog.md)!
 
 Experimental changelog can be found [here](/docs/github/changelogs/experimental_changelog.md)!
