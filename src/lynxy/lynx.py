@@ -99,6 +99,16 @@ class Lynxy:
         return None
 
 
+    # this function starts logging in comm
+    def start_logging(self) -> None:
+        ''' 
+        This function starts logging in the Lynxy client. Logs are saved to a file named
+        `lynxy.log`. The following things are logged:
+        - TODO
+        '''
+        self._comm.start_logging()
+
+
     # this function connects to the other machine
     def connect(self, 
                 target: tuple[str, int], 

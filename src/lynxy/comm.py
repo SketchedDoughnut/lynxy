@@ -11,6 +11,7 @@ import pickle
 import threading
 import time
 import platform
+import logging
 
 # files
 from .sec import Sec
@@ -20,8 +21,6 @@ from .constants import Constants
 from .pool import Pool
 
 ####################################################
-
-# TODO ADD LOGGER
 
 # this is the main class for the connection
 class Comm:
@@ -58,12 +57,33 @@ class Comm:
         self.sendLock = False
         # this represents if we have an active connected
         self.connected = False
+        # this dictionary has the different log calls
+        self.log_calls = {
+            logging.INFO: logging.info,
+            logging.CRITICAL: logging.critical,
+            logging.DEBUG: logging.debug,
+            logging.ERROR: logging.error,
+            logging.FATAL: logging.fatal
+        }
         ###########################################################
         # if UDP_bind, immediately bind to host and port
         if UDP_bind: 
             self._bind_UDP()
             self.UDP_binded = True
 
+
+    # this is a function to customize logging info requests
+    def log(self, logType: int, data: any): self.log_calls(logType)(data)
+
+
+    # this function sets up logging
+    def start_logging(self):
+        logging.basicConfig(filename='lynxy.log', level=logging.INFO)
+        message = f'''------------------------------
+Lynxy logging enabled! 
+------------------------------'''
+        self.log(logging.INFO, message)
+        
 
     # this regenerates the UDP client, making a new object
     def _regen_UDP(self) -> None: self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
