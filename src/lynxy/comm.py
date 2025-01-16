@@ -96,25 +96,25 @@ Lynxy logging enabled!
 
     # this regenerates the UDP client, making a new object
     def _regen_UDP(self) -> None: 
-        self.log(logging.INFO, 'regenerated UDP')
+        self.log(logging.INFO, '_regen_UDP: regenerated UDP')
         self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
     # this regenerates the TCP client, making a new object
     def _regen_TCP(self) -> None: 
-        self.log(logging.INFO, 'regenerated TCP')
+        self.log(logging.INFO, '_regen_TCP: regenerated TCP')
         self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
     # this binds the UDP client to the host machines ip and port
     def _bind_UDP(self) -> None: 
-        self.log(logging.INFO, f'binded UDP to {self.host}:{self.port}')
+        self.log(logging.INFO, f'_bind_UDP: binded UDP to {self.host}:{self.port}')
         self.UDP_client.bind((self.host, self.port))
 
 
     # this binds the TCP client to the host machines ip and port
     def _bind_TCP(self) -> None: 
-        self.log(logging.INFO, f'binded TCP to {self.host}:{self.port}')
+        self.log(logging.INFO, f'_bind_TCP: binded TCP to {self.host}:{self.port}')
         self.TCP_client.bind((self.host, self.port))
 
 
@@ -131,7 +131,7 @@ Lynxy logging enabled!
     # this starts the recv thread
     # for recieving messages and triggering events
     def start_recv(self) -> None: 
-        self.log(logging.INFO, 'started recv thread')
+        self.log(logging.INFO, 'start_recv: started recv thread')
         self.recvThread.start() if not self.recvThread.is_alive() else None
 
 
@@ -146,8 +146,8 @@ Lynxy logging enabled!
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, inactive_delay) # Idle time before sending probes (in seconds)
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, probe_interval) # Interval between probes (in seconds)
             self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, probe_count) # Number of failed probes before closing
-        self.log(logging.INFO, 'set heartbeat config')
-        self.log(logging.INFO, f'   - inactive_delay: {inactive_delay}s\n    - probe_interval: {probe_interval}s\n    probe_count: {probe_count}')
+        self.log(logging.INFO, 'config_heartbeat: set heartbeat config')
+        self.log(logging.INFO, f'config_heartbeat:    - inactive_delay: {inactive_delay}s\n    - probe_interval: {probe_interval}s\n    probe_count: {probe_count}')
     
 
     # this function manages what happens when connection goes wrong,
@@ -155,8 +155,8 @@ Lynxy logging enabled!
     def _handle_close(self, error: Exceptions.BaseLynxyException | None = None) -> None:
         # since we know an error happened and the connection likely is 
         # closed, we can force a close 
-        self.log(logging.INFO, 'client closed')
-        self.log(logging.ERROR, f'error: {error}')
+        self.log(logging.INFO, '_handle_close: client closed')
+        self.log(logging.ERROR, f'_handle_close: error: {error}')
         if self.connected: self.close_connection(force=True)
         # handle the error according to how client is configured
         if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
@@ -186,20 +186,20 @@ Lynxy logging enabled!
                      ) -> None:
         # set target machine data
         self.target = (target_ip, target_port)
-        self.log(logging.INFO, f'target machine set to {self.target}')
+        self.log(logging.INFO, f'TCP_connect: target machine set to {self.target}')
         # determine whether or not to use UDP
         if connection_bias != Constants.ConnectionBias.NONE: 
             # UDP is only used to determine who goes first / second
             # so if we can determine if we are not using it by the connection bias
             first = connection_bias
-            self.log(logging.INFO, f'connection bias set to {connection_bias}')
+            self.log(logging.INFO, f'TCP_connect: connection bias set to {connection_bias}')
         else:
             # we use UDP to get the random number
             ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
             # if True meaning we connect, they recv
             # if False, we recv and they connect
             first = ourRandom > targetRandom
-        self.log(logging.INFO, f'role determined: {first}')
+        self.log(logging.INFO, f'TCP_connect: role determined: {first}')
         # we then find out whether to bind our TCP
         # or try to connect to the other end
         self._regen_TCP()
@@ -222,7 +222,7 @@ Lynxy logging enabled!
                     break
             # raise error if connection failed
             if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (TCP) (attempts:{attempts})') 
-        self.log(logging.INFO, 'connection success')
+        self.log(logging.INFO, 'TCP_connect: connection success')
         # set up the settings for heartbeat pings
         self.config_heartbeat()
         # do the handshake to exchange RSA keys
@@ -274,52 +274,52 @@ Lynxy logging enabled!
         if is_first:
             # we send our public RSA key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
-            self.log(logging.INFO, 'sent public RSA key')
+            self.log(logging.INFO, '_handshake: sent public RSA key')
             # then recieve their public RSA key
             recievedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
             self.sec.load_RSA(pickle.loads(recievedPubKey))
-            self.log(logging.INFO, 'recieved public RSA key')
-            self.log(logging.INFO, f'{pickle.loads(recievedPubKey)}')
+            self.log(logging.INFO, '_handshake: recieved public RSA key')
+            self.log(logging.INFO, f'_handshake: {pickle.loads(recievedPubKey)}')
             # now we send our Fernet key for actual encryption
             # since we are first, we don't need to recieve 
             # since the keys are the same
             encryptedFernet = self.sec.RSA_encrypt(self.sec.fernet_key)
             self.TCP_client.sendall(encryptedFernet)
-            self.log(logging.INFO, 'sent Fernet key')
+            self.log(logging.INFO, '_handshake: sent Fernet key')
         else:
             # we recieve their public key
             recievedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
             self.sec.load_RSA(pickle.loads(recievedPubKey))
-            self.log(logging.INFO, f'{pickle.loads(recievedPubKey)}')
+            self.log(logging.INFO, f'_handshake: {pickle.loads(recievedPubKey)}')
             # then send our public key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
-            self.log(logging.INFO, 'sent public RSA key')
+            self.log(logging.INFO, '_handshake: sent public RSA key')
             # now we recieve the other ends symmetrical token for actual encryption
             # since we are second
             encryptedFernet = self.TCP_client.recv(1024)
             self.sec.load_Fernet(self.sec.RSA_decrypt(encryptedFernet))
-            self.log(logging.INFO, 'recieved Fernet key')
+            self.log(logging.INFO, '_handshake: recieved Fernet key')
     
 
     # this function closes the connection between the two machines
     # gracefully :3
     def close_connection(self, force: bool = False) -> None: 
         if not self.connected: return
-        if force: self.log(logging.WARNING, 'forced closing can cause possible data loss')
+        if force: self.log(logging.WARNING, 'close_connection: forced closing can cause possible data loss')
         self.stopRecv = True
-        self.log(logging.INFO, 'stopped recv thread')
+        self.log(logging.INFO, 'close_connection: stopped recv thread')
         # this shuts down the read and write pipes gracefully
         # making sure that all data is recieved and sent properly
         # before closing
         if not force: 
-            self.log(logging.INFO, 'proper shutdown initiated')
+            self.log(logging.INFO, 'close_connection: proper shutdown initiated')
             self.TCP_client.shutdown(socket.SHUT_RDWR)
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
         self.UDP_binded = False
         self.connected = False
-        self.log(logging.INFO, 'done closing')
+        self.log(logging.INFO, 'close_connection: done closing')
     
 
     # this is a function to send data to the other machine
