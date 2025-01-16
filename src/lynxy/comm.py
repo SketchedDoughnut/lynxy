@@ -66,7 +66,8 @@ class Comm:
             logging.CRITICAL: logging.critical,
             logging.DEBUG: logging.debug,
             logging.ERROR: logging.error,
-            logging.FATAL: logging.fatal
+            logging.FATAL: logging.fatal,
+            logging.WARNING: logging.warning
         }
         ###########################################################
         # if UDP_bind, immediately bind to host and port
@@ -88,6 +89,7 @@ class Comm:
         message = f'''
 ------------------------------
 Lynxy logging enabled! 
+- host info: {self.host}:{self.port}
 ------------------------------'''
         self.log(logging.INFO, message)
         
@@ -173,7 +175,6 @@ Lynxy logging enabled!
         except KeyError: return
 
 
-    # TODO ADD LOGGING
     # this function handles the UDP connection that helps make the TCP connection
     # as well as the handshake, and the overall connection setup
     def TCP_connect(self, 
@@ -185,17 +186,20 @@ Lynxy logging enabled!
                      ) -> None:
         # set target machine data
         self.target = (target_ip, target_port)
+        self.log(logging.INFO, f'target machine set to {self.target}')
         # determine whether or not to use UDP
         if connection_bias != Constants.ConnectionBias.NONE: 
             # UDP is only used to determine who goes first / second
             # so if we can determine if we are not using it by the connection bias
             first = connection_bias
+            self.log(logging.INFO, f'connection bias set to {connection_bias}')
         else:
             # we use UDP to get the random number
             ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
             # if True meaning we connect, they recv
             # if False, we recv and they connect
             first = ourRandom > targetRandom
+        self.log(logging.INFO, f'role determined: {first}')
         # we then find out whether to bind our TCP
         # or try to connect to the other end
         self._regen_TCP()
@@ -218,6 +222,7 @@ Lynxy logging enabled!
                     break
             # raise error if connection failed
             if not connectionSuccess: raise Exceptions.ConnectionFailedError(f'Failed to connect to target machine (TCP) (attempts:{attempts})') 
+        self.log(logging.INFO, 'connection success')
         # set up the settings for heartbeat pings
         self.config_heartbeat()
         # do the handshake to exchange RSA keys
@@ -227,7 +232,6 @@ Lynxy logging enabled!
         self._trigger(Constants.Event.ON_CONNECT, True)
 
 
-    # TODO ADD LOGGING
     # this function manages finding out who goes first with making a TCP connection
     # and also who is first with exchanging RSA keys
     def _UDP_connect(self, timeout, attempts) -> tuple[int, int]:
@@ -264,51 +268,60 @@ Lynxy logging enabled!
         return (randNum, incomingNum)
     
 
-    # TODO ADD LOGGING
     # this function manages handshakes for exchanging RSA keys
     # which are exchanged just to exchange symmetrical Fernet keys
     def _handshake(self, is_first: bool) -> None:
         if is_first:
             # we send our public RSA key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
+            self.log(logging.INFO, 'sent public RSA key')
             # then recieve their public RSA key
             recievedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
             self.sec.load_RSA(pickle.loads(recievedPubKey))
+            self.log(logging.INFO, 'recieved public RSA key')
+            self.log(logging.INFO, f'{pickle.loads(recievedPubKey)}')
             # now we send our Fernet key for actual encryption
             # since we are first, we don't need to recieve 
             # since the keys are the same
             encryptedFernet = self.sec.RSA_encrypt(self.sec.fernet_key)
             self.TCP_client.sendall(encryptedFernet)
+            self.log(logging.INFO, 'sent Fernet key')
         else:
             # we recieve their public key
             recievedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
             self.sec.load_RSA(pickle.loads(recievedPubKey))
+            self.log(logging.INFO, f'{pickle.loads(recievedPubKey)}')
             # then send our public key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
+            self.log(logging.INFO, 'sent public RSA key')
             # now we recieve the other ends symmetrical token for actual encryption
             # since we are second
             encryptedFernet = self.TCP_client.recv(1024)
             self.sec.load_Fernet(self.sec.RSA_decrypt(encryptedFernet))
+            self.log(logging.INFO, 'recieved Fernet key')
     
 
-    # TODO ADD LOGGING
     # this function closes the connection between the two machines
     # gracefully :3
     def close_connection(self, force: bool = False) -> None: 
         if not self.connected: return
+        if force: self.log(logging.WARNING, 'forced closing can cause possible data loss')
         self.stopRecv = True
+        self.log(logging.INFO, 'stopped recv thread')
         # this shuts down the read and write pipes gracefully
         # making sure that all data is recieved and sent properly
         # before closing
-        if not force: self.TCP_client.shutdown(socket.SHUT_RDWR)
+        if not force: 
+            self.log(logging.INFO, 'proper shutdown initiated')
+            self.TCP_client.shutdown(socket.SHUT_RDWR)
         self.TCP_client.close()
         self._regen_UDP()
         self._regen_TCP()
         self.UDP_binded = False
         self.connected = False
+        self.log(logging.INFO, 'done closing')
     
 
-    # TODO ADD LOGGING
     # this is a function to send data to the other machine
     def send(self, data: any, ignore_errors: bool = False, lock_timeout: float = 10.0) -> None:
         # raise error message if data is empty and ignore is disabled,
@@ -343,7 +356,6 @@ Lynxy logging enabled!
             self._handle_close(e)
 
 
-    # TODO ADD LOGGING
     # this is a recieving function for recieving data
     def recv(self) -> None:
         while True:
