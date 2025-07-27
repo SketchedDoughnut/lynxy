@@ -118,13 +118,17 @@ class Lynxy:
 
 
     # this enables UPnP
-    def enable_upnp(self):
+    def enable_upnp(self, duration: int = 0) -> None:
         '''
         This function attempts to enable Universal Plug n Play, which in short will port forward your local port in order to connect
         to machines on other networks. Not all routers have UPnP enabled.
         IMPORTANT: this will make your port publicly accessible, which can be a security risk.
+        duration: int = 0
+        - how long to keep the port forwarded. If set to 0, the port is kept forwarded indefinitely or until the router reboots.
         '''
-        self._comm.setup_upnp()
+        self._comm.setup_upnp(
+            duration=duration
+            )
 
 
     # this function connects to the other machine
