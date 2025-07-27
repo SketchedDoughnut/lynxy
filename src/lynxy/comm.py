@@ -165,7 +165,7 @@ Lynxy logging enabled!
 
     # this function forwards the port of the Lynxy client, utilizing Universal Plug n Play
     # if it is not enabled, an error will likely occur
-    def setup_upnp(self, duration: int = 0) -> None:
+    def setup_upnp(self, duration: int = 3600) -> None:
         # set up the uPnP stuff (universal Plug n Play)
         self.upnp = upnpy.UPnP()
         # get the gateways (routers, devices)
