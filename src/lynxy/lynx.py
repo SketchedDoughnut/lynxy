@@ -56,6 +56,14 @@ class Lynxy:
         return self._comm.get_actual_target()
 
 
+    # returns the public IP of the machine
+    def get_public_ip(self) -> str | None:
+        '''
+        this functions gets the public ip of the machine. If None, uPnP has not been triggered.
+        '''
+        return self._comm.get_public_ip()
+
+
     # this function configures heartbeat things for the client
     def config_heartbeat(self, inactive_delay: int = 60, probe_interval: int = 10, probe_count: int = 5) -> None:
         '''
@@ -112,6 +120,7 @@ class Lynxy:
     # this function connects to the other machine
     def connect(self, 
                 target: tuple[str, int], 
+                upnp: bool = False,
                 start_recv: bool = True, 
                 timeout: int = 10,
                 attempts: int = 6,
@@ -123,6 +132,10 @@ class Lynxy:
         target: tuple[str, int]
         - the information of the target machine, the first entry being the IP and the second entry being the port.
 
+        upnp: bool = False
+        - whether to utilize Universal Plug n Play (UPnP). UPnP allows for you to communicate with other devices outside of the network through port 
+          forwarding. This can fail and raise an error if your router has UPnP disabled, or if other things occur.
+        
         start_recv: bool = True
         - whether to start the thread for recieving or not. If you want to control when you start recieving, set this to False and call on
           the recv function when ready.
@@ -147,6 +160,7 @@ class Lynxy:
         self._comm.TCP_connect(
             target_ip = target[0], 
             target_port = target[1], 
+            upnp=upnp,
             timeout = timeout, 
             attempts = attempts,
             connection_bias = connection_bias

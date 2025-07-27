@@ -27,7 +27,7 @@ from .pool import Pool
 
 # this is the main class for the connection
 class Comm:
-    def __init__(self, host: tuple[str, int] = ['0.0.0.0', 56774], UDP_bind: bool = False):
+    def __init__(self, host: tuple[str, int] = ['', 56774], UDP_bind: bool = False):
         # this is an instance of the security manager
         self.sec = Sec()
         # this is an instance of the parser
@@ -54,6 +54,8 @@ class Comm:
         self.systemType = platform.system()
         # this represents the working directory
         self.wDir = os.path.dirname(os.path.abspath(__file__))
+        # this represents the public IP address of the machine
+        self.pub_ip = None
         # this represents if the UDP client is binded or not
         self.UDP_binded = False
         # these are booleans for stopping threads
@@ -62,14 +64,16 @@ class Comm:
         self.sendLock = False
         # this represents if we have an active connected
         self.connected = False
+        # set up the logger
+        self.logger = logging.getLogger(__name__)
         # this dictionary has the different log calls
         self.log_calls = {
-            logging.INFO: logging.info,
-            logging.CRITICAL: logging.critical,
-            logging.DEBUG: logging.debug,
-            logging.ERROR: logging.error,
-            logging.FATAL: logging.fatal,
-            logging.WARNING: logging.warning
+            logging.INFO: self.logger.info,
+            logging.CRITICAL: self.logger.critical,
+            logging.DEBUG: self.logger.debug,
+            logging.ERROR: self.logger.error,
+            logging.FATAL: self.logger.fatal,
+            logging.WARNING: self.logger.warning
         }
         ###########################################################
         # if UDP_bind, immediately bind to host and port
@@ -87,7 +91,9 @@ class Comm:
         logPath = f'{self.wDir}/_lynxy.log'
         try: os.remove(logPath)
         except FileNotFoundError: pass
-        logging.basicConfig(filename=logPath, level=logging.INFO)
+        self.logger.setLevel(logging.INFO)
+        fh = logging.FileHandler(logPath)
+        self.logger.addHandler(fh)
         message = f'''
 ------------------------------
 Lynxy logging enabled! 
@@ -130,6 +136,57 @@ Lynxy logging enabled!
     def get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
 
+    # gets the public ip of the machine
+    def get_public_ip(self) -> str | None: return self.pub_ip
+
+
+    # this function forwards the port of the Lynxy client, utilizing Universal Plug n Play
+    # if it is not enabled, an error will likely occur.
+    def setup_upnp(self) -> None:
+        # set up the uPnP stuff (universal Plug n Play)
+        self.upnp = upnpy.UPnP()
+        # get the gateways (routers, devices)
+        self.gateways = self.upnp.discover()
+        if not self.gateways: raise RuntimeError('No UPnP-compatible gateway found.')
+        self.gateway = self.gateways[0]
+        self.log(logging.INFO, f'setup_upnp: gateway selected: {self.gateway}')
+        # get the services that the gateway (router) offers
+        services = self.gateway.get_services()
+        self.wan_service = None
+        for svc in services:
+            if "WANIPConn1" in svc.id or "WANPPPConn1" in svc.id:
+                self.wan_service = svc
+                self.log(logging.INFO, f'setup_upnp: service obtained for UPnP: {svc}')
+                break
+        if not self.wan_service: raise RuntimeError('No WAN service (WANIPConn1/WanPPPConn1) found on the router.')
+        # forwards port
+        self.pub_ip = self.wan_service.GetExternalIPAddress()['NewExternalIPAddress']
+        self.log(logging.INFO, f'setup_upnp: external ip: {self.pub_ip}')
+        self.wan_service.AddPortMapping(
+            NewRemoteHost='',
+            NewExternalPort=self.port,
+            NewProtocol='TCP',
+            NewInternalPort=self.port,
+            NewInternalClient=self.host,
+            NewEnabled=1,
+            NewPortMappingDescription='Lynxy Outbound Connection',
+            NewLeaseDuration=0
+        )
+
+
+    # this function unforwards the port (which i think is a safe thing to do)
+    # it can also throw an error, I suppose..
+    def close_upnp(self) -> None:
+        # unforwards port
+        try:
+            self.wan_service.DeletePortMapping(
+                NewRemoteHost='',
+                NewExternalPort=self.port,
+                NewProtocol='TCP'
+            )
+        except: return
+        
+
     # this starts the recv thread
     # for recieving messages and triggering events
     def start_recv(self) -> None: 
@@ -160,6 +217,8 @@ Lynxy logging enabled!
         self.log(logging.INFO, '_handle_close: client closed')
         self.log(logging.ERROR, f'_handle_close: error: {error}')
         if self.connected: self.close_connection(force=True)
+        # close upnp
+        self.close_upnp()
         # handle the error according to how client is configured
         if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
         elif self.connectionType == Constants.ConnectionType.ERROR: raise error
@@ -181,11 +240,13 @@ Lynxy logging enabled!
     # as well as the handshake, and the overall connection setup
     def TCP_connect(self, 
                      target_ip: str, 
-                     target_port: int, 
+                     target_port: int,
+                     upnp: bool = False,
                      timeout: int = 10,
                      attempts: int = 6,
                      connection_bias: Constants.ConnectionBias = Constants.ConnectionBias.NONE
                      ) -> None:
+        if upnp: self.setup_upnp()
         # set target machine data
         self.target = (target_ip, target_port)
         self.log(logging.INFO, f'TCP_connect: target machine set to {self.target}')
