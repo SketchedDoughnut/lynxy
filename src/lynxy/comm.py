@@ -32,41 +32,53 @@ class Comm:
         self.sec = Sec()
         # this is an instance of the parser
         self.parser = Parser()
-        # this is the internal client used for sending and recieving
+        # this is the UDP client for finding out who goes first in the connection
+        self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # this is the TCP client for the main connection
+        self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # this is the information of the host machine
+        # if IP is not set, get machines IP (192.168.x.x)
         if host[0]: self.host = host[0]
         else: self.host = socket.gethostbyname(socket.gethostname())
         self.port = host[1]
-        # this is the target info
+        # this is the target machines info (ip, port)
         self.target = (None, None)
-        # this is the actual connected target info (FOR TCP)
+        # this is the target machines information after connection via TCP
         self.actual_target = (None, None)
-        # this is the client for UDP for finding out who goes first
-        self.UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-        # this is the main client for communication
-        self.TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # TCP
-        # this represents a dictionary of event queues
+        # this represents a dictionary of functions to be called when an event occurs
+        # event decorators are used
         self.eventRegistry = {}
-        # this represents the connection type for when errors occur
+        # this represents what to do in the event that the connection fails / ends
+        # if EVENT, the event will be triggered in the event registry
+        # if ERROR, the error that occurred will be raised again
+        # if NONE, nothing will happen
         self.connectionType = Constants.ConnectionType.EVENT
         # this is the thread for the recieving function
+        # daemon makes it so that the thread exits with the main thread
         self.recvThread = threading.Thread(target=lambda:self.recv(), daemon=True)
-        # this represents the system type
+        # this represents the system type (Windows, Linux, Apple, etc)
         self.systemType = platform.system()
-        # this represents the working directory
+        # this represents the working directory (for logging)
         self.wDir = os.path.dirname(os.path.abspath(__file__))
-        # this represents the public IP address of the machine
-        self.pub_ip = None
-        # this represents if the UDP client is binded or not
+        # this represents if the UDP client is binded to the host machines
+        # IP and port yet
         self.UDP_binded = False
-        # these are booleans for stopping threads
+        # this boolean is for stopping the recv thread
         self.stopRecv = False
         # this is a lock that, while something is sending, other things can not send
         self.sendLock = False
-        # this represents if we have an active connected
+        # this represents if we have an active connection or not
         self.connected = False
-        # set up the logger
+        # this represents if logging is enabled
+        self.enable_logging = False
+        # set up the logger (not used unless logging is enabled)
         self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+        fh = logging.FileHandler(f'{self.wDir}/_lynxy.log')
+        self.logger.addHandler(fh)
         # this dictionary has the different log calls
+        # when a loging type is passed in (ie, "INFO"), it will return
+        # the function used to log at that level
         self.log_calls = {
             logging.INFO: self.logger.info,
             logging.CRITICAL: self.logger.critical,
@@ -76,24 +88,19 @@ class Comm:
             logging.WARNING: self.logger.warning
         }
         ###########################################################
-        # if UDP_bind, immediately bind to host and port
+        # if UDP_bind is True, immediately bind to ip and port of host machine
         if UDP_bind: 
             self._bind_UDP()
             self.UDP_binded = True
 
 
-    # this is a function to customize logging info requests
-    def log(self, logType: int, data: any): self.log_calls[logType](data)
+    # this is a function to submit data to the log, if its enabled
+    def log(self, logType: int, data: any): self.log_calls[logType](data) if self.enable_logging else None
 
 
     # this function sets up logging
     def start_logging(self):
-        logPath = f'{self.wDir}/_lynxy.log'
-        try: os.remove(logPath)
-        except FileNotFoundError: pass
-        self.logger.setLevel(logging.INFO)
-        fh = logging.FileHandler(logPath)
-        self.logger.addHandler(fh)
+        self.enable_logging = True
         message = f'''
 ------------------------------
 Lynxy logging enabled! 
@@ -137,18 +144,34 @@ Lynxy logging enabled!
     
 
     # gets the public ip of the machine
-    def get_public_ip(self) -> str | None: return self.pub_ip
+    # TODO use stun to get public ip
+    def get_public_ip(self) -> str | None: return
 
+
+    # this function configures heartbeat things for the client
+    # such as when to send them, how long to wait between each one, and how many to send
+    def config_heartbeat(self, inactive_delay: int = 60, probe_interval: int = 10, probe_count: int = 5) -> None:
+        self.TCP_client.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+        if self.systemType == 'Windows': # Windows-specific options
+            keepalive = (1, inactive_delay * 1000, probe_interval * 1000) # On, idle time (ms), interval (ms)
+            self.TCP_client.ioctl(socket.SIO_KEEPALIVE_VALS, keepalive)
+        elif self.systemType in ('Linux', 'Darwin'): # Linux/macOS-specific options
+            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, inactive_delay) # Idle time before sending probes (in seconds)
+            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, probe_interval) # Interval between probes (in seconds)
+            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, probe_count) # Number of failed probes before closing
+        self.log(logging.INFO, 'config_heartbeat: set heartbeat config')
+        self.log(logging.INFO, f'config_heartbeat:    - inactive_delay: {inactive_delay}s\n    - probe_interval: {probe_interval}s\n    probe_count: {probe_count}')
+    
 
     # this function forwards the port of the Lynxy client, utilizing Universal Plug n Play
-    # if it is not enabled, an error will likely occur.
+    # if it is not enabled, an error will likely occur
     def setup_upnp(self) -> None:
         # set up the uPnP stuff (universal Plug n Play)
         self.upnp = upnpy.UPnP()
         # get the gateways (routers, devices)
         self.gateways = self.upnp.discover()
         if not self.gateways: raise RuntimeError('No UPnP-compatible gateway found.')
-        self.gateway = self.gateways[0]
+        self.gateway = self.gateways[0] # router is the first device
         self.log(logging.INFO, f'setup_upnp: gateway selected: {self.gateway}')
         # get the services that the gateway (router) offers
         services = self.gateway.get_services()
@@ -185,43 +208,6 @@ Lynxy logging enabled!
                 NewProtocol='TCP'
             )
         except: return
-        
-
-    # this starts the recv thread
-    # for recieving messages and triggering events
-    def start_recv(self) -> None: 
-        self.log(logging.INFO, 'start_recv: started recv thread')
-        self.recvThread.start() if not self.recvThread.is_alive() else None
-
-
-    # this function configures heartbeat things for the client
-    # such as when to send them, how long to wait between each one, and how many to send
-    def config_heartbeat(self, inactive_delay: int = 60, probe_interval: int = 10, probe_count: int = 5) -> None:
-        self.TCP_client.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-        if self.systemType == 'Windows': # Windows-specific options
-            keepalive = (1, inactive_delay * 1000, probe_interval * 1000) # On, idle time (ms), interval (ms)
-            self.TCP_client.ioctl(socket.SIO_KEEPALIVE_VALS, keepalive)
-        elif self.systemType in ('Linux', 'Darwin'): # Linux/macOS-specific options
-            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, inactive_delay) # Idle time before sending probes (in seconds)
-            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, probe_interval) # Interval between probes (in seconds)
-            self.TCP_client.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, probe_count) # Number of failed probes before closing
-        self.log(logging.INFO, 'config_heartbeat: set heartbeat config')
-        self.log(logging.INFO, f'config_heartbeat:    - inactive_delay: {inactive_delay}s\n    - probe_interval: {probe_interval}s\n    probe_count: {probe_count}')
-    
-
-    # this function manages what happens when connection goes wrong,
-    # and a connection is closing - typically with an error
-    def _handle_close(self, error: Exceptions.BaseLynxyException | None = None) -> None:
-        # since we know an error happened and the connection likely is 
-        # closed, we can force a close 
-        self.log(logging.INFO, '_handle_close: client closed')
-        self.log(logging.ERROR, f'_handle_close: error: {error}')
-        if self.connected: self.close_connection(force=True)
-        # close upnp
-        self.close_upnp()
-        # handle the error according to how client is configured
-        if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
-        elif self.connectionType == Constants.ConnectionType.ERROR: raise error
 
 
     # this function runs the given events when requested
@@ -236,17 +222,52 @@ Lynxy logging enabled!
         except KeyError: return
 
 
+    # this function manages what happens when connection goes wrong,
+    # and a connection is closing - typically with an error
+    def _handle_close(self, error: Exceptions.BaseLynxyException | None = None) -> None:
+        # since we know an error happened and the connection likely is 
+        # closed, we can force a close 
+        self.log(logging.INFO, '_handle_close: client closed')
+        self.log(logging.ERROR, f'_handle_close: error: {error}')
+        if self.connected: self.close_connection(force=True)
+        # close upnp
+        self.close_upnp()
+        self.log(logging.INFO, '_handle_close: UPnP disabled')
+        # handle the error according to how client is configured
+        if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
+        elif self.connectionType == Constants.ConnectionType.ERROR: raise error
+
+
+    # this function closes the connection between the two machines
+    # gracefully :3
+    def close_connection(self, force: bool = False) -> None: 
+        if not self.connected: return
+        if force: self.log(logging.WARNING, 'close_connection: forced closing can cause possible data loss')
+        self.stopRecv = True # tell the thread to stop
+        self.log(logging.INFO, 'close_connection: stopped recv thread')
+        # this shuts down the read and write pipes gracefully
+        # making sure that all data is recieved and sent properly
+        # before closing
+        if not force: 
+            self.log(logging.INFO, 'close_connection: unforced closing initiated')
+            self.TCP_client.shutdown(socket.SHUT_RDWR)
+        self.TCP_client.close()
+        self._regen_UDP()
+        self._regen_TCP()
+        self.UDP_binded = False
+        self.connected = False
+        self.log(logging.INFO, 'close_connection: closing complete')
+
+
     # this function handles the UDP connection that helps make the TCP connection
     # as well as the handshake, and the overall connection setup
     def TCP_connect(self, 
                      target_ip: str, 
                      target_port: int,
-                     upnp: bool = False,
                      timeout: int = 10,
                      attempts: int = 6,
                      connection_bias: Constants.ConnectionBias = Constants.ConnectionBias.NONE
                      ) -> None:
-        if upnp: self.setup_upnp()
         # set target machine data
         self.target = (target_ip, target_port)
         self.log(logging.INFO, f'TCP_connect: target machine set to {self.target}')
@@ -364,27 +385,6 @@ Lynxy logging enabled!
             self.log(logging.INFO, '_handshake: recieved Fernet key')
     
 
-    # this function closes the connection between the two machines
-    # gracefully :3
-    def close_connection(self, force: bool = False) -> None: 
-        if not self.connected: return
-        if force: self.log(logging.WARNING, 'close_connection: forced closing can cause possible data loss')
-        self.stopRecv = True
-        self.log(logging.INFO, 'close_connection: stopped recv thread')
-        # this shuts down the read and write pipes gracefully
-        # making sure that all data is recieved and sent properly
-        # before closing
-        if not force: 
-            self.log(logging.INFO, 'close_connection: proper shutdown initiated')
-            self.TCP_client.shutdown(socket.SHUT_RDWR)
-        self.TCP_client.close()
-        self._regen_UDP()
-        self._regen_TCP()
-        self.UDP_binded = False
-        self.connected = False
-        self.log(logging.INFO, 'close_connection: done closing')
-    
-
     # this is a function to send data to the other machine
     def send(self, data: any, ignore_errors: bool = False, lock_timeout: float = 10.0) -> None:
         # raise error message if data is empty and ignore is disabled,
@@ -407,9 +407,9 @@ Lynxy logging enabled!
         self.sendLock = True
         messageObject = Pool.Message(data) # create message object
         encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
-        paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
+        paddedMessage = self.parser.addPadding(encryptedMessage) # pad data to know where it starts / ends
         try: 
-            self.TCP_client.sendall(paddedMessage) # send actual data
+            self.TCP_client.sendall(paddedMessage) # send data
             self.sendLock = False
         except ConnectionResetError as e: # other machine quit
             self.sendLock = False
@@ -418,8 +418,16 @@ Lynxy logging enabled!
             self.sendLock = False
             self._handle_close(e)
 
+    
+    # this starts the recv thread
+    # for recieving messages and triggering events
+    def start_recv(self) -> None: 
+        self.recvThread.start() if not self.recvThread.is_alive() else None
+        self.log(logging.INFO, 'start_recv: started recv thread')
+
 
     # this is a recieving function for recieving data
+    # this is ran in a thread
     def recv(self) -> None:
         while True:
             try: recieved = self.TCP_client.recv(1024)
@@ -442,6 +450,7 @@ Lynxy logging enabled!
                 return
             # remove padding from the recieved data
             unpadded = self.parser.removePadding(recieved)
+            # for each message in the unpadded message (typically only 1, sometimes more)
             for indiv in unpadded:
                 decrypted: Pool.Message = self.sec.Fernet_decrypt(indiv)
                 decrypted.recieved_at = Pool._Tools._format_time()

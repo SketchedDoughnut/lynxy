@@ -117,10 +117,19 @@ class Lynxy:
         self._comm.start_logging()
 
 
+    # this enables UPnP
+    def enable_upnp(self):
+        '''
+        This function attempts to enable Universal Plug n Play, which in short will port forward your local port in order to connect
+        to machines on other networks. Not all routers have UPnP enabled.
+        IMPORTANT: this will make your port publicly accessible, which can be a security risk.
+        '''
+        self._comm.setup_upnp()
+
+
     # this function connects to the other machine
     def connect(self, 
                 target: tuple[str, int], 
-                upnp: bool = False,
                 start_recv: bool = True, 
                 timeout: int = 10,
                 attempts: int = 6,
@@ -131,10 +140,6 @@ class Lynxy:
 
         target: tuple[str, int]
         - the information of the target machine, the first entry being the IP and the second entry being the port.
-
-        upnp: bool = False
-        - whether to utilize Universal Plug n Play (UPnP). UPnP allows for you to communicate with other devices outside of the network through port 
-          forwarding. This can fail and raise an error if your router has UPnP disabled, or if other things occur.
         
         start_recv: bool = True
         - whether to start the thread for recieving or not. If you want to control when you start recieving, set this to False and call on
@@ -160,7 +165,6 @@ class Lynxy:
         self._comm.TCP_connect(
             target_ip = target[0], 
             target_port = target[1], 
-            upnp=upnp,
             timeout = timeout, 
             attempts = attempts,
             connection_bias = connection_bias
