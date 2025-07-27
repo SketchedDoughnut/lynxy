@@ -3,6 +3,8 @@ This is the comm file, which manages the sockets and communication.
 The encryption tools is in the sec.py file, which can be accessed with the "sec" class object. 
 The parser tools is in the parser.py file, which can be accessed with the "parser" class object.
 '''
+# external modules
+import upnpy
 
 # included modules
 import socket
@@ -25,7 +27,7 @@ from .pool import Pool
 
 # this is the main class for the connection
 class Comm:
-    def __init__(self, host: tuple[str, int] = ['', 56774], UDP_bind: bool = False):
+    def __init__(self, host: tuple[str, int] = ['0.0.0.0', 56774], UDP_bind: bool = False):
         # this is an instance of the security manager
         self.sec = Sec()
         # this is an instance of the parser
