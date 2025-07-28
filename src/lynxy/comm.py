@@ -45,6 +45,9 @@ class Comm:
         self.target = (None, None)
         # this is the target machines information after connection via TCP
         self.actual_target = (None, None)
+        # this is the public IP of the machine
+        # set when upnp is enabled
+        self.pub_ip = None
         # this represents a dictionary of functions to be called when an event occurs
         # event decorators are used
         self.eventRegistry = {}
@@ -137,15 +140,14 @@ Lynxy logging enabled!
     def get_host(self) -> tuple[str, int]: return self.host, self.port
 
 
+    # this gets the public ip
+    def get_public_ip(self) -> str | None: return self.pub_ip
+
+
     # this returns the actual target
     # that target being the active TCP connection, not the initial IP and port
     # before connectin
     def get_actual_target(self) -> tuple[str, int]: return self.actual_target
-    
-
-    # gets the public ip of the machine
-    # TODO use stun to get public ip
-    def get_public_ip(self) -> str | None: return
 
 
     # this function configures heartbeat things for the client
@@ -185,6 +187,11 @@ Lynxy logging enabled!
         # forwards port
         self.pub_ip = self.wan_service.GetExternalIPAddress()['NewExternalIPAddress']
         self.log(logging.INFO, f'setup_upnp: external ip: {self.pub_ip}')
+        self.log(logging.INFO, f"""setup_upnp: UPnP info:
+- internal port: {self.port}
+- external port: {self.port}
+- internal client: {self.host}
+- lease duration: {duration} seconds""")
         self.wan_service.AddPortMapping(
             NewRemoteHost='',
             NewExternalPort=self.port,

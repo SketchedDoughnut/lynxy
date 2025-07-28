@@ -59,7 +59,7 @@ class Lynxy:
     # returns the public IP of the machine
     def get_public_ip(self) -> str | None:
         '''
-        this functions gets the public ip of the machine. If None, uPnP has not been triggered.
+        this functions gets the public ip of the machine. If None, uPnP has not been enabled.
         '''
         return self._comm.get_public_ip()
 
