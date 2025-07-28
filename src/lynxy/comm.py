@@ -237,9 +237,6 @@ Lynxy logging enabled!
         self.log(logging.INFO, '_handle_close: client closed')
         self.log(logging.ERROR, f'_handle_close: error: {error}')
         if self.connected: self.close_connection(force=True)
-        # close upnp
-        self.close_upnp()
-        self.log(logging.INFO, '_handle_close: UPnP disabled')
         # handle the error according to how client is configured
         if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
         elif self.connectionType == Constants.ConnectionType.ERROR: raise error
@@ -252,6 +249,9 @@ Lynxy logging enabled!
         if force: self.log(logging.WARNING, 'close_connection: forced closing can cause possible data loss')
         self.stopRecv = True # tell the thread to stop
         self.log(logging.INFO, 'close_connection: stopped recv thread')
+        # close upnp
+        self.close_upnp()
+        self.log(logging.INFO, '_handle_close: UPnP disabled')
         # this shuts down the read and write pipes gracefully
         # making sure that all data is recieved and sent properly
         # before closing
