@@ -124,7 +124,9 @@ class Lynxy:
         to machines on other networks. Not all routers have UPnP enabled.
         IMPORTANT: this will make your port publicly accessible, which can be a security risk.
         duration: int = 3600
-        - how long to keep the port forwarded, in seconds. If set to 0, the port is kept forwarded indefinitely or until the router reboots.
+        - how long to keep the port forwarded, in seconds. If set to 0, the port is kept forwarded indefinitely or until the router reboots. 
+          Note that if it is set to 0, other devices can no longer use that external port until the mapping is deleted. You can do this by calling
+          _comm.close_upnp(), or by re-enablign upnp with a small duration as to terminate the forwarded port.
         '''
         self._comm.setup_upnp(
             duration=duration
