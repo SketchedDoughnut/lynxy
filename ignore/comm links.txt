@@ -39,3 +39,6 @@ Optimizing data:
 For port forwarding:
 - https://github.com/vinodpandey/python-port-forward/blob/master/port-forward.py
 - https://github.com/pytogo/portforward/blob/main/src/portforward.rs
+
+Information about UDP and TCP:
+- https://www.reddit.com/r/gamedev/comments/1bowopq/which_protocol_to_use_in_multiplayer_games/
