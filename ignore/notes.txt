@@ -24,3 +24,7 @@ helpful info: https://packaging.python.org/en/latest/guides/using-testpypi/
 - For normal pypi: 
     - pip install lynxy
 - To update, add the following tag: --upgrade
+
+TO FIX THE ISSUE WITH THE ACTIVATE.PS1 NOT RUNNING FOR VENV: 
+- run this in powershell:         Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+- to undo, run this:         Set-ExecutionPolicy Restricted -Scope CurrentUser
