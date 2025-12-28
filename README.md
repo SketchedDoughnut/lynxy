@@ -15,6 +15,10 @@ The goal of Lynxy is to make it easier for others to set up multiplayer applicat
 Do note that Lynxy is currently works solely over LAN, although updates are coming to go across networks. For now, you will have to find ways to maually port forward Lynxy, or use another library to do that job for you.
 
 ***
+**DISCLAIMER** <br>
+Lynxy is primarily a project to understand networking, and is not the best, most optimal solution to the challenge of networking applications. I made it for fun and to learn. Enjoy!
+
+***
 
 # Getting started
 First, lets install Lynxy!
