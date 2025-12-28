@@ -7,12 +7,12 @@ Network <br>
 
 ***
 
-Lynxy is a client system coded in Python for ease of communication. It allows for easy set up for connecting
+Lynxy is a client communication system coded in Python. It allows for easy set up for connecting
 machines to each other, as well as providing a lot of extra features. 
 
 The goal of Lynxy is to make it easier for others to set up multiplayer applications, no matter what they intend to make. From texting applications to games to streaming services, the possiblities are endless! Read more to learn the ways you can use Lynxy.
 
-Do note that Lynxy is currently works best over LAN, and changes are coming in the future to make this easier to open up to the open internet. For now, you will have to find ways to maually port forward Lynxy, or use another library to do that job for you.
+Do note that Lynxy is currently works solely over LAN, although updates are coming to go across networks. For now, you will have to find ways to maually port forward Lynxy, or use another library to do that job for you.
 
 ***
 
