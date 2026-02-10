@@ -18,7 +18,7 @@ Do note that Lynxy is currently works solely over LAN, although updates are comi
 **DISCLAIMER** <br>
 Lynxy is primarily a project to understand networking, and is not the best, most optimal solution to the challenge of networking applications. I made it for fun and to learn. Enjoy!
 
-***
+*** 
 
 # Getting started
 First, lets install Lynxy!
