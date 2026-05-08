@@ -31,7 +31,7 @@ If you want to use the test releases, do this instead:
 ***
 
 # Documentation
-Documentation is on the [wiki]([url](https://github.com/SketchedDoughnut/lynxy/wiki))!
+Documentation is on the [wiki](https://github.com/SketchedDoughnut/lynxy/wiki)!
 
 Official changelog can be found [here](/docs/github/changelogs/release_changelog.md)!
 
