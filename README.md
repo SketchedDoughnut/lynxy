@@ -31,14 +31,10 @@ If you want to use the test releases, do this instead:
 ***
 
 # Documentation
-Information about functions can be found [here](/docs/github/functions.md)!
-
-Information about objects and data types can be found [here](/docs/github/data.md)!
-
-Code examples can be found [here](/docs/github/examples.md)!
+Documentation is on the [wiki](https://github.com/SketchedDoughnut/lynxy/wiki)!
 
 Official changelog can be found [here](/docs/github/changelogs/release_changelog.md)!
 
 Experimental changelog can be found [here](/docs/github/changelogs/experimental_changelog.md)!
 
-Version info for releases can be found [here](/docs/github/version%20key.md)!
+Version info for releases can be found [here](https://github.com/SketchedDoughnut/lynxy/wiki/Release-Key)!
