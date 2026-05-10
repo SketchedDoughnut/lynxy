@@ -231,4 +231,5 @@ class Lynxy:
                 self._comm.eventRegistry[eventType] = [func]
             # append function
             else: self._comm.eventRegistry[eventType].append(func)
+            # return func
         return wrapper
