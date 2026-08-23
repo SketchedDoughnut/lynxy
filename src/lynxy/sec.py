@@ -4,12 +4,10 @@ for RSA and Fernet (AES with a 128 bit key). RSA is only used for exchanging Fer
 connect to each other.
 '''
 
-# included modules
-import pickle
-
-# external modules
-import rsa
+# libraries
 from cryptography.fernet import Fernet
+import pickle
+import rsa
 
 # files
 from .exceptions import Exceptions
@@ -54,7 +52,6 @@ class Sec:
     def load_Fernet(self, fernet_key: bytes) -> None: 
         self.fernet_key = fernet_key
         self.fernet_tool = Fernet(self.fernet_key)
-        return None
 
 
     # function that encrypts using RSA and a public key
@@ -70,7 +67,7 @@ class Sec:
 
 
     # function that decrypts using RSA and a private key
-    def RSA_decrypt(self, data: bytes) -> any:
+    def RSA_decrypt(self, data: bytes):
         decryptedData = rsa.decrypt(data, self.int_priv_key)
         unpickledData = pickle.loads(decryptedData)
         return unpickledData

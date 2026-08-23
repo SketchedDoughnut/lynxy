@@ -4,24 +4,24 @@ The encryption tools is in the sec.py file, which can be accessed with the "sec"
 The parser tools is in the parser.py file, which can be accessed with the "parser" class object.
 '''
 
-# included modules
-import socket
-import random
-import pickle
+# libraries
 import threading
 import datetime
 import platform
 import logging
+import socket
+import random
+import pickle
 import os
 
 # files
-from .sec import Sec
-from .parser import Parser
 from .exceptions import Exceptions
-from .constants import Constants
-from .pool import Pool
+from .pool import Message, Util
+from .parser import Parser
+from .constants import *
+from .sec import Sec
 
-####################################################
+
 
 # this is the main class for the connection
 class Comm:
@@ -46,9 +46,9 @@ class Comm:
         # this represents a dictionary of event queues
         self.eventRegistry = {}
         # this represents the connection type for when errors occur
-        self.connectionType = Constants.ConnectionType.EVENT
+        self.connectionType = ConnectionType.NONE
         # this is the thread for the recieving function
-        self.recvThread = threading.Thread(target=lambda:self.recv(), daemon=True)
+        self.recvThread = threading.Thread(target=self.recv, daemon=True)
         # this represents the system type
         self.systemType = platform.system()
         # this represents the working directory
@@ -61,6 +61,8 @@ class Comm:
         self.sendLock = threading.Lock()
         # this represents if we have an active connected
         self.connected = False
+        # whether to log send/recv calls or not
+        self.log_debug = False
         # this dictionary has the different log calls
         self.log_calls = {
             logging.INFO: logging.info,
@@ -78,22 +80,27 @@ class Comm:
 
 
     # this is a function to customize logging info requests
-    def log(self, logType: int, data: any): self.log_calls[logType](data)
+    def log(self, logType: int, data: any): 
+        if logType == logging.DEBUG and not self.log_debug: return
+        self.log_calls[logType](data)
 
 
     # this function sets up logging
-    def start_logging(self):
-        date = datetime.datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
-        logPath = f'{self.wDir}/_lynxy_{date}.log'
-        # try: os.remove(logPath)
-        # except FileNotFoundError: pass
-        logging.basicConfig(filename=logPath, level=logging.INFO, force=True)
-        message = f'''
-------------------------------
-Lynxy logging enabled! 
-- host info: {self.host}:{self.port}
-------------------------------'''
-        self.log(logging.INFO, message)
+#     def start_logging(self, debug: bool = False):
+#         self.log_debug = debug
+#         date = datetime.datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
+#         logPath = f'{self.wDir}/_lynxy_{date}.log'
+#         # try: os.remove(logPath)
+#         # except FileNotFoundError: pass
+#         logging.basicConfig(filename=logPath, level=logging.INFO, force=True)
+#         message = f'''
+# ------------------------------
+# Lynxy logging enabled! 
+# - host info: {self.host}:{self.port}
+# - filename: {__name__}
+# - time: {Pool._Tools._format_time()}
+# ------------------------------'''
+#         self.log(logging.INFO, message)
         
 
     # this regenerates the UDP client, making a new object
@@ -130,7 +137,7 @@ Lynxy logging enabled!
 
     # this returns the actual target
     # that target being the active TCP connection, not the initial IP and port
-    # before connectin
+    # before connecting
     def get_actual_target(self) -> tuple[str, int]: return self.actual_target
     
 
@@ -139,8 +146,10 @@ Lynxy logging enabled!
     def start_recv(self) -> None: 
         self.log(logging.INFO, 'start_recv: TRY start recv thread')
         self.TCP_client.settimeout(3.0)
-        self.recvThread.start() if not self.recvThread.is_alive() else None
-        self.log(logging.INFO, 'start_recv: OK start recv thread')
+        if not self.recvThread.is_alive(): 
+            self.recvThread.start()
+            self.log(logging.INFO, 'start_recv: OK start recv thread')
+        self.log(logging.INFO, 'start_recv: OK recv thread already started')
 
 
     # this function configures heartbeat things for the client
@@ -170,13 +179,13 @@ Lynxy logging enabled!
         self.log(logging.INFO, '_handle_close: OK close client')
         # handle the error according to how client is configured
         self.log(logging.INFO, 'TCP_connect: triggering ON_CLOSE/error')
-        if self.connectionType == Constants.ConnectionType.EVENT: self._trigger(Constants.Event.ON_CLOSE, error)
-        elif self.connectionType == Constants.ConnectionType.ERROR: raise error
+        if self.connectionType == ConnectionType.EVENT: self._dispatch(Event.ON_CLOSE, error)
+        elif self.connectionType == ConnectionType.ERROR: raise error
 
 
     # this function runs the given events when requested
     # events are created using decorators
-    def _trigger(self, eventType: Constants.Event, data) -> None:
+    def _dispatch(self, eventType: Event, data) -> None:
         # run every function set up under the event
         try:
             for func in self.eventRegistry[eventType]: 
@@ -193,14 +202,14 @@ Lynxy logging enabled!
                      target_port: int, 
                      timeout: int = 10,
                      attempts: int = 6,
-                     connection_bias: Constants.ConnectionBias = Constants.ConnectionBias.NONE
+                     connection_bias: ConnectionBias = ConnectionBias.NONE
                      ) -> None:
         self.log(logging.INFO, 'TCP_connect: TRY TCP connection')
         # set target machine data
         self.target = (target_ip, target_port)
         self.log(logging.INFO, f'TCP_connect: target machine set to {self.target}')
         # determine whether or not to use UDP
-        if connection_bias != Constants.ConnectionBias.NONE: 
+        if connection_bias != ConnectionBias.NONE: 
             # UDP is only used to determine who goes first / second
             # so if we can determine if we are not using it by the connection bias
             first = connection_bias
@@ -243,7 +252,7 @@ Lynxy logging enabled!
         self.log(logging.INFO, 'TCP_connect: OK handshake')
         self.connected = True
         # trigger connect event
-        self._trigger(Constants.Event.ON_CONNECT, True)
+        self._dispatch(Event.ON_CONNECT, True)
         self.log(logging.INFO, 'TCP_connect: triggering ON_CONNECT')
 
 
@@ -382,20 +391,24 @@ Lynxy logging enabled!
         # set the send lock to True so that any other calls to send
         # data have to wait to send their data
         # self.sendLock = True
-        messageObject = Pool.Message(data) # create message object
+        messageObject = Message(data) # create message object
         encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
         try: 
             self.TCP_client.sendall(paddedMessage) # send actual data
+            self.log(logging.DEBUG, f'send: {Util._format_time()} - {len(paddedMessage)} bytes')
             # self.sendLock = False
         except ConnectionResetError as e: # other machine quit
+            self.log(logging.DEBUG, f'send: {Util._format_time()} - {e}')
             # self.sendLock = False
             self._handle_close(e)
         except BrokenPipeError as e: # connection was properly closed and sending data was attempted
+            self.log(logging.DEBUG, f'send: {Util._format_time()} - {e}')
             # self.sendLock = False
             self._handle_close(e)
         finally:
             self.sendLock.release()
+        return messageObject
 
 
     # this is a recieving function for recieving data
@@ -404,11 +417,14 @@ Lynxy logging enabled!
             try: recieved = self.TCP_client.recv(1024)
             except socket.timeout:
                 if self.stopRecv: return
+                self.log(logging.DEBUG, f'recv: {Util._format_time()} - {socket.timeout}')
                 continue
             except ConnectionResetError as e: # other machine quit
+                self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
                 self._handle_close(e)
                 return
             except ConnectionAbortedError as e: # host client closed
+                self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
                 self._handle_close(e)
                 return
             # catch any other error that happens
@@ -416,6 +432,7 @@ Lynxy logging enabled!
             # otherwise raise the same exception again
             except Exception as e:
                 if self.stopRecv: return
+                self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
                 raise e
             # if recieved is empty, then we got an EOF meaning the other socket
             # shutdown
@@ -424,7 +441,8 @@ Lynxy logging enabled!
                 return
             # remove padding from the recieved data
             unpadded = self.parser.removePadding(recieved)
+            self.log(logging.DEBUG, f'recv: {Util._format_time()} - {recieved} bytes')
             for indiv in unpadded:
-                decrypted: Pool.Message = self.sec.Fernet_decrypt(indiv)
-                decrypted.recieved_at = Pool._Tools._format_time()
-                self._trigger(Constants.Event.ON_MESSAGE, decrypted)
+                decrypted: Message = self.sec.Fernet_decrypt(indiv)
+                decrypted.recieved_at = Util._format_time()
+                self._dispatch(Event.ON_MESSAGE, decrypted)

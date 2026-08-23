@@ -7,3 +7,5 @@ To find documentation, go to the github~!
 
 # extending main lynx file
 from .lynx import *
+from .pool import Message
+from .constants import ConnectionType, Event, ConnectionBias
