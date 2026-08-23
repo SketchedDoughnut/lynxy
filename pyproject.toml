@@ -28,10 +28,10 @@ name = "lynxy"
 # - x.0.0 = BIG update
 # - 0.x.0 = somewhat large update
 # - 0.0.x = small patches and updates
-# version = "0.2.14" # test pypi release
-version = "1.0.0" # pypi release 
+version = "0.3.0" # test pypi release
+# version = "1.0.0" # pypi release 
 authors = [
-  { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" }
+  { name="Sketched Doughnut" } # email="sketcheddoughnut@gmail.com"
 ]
 description = "A package made for easy communication and sending of data from one machine to the other."
 readme = "docs/pypi/pypi_info.md"
@@ -39,7 +39,7 @@ requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
 ]
 dependencies = [
     # for RSA encryption
