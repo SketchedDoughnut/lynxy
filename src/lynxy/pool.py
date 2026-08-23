@@ -34,5 +34,5 @@ class Message:
     '''
     def __init__(self, data):
         self.content = data
-        self.created_at = _Tools._format_time()
+        self.created_at = Util._format_time()
         self.recieved_at = None

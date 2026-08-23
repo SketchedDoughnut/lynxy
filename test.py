@@ -18,16 +18,17 @@ client.connect([ip, port])
 
 @client.event(lynxy.Event.ON_CONNECT)
 def my_function(connect_state: bool):
+     print('connected!')
      client.send('hi from test 1!')
-     print(connect_state)
+     print('state of connection:', connect_state)
 
 @client.event(lynxy.Event.ON_MESSAGE)
 def my_function(message: lynxy.Message):
-     print(message.content)
+     print('new message:', message.content)
 
 @client.event(lynxy.Event.ON_CLOSE)
 def my_function(error: Exception | None):
-     print(error)
+     print('closed:', error)
 
 while True: 
      input('confirm close')

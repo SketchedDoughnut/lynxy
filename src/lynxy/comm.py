@@ -185,14 +185,10 @@ class Comm:
 
     # this function runs the given events when requested
     # events are created using decorators
-    def _dispatch(self, eventType: Event, data) -> None:
+    def _dispatch(self, eventType: Event, *args) -> None:
         # run every function set up under the event
-        try:
-            for func in self.eventRegistry[eventType]: 
-                func(data)
-        # if no functions then there will be a key error, this is fine
-        # so we can ignore
-        except KeyError: return
+        if eventType not in self.eventRegistry.keys(): return
+        for func in self.eventRegistry[eventType]: func(*args)
 
 
     # this function handles the UDP connection that helps make the TCP connection
@@ -203,7 +199,7 @@ class Comm:
                      timeout: int = 10,
                      attempts: int = 6,
                      connection_bias: ConnectionBias = ConnectionBias.NONE
-                     ) -> None:
+    ) -> None:
         self.log(logging.INFO, 'TCP_connect: TRY TCP connection')
         # set target machine data
         self.target = (target_ip, target_port)
@@ -346,11 +342,8 @@ class Comm:
         if force: self.log(logging.WARNING, 'close_connection: forced closing can cause possible data loss')
         self.stopRecv = True
         self.log(logging.INFO, 'close_connection: TRY stop recv thread')
-        while self.recvThread.is_alive(): 
-            if force:
-                self.log(logging.INFO, 'close_connection: force bypass stop recv thread')
-                break
-            pass
+        if not force: self.recvThread.join()
+        else: self.log(logging.INFO, 'close_connection: force bypass stop recv thread')
         self.log(logging.INFO, 'close_connection: OK stop recv thread')
         # this shuts down the read and write pipes gracefully
         # making sure that all data is recieved and sent properly
@@ -368,7 +361,7 @@ class Comm:
     
 
     # this is a function to send data to the other machine
-    def send(self, data: any, ignore_errors: bool = False, lock_timeout: float = 10.0) -> None:
+    def send(self, data: any, ignore_errors: bool = False, lock_timeout: float = 10.0) -> Message:
         # raise error message if data is empty and ignore is disabled, or if is none
         # otherwise return
         if data is None and not ignore_errors: raise TypeError('NoneType')
@@ -382,29 +375,14 @@ class Comm:
         if not self.sendLock.acquire(timeout=lock_timeout):
             if ignore_errors: return
             raise Exceptions.SendingTimeoutError()
-        # wait until no longer a lock on sending or if we reach the lock timeout
-        # timeout = time.time() + lock_timeout
-        # while self.sendLock:
-            # if time.time() >= timeout:
-                # if ignore_errors: return
-                # raise Exceptions.SendingTimeoutError()
-        # set the send lock to True so that any other calls to send
-        # data have to wait to send their data
-        # self.sendLock = True
         messageObject = Message(data) # create message object
         encryptedMessage = self.sec.Fernet_encrypt(messageObject) # encrypt data
         paddedMessage = self.parser.addPadding(encryptedMessage) # pad data
         try: 
             self.TCP_client.sendall(paddedMessage) # send actual data
             self.log(logging.DEBUG, f'send: {Util._format_time()} - {len(paddedMessage)} bytes')
-            # self.sendLock = False
-        except ConnectionResetError as e: # other machine quit
+        except ConnectionResetError | BrokenPipeError as e: # other machine quit
             self.log(logging.DEBUG, f'send: {Util._format_time()} - {e}')
-            # self.sendLock = False
-            self._handle_close(e)
-        except BrokenPipeError as e: # connection was properly closed and sending data was attempted
-            self.log(logging.DEBUG, f'send: {Util._format_time()} - {e}')
-            # self.sendLock = False
             self._handle_close(e)
         finally:
             self.sendLock.release()
@@ -414,16 +392,12 @@ class Comm:
     # this is a recieving function for recieving data
     def recv(self) -> None:
         while True:
+            if self.stopRecv: return
             try: recieved = self.TCP_client.recv(1024)
             except socket.timeout:
-                if self.stopRecv: return
                 self.log(logging.DEBUG, f'recv: {Util._format_time()} - {socket.timeout}')
                 continue
-            except ConnectionResetError as e: # other machine quit
-                self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
-                self._handle_close(e)
-                return
-            except ConnectionAbortedError as e: # host client closed
+            except ConnectionResetError | ConnectionAbortedError as e: # other machine quit
                 self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
                 self._handle_close(e)
                 return
@@ -431,7 +405,6 @@ class Comm:
             # if we are meant to exit thread, just ignore error and exit
             # otherwise raise the same exception again
             except Exception as e:
-                if self.stopRecv: return
                 self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
                 raise e
             # if recieved is empty, then we got an EOF meaning the other socket

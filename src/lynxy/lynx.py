@@ -8,6 +8,7 @@ I know this is probably a clunky way to do this but, if it's not broken then don
 # files
 from .constants import ConnectionType, ConnectionBias, Event
 from .comm import Comm as _Comm
+from .pool import Message
 
 ####################################################
 
@@ -137,7 +138,7 @@ class Lynxy:
                 timeout: int = 10,
                 attempts: int = 6,
                 connection_bias: ConnectionBias = ConnectionBias.NONE
-                ) -> None: 
+    ) -> None: 
         '''
         This function connects client to the other machine, and exchanges encryption keys.
 
@@ -201,7 +202,7 @@ class Lynxy:
 
 
     # this sends data
-    def send(self, data: any, ignore_errors: bool = False, lock_timeout: float = 10.0) -> None: 
+    def send(self, data: any, ignore_errors: bool = False, lock_timeout: float = 10.0) -> Message: 
         '''
         When called, Lynxy will send any data you input to the other machine, encrypting it. Data must be pickleable.
 
@@ -224,8 +225,13 @@ class Lynxy:
         lock_timeout: float
             If data is being sent and you try to send more data, Lynxy will wait until the current message is done sending. You can set a timeout that,
             once Lynxy waits up to the timeout amount, a SendingTimeoutError will be raised.
+
+        Returns
+        ----------
+        Message
+            The message object that was sent.
         '''
-        self._comm.send(data, ignore_errors, lock_timeout)
+        return self._comm.send(data, ignore_errors, lock_timeout)
 
 
     # this starts recieving data
@@ -255,7 +261,7 @@ class Lynxy:
         ```python
             # Example with the ON_MESSAGE event
             @client.event(lynxy.Event.ON_MESSAGE)
-            def woo_hoo_a_function(message: lynxy.Message):
+            def woohoo_a_function(message: lynxy.Message):
                 print(message.content)
         ```
 
@@ -264,15 +270,12 @@ class Lynxy:
         event: Event
             The event to register this function to.
         '''
-        # wrapper function that is returned,
-        # i am not quite sure how this works but it wraps around
-        # the inputted function?
+        # wrapper
         def wrapper(func):
-            # make a new entry for this event if it doesn't exist
-            # this function will be ran everytime the event is triggered
-            if event not in self._comm.eventRegistry.keys(): 
+            # make new entry or add to current entry
+            if event not in self._comm.eventRegistry.keys():
                 self._comm.eventRegistry[event] = [func]
-            # append function
-            else: self._comm.eventRegistry[event].append(func)
+            else:
+                self._comm.eventRegistry[event].append(func)
             return func
         return wrapper
