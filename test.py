@@ -12,10 +12,6 @@ port = 56776
 
 # client.start_logging()
 
-input('confirm start connect')
-
-client.connect([ip, port])
-
 @client.event(lynxy.Event.ON_CONNECT)
 def my_function(connect_state: bool):
      print('connected!')
@@ -30,6 +26,8 @@ def my_function(message: lynxy.Message):
 def my_function(error: Exception | None):
      print('closed:', error)
 
+input('confirm start connect')
+client.connect([ip, port])
 while True: 
      input('confirm close')
      break
