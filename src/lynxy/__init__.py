@@ -9,3 +9,4 @@ To find documentation, go to the github~!
 from .lynx import *
 from .pool import Message
 from .constants import ConnectionType, Event, ConnectionBias
+from .exceptions import Exceptions

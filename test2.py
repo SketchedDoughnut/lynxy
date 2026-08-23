@@ -7,25 +7,26 @@ client = lynxy.Lynxy(['', hport], bind=True)
 print('this clients credentials are:')
 print(client.get_host())
 
-ip = '192.168.68.118'
+ip = '192.168.86.53'
 port = 56775
 
-client.start_logging()
+# client.start_logging()
 
 input('confirm start connect')
 
 client.connect([ip, port])
 
-@client.event(lynxy.Constants.Event.ON_CONNECT)
+@client.event(lynxy.Event.ON_CONNECT)
 def my_function(connect_state: bool):
+     client.send('hi from test 2!')
      print(connect_state)
 
-@client.event(lynxy.Constants.Event.ON_MESSAGE)
-def my_function(message: lynxy.Pool.Message):
+@client.event(lynxy.Event.ON_MESSAGE)
+def my_function(message: lynxy.Message):
      print(message.content)
 
-@client.event(lynxy.Constants.Event.ON_CLOSE)
-def my_function(error: lynxy.Exceptions.BaseLynxyException | None):
+@client.event(lynxy.Event.ON_CLOSE)
+def my_function(error: Exception | None):
      print(error)
 
 while True: 
