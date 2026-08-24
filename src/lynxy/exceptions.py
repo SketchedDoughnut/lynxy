@@ -47,6 +47,12 @@ class Exceptions:
             self.message = message
             super().__init__(message)
 
+
+    class ConnectionRejectedError(BaseLynxyException):
+            def __init__(self, message='The target machine has rejected your connection attempt.'):
+                self.message = message
+                super().__init__(message)
+
     
     class ConnectionFailedError(BaseLynxyException):
         def __init__(self, message=None):
