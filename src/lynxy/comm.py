@@ -78,6 +78,8 @@ class Comm:
             try: self._bind_UDP()
             except OSError: raise Exceptions.AddrAlreadyBindedError()
             self.UDP_binded = True
+        ## add default function
+        self.eventRegistry[Event.ON_CONN_ATTEMPT] = [self._default_conn_attempt_callback]
 
 
     # this is a function to customize logging info requests
@@ -86,6 +88,13 @@ class Comm:
         self.log_calls[logType](data)
 
 
+    # default callback for the ON_CONN_ATTEMPT function
+    def _default_conn_attempt_callback(self, target: tuple):
+        if self.target == target:
+            return True
+        return False
+
+    
     # this function sets up logging
 #     def start_logging(self, debug: bool = False):
 #         self.log_debug = debug
@@ -186,12 +195,14 @@ class Comm:
 
     # this function runs the given events when requested
     # events are created using decorators
-    def _dispatch(self, eventType: Event, *args) -> None:
+    def _dispatch(self, eventType: Event, *args) -> list:
         # run every function set up under the event
+        res = []
         if eventType not in self.eventRegistry.keys(): return
         for func in self.eventRegistry[eventType]: 
-            try: func(*args)
+            try: res.append(func(*args))
             except TypeError: raise Exceptions.InvalidFunctionError()
+        return res
 
 
     # this function handles the UDP connection that helps make the TCP connection
@@ -202,7 +213,7 @@ class Comm:
                      timeout: int = 10,
                      attempts: int = 6,
                      connection_bias: ConnectionBias = ConnectionBias.NONE
-    ) -> None:
+    ) -> bool:
         self.log(logging.INFO, 'TCP_connect: TRY TCP connection')
         # set target machine data
         self.target = (target_ip, target_port)
@@ -218,9 +229,9 @@ class Comm:
             # if not self.UDP_binded:
             #     self._bind_UDP()
             #     self.UDP_binded = True
-            try: ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
-            except ConnectionResetError: # target is not ready
-                raise Exceptions.TargetUnavailableError()
+            res = self._UDP_connect(timeout, attempts)
+            if not res: return False
+            ourRandom, targetRandom = res[0], res[1]
             # if True meaning we connect, they recv
             # if False, we recv and they connect
             first = ourRandom > targetRandom
@@ -258,11 +269,12 @@ class Comm:
         # trigger connect event
         self._dispatch(Event.ON_CONNECT, True)
         self.log(logging.INFO, 'TCP_connect: triggering ON_CONNECT')
+        return True
 
 
     # this function manages finding out who goes first with making a TCP connection
     # and also who is first with exchanging RSA keys
-    def _UDP_connect(self, timeout, attempts) -> tuple[int, int]:
+    def _UDP_connect(self, timeout, attempts) -> tuple[int, int] | None:
         self.log(logging.INFO, 'UDP_connect: TRY UDP connection')
         # first, we bind to our port / ip if not already
         if not self.UDP_binded: 
@@ -280,9 +292,28 @@ class Comm:
             try:
                 # if we send the data and get data back,
                 # then it succeeded
+                try: 
+                    # send our random number
+                    self.UDP_client.sendto(str(randNum).encode(), self.target)
+                    data, potential_target = self.UDP_client.recvfrom(1024)
+                # target machine has not called connect() yet
+                except ConnectionResetError: 
+                    raise Exceptions.TargetUnavailableError()
+                # call the callback and see if this target is accepted
+                # if not accepted then continue to next attempt
+                res = self._dispatch(Event.ON_CONN_ATTEMPT, potential_target)
+                if not res[0]: 
+                    self.UDP_client.sendto('REJECT'.encode(), self.target)
+                    continue
+                # accept that target
+                self.target = potential_target
+                # make sure data got through
                 self.UDP_client.sendto(str(randNum).encode(), self.target)
-                data, self.target = self.UDP_client.recvfrom(1024)
-                self.UDP_client.sendto(str(randNum).encode(), self.target) # make sure data got through
+                # try and recieve more data and see if we were rejected
+                additional, additionalTarget = self.UDP_client.recvfrom(1024)
+                if additional.decode() == 'REJECT' and additionalTarget == self.target:
+                    self._dispatch(Event.ON_DISCONNECT, Exceptions.ConnectionRejectedError())
+                    return None
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we raise error (the chances are very low for this to happen)
                 incomingNum = int(data.decode())

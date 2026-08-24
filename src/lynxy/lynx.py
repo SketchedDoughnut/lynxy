@@ -139,7 +139,7 @@ class Client:
                 timeout: int = 10,
                 attempts: int = 6,
                 connection_bias: ConnectionBias = ConnectionBias.NONE
-    ) -> None: 
+    ) -> bool: 
         '''
         This function connects client to the other machine, and exchanges encryption keys.
 
@@ -174,6 +174,11 @@ class Client:
             ```
             or vice versa.
 
+        Returns
+        ----------
+        bool
+            Whether the connection succeeded or not.
+
         Raises
         ----------
         lynxy.Exceptions.ConnectionFailedError 
@@ -181,7 +186,7 @@ class Client:
         lynxy.Exceptions.TargetUnavailableError
             If the target machine is not ready for a connection.
         '''
-        self._comm.TCP_connect(
+        state = self._comm.TCP_connect(
             target_ip = target[0], 
             target_port = target[1], 
             timeout = timeout, 
@@ -189,6 +194,8 @@ class Client:
             connection_bias = connection_bias
             )
         if start_recv: self.recv()
+        return state
+
 
 
     # this function closes connections
@@ -280,7 +287,9 @@ class Client:
         '''
         # wrapper
         def wrapper(func):
-            # make new entry or add to current entry
+            # connection attempt can only have one event
+            if event == Event.ON_CONN_ATTEMPT: self._comm.eventRegistry.pop(event)
+            # the rest can have as many events as they want, and so we add
             if event not in self._comm.eventRegistry.keys():
                 self._comm.eventRegistry[event] = [func]
             else:

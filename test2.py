@@ -2,7 +2,7 @@
 from src import lynxy
 
 # create our client
-host = ('', 56775)
+host = ('', 56776)
 client = lynxy.Client(host=host)
 
 # add our on_connect event
@@ -20,11 +20,19 @@ def my_function(message: lynxy.Message):
 def my_function(error: lynxy.Exceptions.BaseLynxyException| None):
      print(error)
 
+# add our connection attempt event
+@client.event(lynxy.Event.ON_CONN_ATTEMPT)
+def my_function(potential_target: tuple):
+     print('potential target attempted to connect:', potential_target)
+     if potential_target == target: 
+          return True   
+     return False
+
 # connect to the other computer using its IP and port
 # both clients need to be ready to connect in order for a connection to work
-target = ('192.168.86.53', 56776)
+target = ('192.168.86.53', 56775)
 input('awaiting connect confirmation:')
-client.connect(target)
+print('state of connection:', client.connect(target))
 
 # send messages, or exit
 # loop keeps running as we need to keep the program going
