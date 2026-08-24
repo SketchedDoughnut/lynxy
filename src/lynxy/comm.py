@@ -293,6 +293,7 @@ class Comm:
                 # if we send the data and get data back,
                 # then it succeeded
                 try: 
+                    # send our random number
                     self.UDP_client.sendto(str(randNum).encode(), self.target)
                     data, potential_target = self.UDP_client.recvfrom(1024)
                 # target machine has not called connect() yet
@@ -302,11 +303,17 @@ class Comm:
                 # if not accepted then continue to next attempt
                 res = self._dispatch(Event.ON_CONN_ATTEMPT, potential_target)
                 if not res[0]: 
+                    self.UDP_client.sendto('REJECT'.encode(), self.target)
                     continue
                 # accept that target
                 self.target = potential_target
                 # make sure data got through
                 self.UDP_client.sendto(str(randNum).encode(), self.target)
+                # try and recieve more data and see if we were rejected
+                additional, additionalTarget = self.UDP_client.recvfrom(1024)
+                if additional.decode() == 'REJECT' and additionalTarget == self.target:
+                    self._dispatch(Event.ON_DISCONNECT, Exceptions.ConnectionRejectedError())
+                    return None
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we raise error (the chances are very low for this to happen)
                 incomingNum = int(data.decode())

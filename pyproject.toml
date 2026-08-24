@@ -20,7 +20,7 @@ name = "lynxy"
 # - 0.x.0 = somewhat large update
 # - 0.0.x = small patches and updates
 # version = "0.3.4" # test pypi release
-version = "1.2.0" # pypi release 
+version = "1.2.1" # pypi release 
 authors = [
   { name="Sketched Doughnut" } # email="sketcheddoughnut@gmail.com"
 ]
