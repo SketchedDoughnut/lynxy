@@ -218,7 +218,9 @@ class Comm:
             # if not self.UDP_binded:
             #     self._bind_UDP()
             #     self.UDP_binded = True
-            ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
+            try: ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
+            except ConnectionResetError: # target is not ready
+                raise Exceptions.TargetUnavailableError()
             # if True meaning we connect, they recv
             # if False, we recv and they connect
             first = ourRandom > targetRandom

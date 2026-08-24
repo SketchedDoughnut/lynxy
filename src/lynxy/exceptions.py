@@ -41,7 +41,13 @@ class Exceptions:
         def __init__(self, message='The inputs for event functions are invalid.'):
             super().__init__(message)
 
-            
+
+    class TargetUnavailableError(BaseLynxyException):
+        def __init__(self, message='The target machine is not available for connection.'):
+            self.message = message
+            super().__init__(message)
+
+    
     class ConnectionFailedError(BaseLynxyException):
         def __init__(self, message=None):
             self.message = message

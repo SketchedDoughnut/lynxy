@@ -15,7 +15,7 @@ from .pool import Message
 # the main class for the keeping everything together
 class Client:
     '''
-    This is the Client class, which creates a Lynxy client object. This allows you to communicate with
+    This is the Client class, which creates a Lynxy Client instance. This allows you to communicate with
     other Lynxy clients and allows you to exchange data between machines.
 
     Parameters
@@ -29,6 +29,11 @@ class Client:
             client = lynxy.Client(('', 50004))
             client.get_host() -> ('192.168.68.x', 50004)
         ```
+
+    Raises
+    ----------
+    lynxy.Exceptions.AddrAlreadyBindedError
+        If another process has already binded to that IP / port pair.
     '''
 
 
@@ -173,6 +178,8 @@ class Client:
         ----------
         lynxy.Exceptions.ConnectionFailedError 
             If handshake or TCP connection fails.
+        lynxy.Exceptions.TargetUnavailableError
+            If the target machine is not ready for a connection.
         '''
         self._comm.TCP_connect(
             target_ip = target[0], 
@@ -265,6 +272,11 @@ class Client:
         ----------
         event: Event
             The event to register this function to.
+
+        Raises
+        ----------
+        lynxy.Exceptions.InvalidFunctionError
+            If the callback function has invalid inputs.
         '''
         # wrapper
         def wrapper(func):
