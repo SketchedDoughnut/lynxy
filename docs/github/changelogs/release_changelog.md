@@ -17,7 +17,7 @@
 
 # V1.1.0 - 1.2.0
 **8/24/26**
-- This release fixed a variety of issues and introduced some new features. Thank you (TBD) for helping with testing and recommending these changes.
+- This release fixed a variety of issues and introduced some new features. Thank you [i1aw](https://github.com/i1aw) for helping with testing and recommending these changes.
 - A bug was fixed where the events would never be added and would fail to be dispatched. 
 - A variety of imports were changed in order to make accessing things such as `lynxy.Message` easier for typehinting and general usage. 
 - The `Lynxy()` class was renamed to `Client()` to make its purpose clearer. 
