@@ -20,7 +20,7 @@ name = "lynxy"
 # - 0.x.0 = somewhat large update
 # - 0.0.x = small patches and updates
 # version = "0.3.4" # test pypi release
-version = "1.2.1" # pypi release 
+version = "1.2.2" # pypi release 
 authors = [
   { name="Sketched Doughnut" } # email="sketcheddoughnut@gmail.com"
 ]
@@ -34,11 +34,11 @@ classifiers = [
 ]
 license = 'MIT'
 dependencies = [
-    'rsa==4.9', 
-    'pyasn1==0.6.1',
-    'cryptography==44.0.0', 
-    'cffi==1.17.1',
-    'pycparser==2.22'
+    'rsa>=4.9', 
+    'pyasn1>=0.6.1',
+    'cryptography>=44.0.0', 
+    'cffi>=1.17.1',
+    'pycparser>=2.22'
 ]
 
 # URLs for project pages
