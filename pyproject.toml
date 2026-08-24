@@ -3,16 +3,7 @@
 
 # build system info
 [build-system]
-requires = [
-    # for building
-    'hatchling',
-    # for RSA encryption
-    'rsa==4.9', 
-    'pyasn1==0.6.1',
-    # for cryptography encryption
-    'cryptography==44.0.0', 
-    'cffi==1.17.1'
-]
+requires = ['hatchling >= 1.26']
 build-backend = "hatchling.build"
 
 # information about what is actually being built
@@ -28,26 +19,26 @@ name = "lynxy"
 # - x.0.0 = BIG update
 # - 0.x.0 = somewhat large update
 # - 0.0.x = small patches and updates
-# version = "0.2.14" # test pypi release
-version = "1.0.0" # pypi release 
+# version = "0.3.2" # test pypi release
+version = "1.1.0" # pypi release 
 authors = [
-  { name="Sketched Doughnut", email="sketcheddoughnut@gmail.com" }
+  { name="Sketched Doughnut" } # email="sketcheddoughnut@gmail.com"
 ]
 description = "A package made for easy communication and sending of data from one machine to the other."
 readme = "docs/pypi/pypi_info.md"
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
+    # "License :: OSI Approved :: Apache Software License",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
 ]
+license = 'MIT'
 dependencies = [
-    # for RSA encryption
     'rsa==4.9', 
     'pyasn1==0.6.1',
-    # for cryptography encryption
     'cryptography==44.0.0', 
-    'cffi==1.17.1'
+    'cffi==1.17.1',
+    'pycparser==2.22'
 ]
 
 # URLs for project pages

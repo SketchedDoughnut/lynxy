@@ -1,4 +1,4 @@
 # folders
 .venv
+__pycache__
 dist
-__pycache__/

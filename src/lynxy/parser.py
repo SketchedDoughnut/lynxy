@@ -15,7 +15,7 @@ class Parser:
         # end marker for message
         self.byteEndMarker = b':~e~:'
         # heartbeat marker
-        self.heartbeatMarker = ':~hb~:'
+        # self.heartbeatMarker = ':~hb~:'
         # carry over from previous incomplete packets
         self.carry = b''
 
