@@ -420,9 +420,12 @@ class Comm:
         try: 
             self.TCP_client.sendall(paddedMessage) # send actual data
             self.log(logging.DEBUG, f'send: {Util._format_time()} - {len(paddedMessage)} bytes')
-        except ConnectionResetError | BrokenPipeError as e: # other machine quit
+        except (ConnectionResetError, BrokenPipeError) as e: # other machine quit
             self.log(logging.DEBUG, f'send: {Util._format_time()} - {e}')
             self._handle_close(e)
+        except TimeoutError as e:
+            self.log(logging.DEBUG, f'send: {Util._format_time()} - {e}')
+            if not ignore_errors: raise
         finally:
             self.sendLock.release()
         return messageObject
