@@ -22,13 +22,13 @@ class Lynxy:
     Parameters
     ----------
     host: tuple[str, int]
-        This is the information for the host machine to bind onto, the information being the IP of the host machine and the chosen
+        This is the information for the host machine (that is, your machine) to bind onto, the information being the IP of the host machine and the chosen
         port. The IP should be left empty, as Lynxy will naturally find out the correct IP. However, the port can be set to whatever you
         desire. This information can be acquired with the get_host function
 
         ```python
-            client = Lynxy(['', 50004])
-            client.get_host() -> ['192.168.68.x', 50004]
+            client = Lynxy(('', 50004))
+            client.get_host() -> ('192.168.68.x', 50004)
         ```
 
     bind: bool
