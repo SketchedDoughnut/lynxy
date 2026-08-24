@@ -14,3 +14,17 @@
 - The first official release of the completely refactored and re-written Lynxy client. The lynxy_server implementation has been dropped for now, and plans for that as a seperate package are coming in the future. As of when this release was made, no documentation was written but was being worked on. 
 - This release defines how Lynxy will work from now on, and sets the starting point for growth in the future. 
 - Commit label (estimate): [44fc5bc](https://github.com/SketchedDoughnut/lynxy/commit/44fc5bce7c79b888aeea0f3c562dd0db9b79afd2)
+
+# V1.1.0 - 1.2.0
+**8/24/26**
+- This release fixed a variety of issues and introduced some new features. Thank you (TBD) for helping with testing and recommending these changes.
+- A bug was fixed where the events would never be added and would fail to be dispatched. 
+- A variety of imports were changed in order to make accessing things such as `lynxy.Message` easier for typehinting and general usage. 
+- The `Lynxy()` class was renamed to `Client()` to make its purpose clearer. 
+- The `ON_CLOSE` event was renamed to `ON_DISCONNECT`
+- The `bind` parameter of `Client()` was removed as it caused errors when set to `False` and was not a necessary option when using the client.
+- New exceptions were added to make errors more graceful:
+    - `ConnectionFailedError` -> when the connection has failed 
+    - `TargetUnavailableError` -> when the target machine is not available for connection
+    - `InvalidFunctionError` -> when a callback function for an event has invalid inputs
+    - `AddrAlreadyBindedError` -> when a socket is already binded to the inputted host IP / port

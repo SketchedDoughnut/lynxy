@@ -32,4 +32,9 @@
 # V0.2.0 - v0.2.14
 **1/4/25**
 - These releases were the first ones in a while, as the entirety of Lynxy has been refactored and rewritten to be simpler, more lightweight, and quicker. The lynxy_server addition has been dropped, but a server implementation might be made in the future. More information will be shared in the official release when the documentation is out (This is being written before documentation is complete).
-- Commit Label of latetst release: [85da65c](https://github.com/SketchedDoughnut/lynxy/tree/85da65c59e60e8c78fe3d33704d09e4bb5be0eb3)
+- Commit Label: [85da65c](https://github.com/SketchedDoughnut/lynxy/tree/85da65c59e60e8c78fe3d33704d09e4bb5be0eb3)
+
+# V0.3.0 - 0.3.4
+**8/24/26**
+- These releases were tests of fixes created for the event dispatcher and other logistical features, such as custom errors. A more detailed description will be on the releated official release.
+- Commit Label: [eb922ff](https://github.com/SketchedDoughnut/lynxy/tree/eb922ffbe1936e2925700825207ee22d9b18899e)
