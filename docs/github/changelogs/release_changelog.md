@@ -30,3 +30,7 @@
 # V1.2.1
 **8/24/26** - [3206210](https://github.com/SketchedDoughnut/lynxy/tree/32062103a43357fca18a9cd637d642402b7083c2) (estimate)
 - Added a feature that allows you to decide which connection attempts get accepted or rejected via the `lynxy.Event.ON_CONN_ATTEMPT` event. If no event is created, any connection will be rejected unless it is the target you passed in to `client.connect()`. However, you can make your own callback with `client.event()` if you want to do more. Just remember to return a bool!
+
+# V1.2.2
+**8/24/26** - [ba6afb9](https://github.com/SketchedDoughnut/lynxy/tree/ba6afb9faf7a37084eb4a9306bf8c82c449e3065)
+- Fixing some error handling and updating pyproject.toml and requirements to allow versions that are above the lowest required version.
