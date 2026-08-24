@@ -75,7 +75,8 @@ class Comm:
         ###########################################################
         # if UDP_bind, immediately bind to host and port
         if UDP_bind: 
-            self._bind_UDP()
+            try: self._bind_UDP()
+            except OSError: raise Exceptions.AddrAlreadyBindedError()
             self.UDP_binded = True
 
 
@@ -178,8 +179,8 @@ class Comm:
         if self.connected: self.close_connection(force=True)
         self.log(logging.INFO, '_handle_close: OK close client')
         # handle the error according to how client is configured
-        self.log(logging.INFO, 'TCP_connect: triggering ON_CLOSE/error')
-        if self.connectionType == ConnectionType.EVENT: self._dispatch(Event.ON_CLOSE, error)
+        self.log(logging.INFO, 'TCP_connect: triggering ON_DISCONNECT/error')
+        if self.connectionType == ConnectionType.EVENT: self._dispatch(Event.ON_DISCONNECT, error)
         elif self.connectionType == ConnectionType.ERROR: raise error
 
 
@@ -188,7 +189,9 @@ class Comm:
     def _dispatch(self, eventType: Event, *args) -> None:
         # run every function set up under the event
         if eventType not in self.eventRegistry.keys(): return
-        for func in self.eventRegistry[eventType]: func(*args)
+        for func in self.eventRegistry[eventType]: 
+            try: func(*args)
+            except TypeError: raise Exceptions.InvalidFunctionError()
 
 
     # this function handles the UDP connection that helps make the TCP connection
@@ -400,7 +403,11 @@ class Comm:
             except TimeoutError as e:
                 self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
                 continue
-            except ConnectionResetError | ConnectionAbortedError as e: # other machine quit
+            except ConnectionResetError as e: # other machine quit
+                self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
+                self._handle_close(e)
+                return
+            except ConnectionAbortedError as e:
                 self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
                 self._handle_close(e)
                 return

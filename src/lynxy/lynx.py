@@ -171,7 +171,7 @@ class Client:
 
         Raises
         ----------
-        Exceptions.ConnectionFailedError 
+        lynxy.Exceptions.ConnectionFailedError 
             If handshake or TCP connection fails.
         '''
         self._comm.TCP_connect(
@@ -211,9 +211,9 @@ class Client:
             Whether Lynxy should ignore errors and silently return or not. The following errors can be raised if set to False:
           
             ```python
-                Lynxy.Exceptions.EmptyDataError() # if sent data is empty
+                lynxy.Exceptions.EmptyDataError() # if sent data is empty
                 lynxy.Exceptions.ClientNotConnected() # if client is not connected to other machine
-                Lynxy.Exceptions.SendingTimeoutError() # if client can not send after waiting for lock to be released
+                lynxy.Exceptions.SendingTimeoutError() # if client can not send after waiting for lock to be released
             ```
 
             All of these errors are ignored if ignore_errors is set to True.
@@ -224,7 +224,7 @@ class Client:
 
         Returns
         ----------
-        Message
+        lynxy.Message
             The message object that was sent.
         '''
         return self._comm.send(data, ignore_errors, lock_timeout)

@@ -32,6 +32,16 @@ class Exceptions:
             super().__init__(message)
 
 
+    class AddrAlreadyBindedError(BaseLynxyException):
+        def __init__(self, message='The host address has already been binded to.'):
+            super().__init__(message)
+
+
+    class InvalidFunctionError(BaseLynxyException):
+        def __init__(self, message='The inputs for event functions are invalid.'):
+            super().__init__(message)
+
+            
     class ConnectionFailedError(BaseLynxyException):
         def __init__(self, message=None):
             self.message = message
