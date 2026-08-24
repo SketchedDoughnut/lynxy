@@ -20,13 +20,13 @@ name = "lynxy"
 # - 0.x.0 = somewhat large update
 # - 0.0.x = small patches and updates
 # version = "0.3.4" # test pypi release
-version = "1.2.2" # pypi release 
+version = "1.2.3" # pypi release 
 authors = [
   { name="Sketched Doughnut" } # email="sketcheddoughnut@gmail.com"
 ]
 description = "A package made for easy communication and sending of data from one machine to the other."
 readme = "docs/pypi/pypi_info.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9, <3.11"
 
 # our classifiers
 classifiers = [
