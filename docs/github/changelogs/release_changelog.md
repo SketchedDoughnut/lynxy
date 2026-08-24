@@ -31,4 +31,4 @@
 
 # V1.2.1
 **8/24/26**
-- Added a feature that allows you to decide which connection attempts accept or reject via the `lynxy.Event.ON_CONN_ATTEMPT` event. By default any connection will be rejected unless it is the target you passed in to `client.Connect()`. However, you can make your own callback with `client.Event()` if you want to do more. Just remember to return a bool!
+- Added a feature that allows you to decide which connection attempts get accepted or rejected via the `lynxy.Event.ON_CONN_ATTEMPT` event. If no event is created, any connection will be rejected unless it is the target you passed in to `client.connect()`. However, you can make your own callback with `client.event()` if you want to do more. Just remember to return a bool!
