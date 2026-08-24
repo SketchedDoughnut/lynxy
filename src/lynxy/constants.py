@@ -14,6 +14,7 @@ class Event(Enum):
     ON_MESSAGE = 'on message'
     ON_DISCONNECT = 'on disconnect'
     ON_CONNECT = 'on connect'
+    ON_CONN_ATTEMPT = 'on connection attempt'
 
 
 # class for all connection types

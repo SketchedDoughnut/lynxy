@@ -186,12 +186,14 @@ class Comm:
 
     # this function runs the given events when requested
     # events are created using decorators
-    def _dispatch(self, eventType: Event, *args) -> None:
+    def _dispatch(self, eventType: Event, *args) -> list:
         # run every function set up under the event
+        res = []
         if eventType not in self.eventRegistry.keys(): return
         for func in self.eventRegistry[eventType]: 
-            try: func(*args)
+            try: res.append(func(*args))
             except TypeError: raise Exceptions.InvalidFunctionError()
+        return res
 
 
     # this function handles the UDP connection that helps make the TCP connection
@@ -281,8 +283,15 @@ class Comm:
                 # if we send the data and get data back,
                 # then it succeeded
                 self.UDP_client.sendto(str(randNum).encode(), self.target)
-                data, self.target = self.UDP_client.recvfrom(1024)
-                self.UDP_client.sendto(str(randNum).encode(), self.target) # make sure data got through
+                data, potential_target = self.UDP_client.recvfrom(1024)
+                # call the callback and see if this target is accepted
+                # if not accepted then continue to next attempt
+                res = self._dispatch(Event.ON_CONN_ATTEMPT, potential_target)
+                if not res: continue
+                # accept that target
+                self.target = potential_target
+                # make sure data got through
+                self.UDP_client.sendto(str(randNum).encode(), self.target)
                 # we decode the incoming value to make sure the two values aren't equal
                 # if they are, we raise error (the chances are very low for this to happen)
                 incomingNum = int(data.decode())
