@@ -26,7 +26,7 @@ class Client:
         desire. This information can be acquired with the get_host function.
 
         ```python
-            client = Lynxy(('', 50004))
+            client = lynxy.Client(('', 50004))
             client.get_host() -> ('192.168.68.x', 50004)
         ```
     '''

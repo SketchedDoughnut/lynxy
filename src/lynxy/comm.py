@@ -397,8 +397,8 @@ class Comm:
         while True:
             if self.stopRecv: return
             try: received = self.TCP_client.recv(1024)
-            except TimeoutError:
-                self.log(logging.DEBUG, f'recv: {Util._format_time()} - {socket.timeout}')
+            except TimeoutError as e:
+                self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
                 continue
             except ConnectionResetError | ConnectionAbortedError as e: # other machine quit
                 self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
