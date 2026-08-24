@@ -36,7 +36,7 @@ class Lynxy:
     '''
 
 
-    def __init__(self, host: tuple[str, int] = ('', 56774), bind: bool = False):
+    def __init__(self, host: tuple[str, int] = ('', 56774), bind: bool = True):
         self._comm = _Comm(host, bind)
 
 
