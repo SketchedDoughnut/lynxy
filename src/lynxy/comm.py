@@ -296,11 +296,13 @@ class Comm:
                     self.UDP_client.sendto(str(randNum).encode(), self.target)
                     data, potential_target = self.UDP_client.recvfrom(1024)
                 # target machine has not called connect() yet
-                except ConnectionResetError: raise Exceptions.TargetUnavailableError()
+                except ConnectionResetError: 
+                    raise Exceptions.TargetUnavailableError()
                 # call the callback and see if this target is accepted
                 # if not accepted then continue to next attempt
                 res = self._dispatch(Event.ON_CONN_ATTEMPT, potential_target)
-                if not res[0]: continue
+                if not res[0]: 
+                    continue
                 # accept that target
                 self.target = potential_target
                 # make sure data got through

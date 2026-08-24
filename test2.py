@@ -25,7 +25,7 @@ def my_function(error: lynxy.Exceptions.BaseLynxyException| None):
 def my_function(potential_target: tuple):
      print('potential target attempted to connect:', potential_target)
      if potential_target == target: 
-          return False   
+          return True   
      return False
 
 # connect to the other computer using its IP and port
