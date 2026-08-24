@@ -258,7 +258,7 @@ class Comm:
         self.log(logging.INFO, 'UDP_connect: TRY UDP connection')
         # first, we bind to our port / ip if not already
         if not self.UDP_binded: 
-            self._regen_UDP()
+            # self._regen_UDP()
             self._bind_UDP()
             self.UDP_binded = True
             self.log(logging.INFO, 'UDP_connect: TRY regen, binded')
