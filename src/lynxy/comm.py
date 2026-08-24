@@ -30,7 +30,7 @@ class Comm:
         self.sec = Sec()
         # this is an instance of the parser
         self.parser = Parser()
-        # this is the internal client used for sending and recieving
+        # this is the internal client used for sending and receiving
         if host[0]: self.host = host[0]
         else: self.host = socket.gethostbyname(socket.gethostname())
         self.port = host[1]
@@ -47,7 +47,7 @@ class Comm:
         self.eventRegistry = {}
         # this represents the connection type for when errors occur
         self.connectionType = ConnectionType.NONE
-        # this is the thread for the recieving function
+        # this is the thread for the receiving function
         self.recvThread = threading.Thread(target=self.recv, daemon=True)
         # this represents the system type
         self.systemType = platform.system()
@@ -142,7 +142,7 @@ class Comm:
     
 
     # this starts the recv thread
-    # for recieving messages and triggering events
+    # for receiving messages and triggering events
     def start_recv(self) -> None: 
         self.log(logging.INFO, 'start_recv: TRY start recv thread')
         self.TCP_client.settimeout(3.0)
@@ -212,6 +212,9 @@ class Comm:
             self.log(logging.INFO, f'TCP_connect: connection bias set to {connection_bias}')
         else:
             # we use UDP to get the random number
+            # if not self.UDP_binded:
+            #     self._bind_UDP()
+            #     self.UDP_binded = True
             ourRandom, targetRandom = self._UDP_connect(timeout, attempts)
             # if True meaning we connect, they recv
             # if False, we recv and they connect
@@ -281,7 +284,7 @@ class Comm:
                 if incomingNum == randNum: raise Exceptions.ConnectionFailedError('Role number generations were equal.')
                 # otherwise connection was a success, break
                 connectionSuccess = True
-                self.log(logging.INFO, f'UDP_connect: recieved num: {incomingNum}')
+                self.log(logging.INFO, f'UDP_connect: received num: {incomingNum}')
                 break
             except TimeoutError: 
                 self.log(logging.INFO, f'UDP_connect: TIMEOUT {attempt}')
@@ -304,32 +307,32 @@ class Comm:
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
             self.log(logging.INFO, '_handshake: sent public RSA key')
             self.log(logging.INFO, f'_handshake: {self.sec.int_pub_key}')
-            # then recieve their public RSA key
-            recievedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
-            self.sec.load_RSA(pickle.loads(recievedPubKey))
-            self.log(logging.INFO, '_handshake: recieved public RSA key')
-            self.log(logging.INFO, f'_handshake: {pickle.loads(recievedPubKey)}')
+            # then receive their public RSA key
+            receivedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
+            self.sec.load_RSA(pickle.loads(receivedPubKey))
+            self.log(logging.INFO, '_handshake: received public RSA key')
+            self.log(logging.INFO, f'_handshake: {pickle.loads(receivedPubKey)}')
             # now we send our Fernet key for actual encryption
-            # since we are first, we don't need to recieve 
+            # since we are first, we don't need to receive 
             # since the keys are the same
             encryptedFernet = self.sec.RSA_encrypt(self.sec.fernet_key)
             self.TCP_client.sendall(encryptedFernet)
             self.log(logging.INFO, '_handshake: sent Fernet key')
         else:
-            # we recieve their public key
-            recievedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
-            self.sec.load_RSA(pickle.loads(recievedPubKey))
-            self.log(logging.INFO, '_handshake: recieved public RSA key')
-            self.log(logging.INFO, f'_handshake: {pickle.loads(recievedPubKey)}')
+            # we receive their public key
+            receivedPubKey = self.TCP_client.recv(self.sec.keySizeRSA)
+            self.sec.load_RSA(pickle.loads(receivedPubKey))
+            self.log(logging.INFO, '_handshake: received public RSA key')
+            self.log(logging.INFO, f'_handshake: {pickle.loads(receivedPubKey)}')
             # then send our public key
             self.TCP_client.sendall(pickle.dumps(self.sec.int_pub_key))
             self.log(logging.INFO, '_handshake: sent public RSA key')
             self.log(logging.INFO, f'_handshake: {self.sec.int_pub_key}')
-            # now we recieve the other ends symmetrical token for actual encryption
+            # now we receive the other ends symmetrical token for actual encryption
             # since we are second
             encryptedFernet = self.TCP_client.recv(1024)
             self.sec.load_Fernet(self.sec.RSA_decrypt(encryptedFernet))
-            self.log(logging.INFO, '_handshake: recieved Fernet key')
+            self.log(logging.INFO, '_handshake: received Fernet key')
     
 
     # this function closes the connection between the two machines
@@ -346,7 +349,7 @@ class Comm:
         else: self.log(logging.INFO, 'close_connection: force bypass stop recv thread')
         self.log(logging.INFO, 'close_connection: OK stop recv thread')
         # this shuts down the read and write pipes gracefully
-        # making sure that all data is recieved and sent properly
+        # making sure that all data is received and sent properly
         # before closing
         if not force: 
             self.log(logging.INFO, 'close_connection: TRY shutdown client')
@@ -389,11 +392,11 @@ class Comm:
         return messageObject
 
 
-    # this is a recieving function for recieving data
+    # this is a receiving function for receiving data
     def recv(self) -> None:
         while True:
             if self.stopRecv: return
-            try: recieved = self.TCP_client.recv(1024)
+            try: received = self.TCP_client.recv(1024)
             except socket.timeout:
                 self.log(logging.DEBUG, f'recv: {Util._format_time()} - {socket.timeout}')
                 continue
@@ -407,15 +410,15 @@ class Comm:
             except Exception as e:
                 self.log(logging.DEBUG, f'recv: {Util._format_time()} - {e}')
                 raise e
-            # if recieved is empty, then we got an EOF meaning the other socket
+            # if received is empty, then we got an EOF meaning the other socket
             # shutdown
-            if not recieved: 
+            if not received: 
                 self._handle_close(EOFError('EOF detected: Remote socket shutdown.'))
                 return
-            # remove padding from the recieved data
-            unpadded = self.parser.removePadding(recieved)
-            self.log(logging.DEBUG, f'recv: {Util._format_time()} - {recieved} bytes')
+            # remove padding from the received data
+            unpadded = self.parser.removePadding(received)
+            self.log(logging.DEBUG, f'recv: {Util._format_time()} - {received} bytes')
             for indiv in unpadded:
                 decrypted: Message = self.sec.Fernet_decrypt(indiv)
-                decrypted.recieved_at = Util._format_time()
+                decrypted.received_at = Util._format_time()
                 self._dispatch(Event.ON_MESSAGE, decrypted)

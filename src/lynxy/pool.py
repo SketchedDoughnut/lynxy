@@ -1,6 +1,6 @@
 '''
-This is the pool file, which contains a variety of different types of objects used for variables or recieved data.
-For example, on the client ON_MESSAGE, the data you recieve is a Pool.Message object.
+This is the pool file, which contains a variety of different types of objects used for variables or received data.
+For example, on the client ON_MESSAGE, the data you receive is a Pool.Message object.
 '''
 
 # libraries
@@ -26,8 +26,8 @@ class Message:
     created_at: str
         The timestamp for when the message object was created on the sending side
 
-    recieved_at: str
-        The timestamp for when the message object was recieved on the recieving side
+    received_at: str
+        The timestamp for when the message object was received on the receiving side
 
     public_key: rsa.PublicKey
         The public key used to encrypt this message object when sent
@@ -35,4 +35,4 @@ class Message:
     def __init__(self, data):
         self.content = data
         self.created_at = Util._format_time()
-        self.recieved_at = None
+        self.received_at = None

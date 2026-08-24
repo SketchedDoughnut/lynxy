@@ -30,14 +30,11 @@ class Lynxy:
             client = Lynxy(('', 50004))
             client.get_host() -> ('192.168.68.x', 50004)
         ```
-
-    bind: bool
-        This decides whether or not you immediately bind to the host IP and port, or if you want to wait until you call the connect function.
     '''
 
 
-    def __init__(self, host: tuple[str, int] = ('', 56774), bind: bool = True):
-        self._comm = _Comm(host, bind)
+    def __init__(self, host: tuple[str, int] = ('', 56774)):
+        self._comm = _Comm(host, True)
 
 
     # this gets the host information
@@ -125,7 +122,7 @@ class Lynxy:
     #     Parameters
     #     ----------
     #     debug: bool
-    #         Whether to log when when messages are recieved / sent. The message itself will not be logged, only its timestamp
+    #         Whether to log when when messages are received / sent. The message itself will not be logged, only its timestamp
     #       and size.
     #     '''
     #     self._comm.start_logging(debug = debug)
@@ -148,8 +145,8 @@ class Lynxy:
             The information of the target machine, the first entry being the IP and the second entry being the port.
 
         start_recv: bool
-            Whether to start the thread for recieving or not. If you want to control when you start recieving, set this to False and call on
-          the `lynxy.recv` function when ready to start recieving.
+            Whether to start the thread for receiving or not. If you want to control when you start receiving, set this to False and call on
+          the `lynxy.recv` function when ready to start receiving.
 
         timeout: int
             How long Lynxy should wait between each attempt to connect to the other client.
@@ -191,7 +188,7 @@ class Lynxy:
     # this function closes connections
     def close(self, force: bool = False) -> None: 
         '''
-        When called, Lynxy will wait until all data is sent and all data is recieved before closing.
+        When called, Lynxy will wait until all data is sent and all data is received before closing.
         
         Parameters
         ----------
@@ -234,10 +231,10 @@ class Lynxy:
         return self._comm.send(data, ignore_errors, lock_timeout)
 
 
-    # this starts recieving data
+    # this starts receiving data
     def recv(self) -> None:
         '''
-        By default, calling the connect function will call this function, which starts recieving data
+        By default, calling the connect function will call this function, which starts receiving data
         in a background thread. However, if you want to control when you start this, then you can set start_recv in `lynxy.Connenct` to False,
         and call this function when your ready.
 
@@ -246,7 +243,7 @@ class Lynxy:
             client.connect()
             # or this
             client.connect(start_recv = False)
-            client.recv() # when you are ready to start recieving
+            client.recv() # when you are ready to start receiving
         ```
         '''
         self._comm.start_recv()
