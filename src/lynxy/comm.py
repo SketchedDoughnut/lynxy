@@ -46,7 +46,7 @@ class Comm:
         # this represents a dictionary of event queues
         self.eventRegistry = {}
         # this represents the connection type for when errors occur
-        self.connectionType = ConnectionType.NONE
+        self.connectionType = ConnectionType.EVENT
         # this is the thread for the receiving function
         self.recvThread = threading.Thread(target=self.recv, daemon=True)
         # this represents the system type
@@ -170,11 +170,11 @@ class Comm:
 
     # this function manages what happens when connection goes wrong,
     # and a connection is closing - typically with an error
-    def _handle_close(self, error: Exception | None = None) -> None:
+    def _handle_close(self, error: BaseException | None = None) -> None:
         # since we know an error happened and the connection likely is 
         # closed, we can force a close 
         self.log(logging.INFO, '_handle_close: TRY force close client')
-        self.log(logging.ERROR, f'_handle_close: error: {error}')
+        # self.log(logging.ERROR, f'_handle_close: error: {error}')
         if self.connected: self.close_connection(force=True)
         self.log(logging.INFO, '_handle_close: OK close client')
         # handle the error according to how client is configured
@@ -342,7 +342,7 @@ class Comm:
         if not self.connected: 
             self.log(logging.INFO, 'close_connection: FAIL close; not connected')
             return
-        if force: self.log(logging.WARNING, 'close_connection: forced closing can cause possible data loss')
+        # if force: self.log(logging.WARNING, 'close_connection: forced closing can cause possible data loss')
         self.stopRecv = True
         self.log(logging.INFO, 'close_connection: TRY stop recv thread')
         if not force: self.recvThread.join()
@@ -397,7 +397,7 @@ class Comm:
         while True:
             if self.stopRecv: return
             try: received = self.TCP_client.recv(1024)
-            except socket.timeout:
+            except TimeoutError:
                 self.log(logging.DEBUG, f'recv: {Util._format_time()} - {socket.timeout}')
                 continue
             except ConnectionResetError | ConnectionAbortedError as e: # other machine quit

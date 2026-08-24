@@ -13,18 +13,17 @@ from .pool import Message
 ####################################################
 
 # the main class for the keeping everything together
-class Lynxy:
+class Client:
     '''
-    This is the Lynxy class, which creates a Lynxy client object. This allows you to communicate with
-    other Lynxy clients and allows you to exchange data between machines. More specifics about certain functionalities
-    can be found on the official documentation on Github!
+    This is the Client class, which creates a Lynxy client object. This allows you to communicate with
+    other Lynxy clients and allows you to exchange data between machines.
 
     Parameters
     ----------
     host: tuple[str, int]
         This is the information for the host machine (that is, your machine) to bind onto, the information being the IP of the host machine and the chosen
         port. The IP should be left empty, as Lynxy will naturally find out the correct IP. However, the port can be set to whatever you
-        desire. This information can be acquired with the get_host function
+        desire. This information can be acquired with the get_host function.
 
         ```python
             client = Lynxy(('', 50004))
@@ -94,7 +93,7 @@ class Lynxy:
         Types
         ----------
         ConnectionType.EVENT
-            Lynxy will trigger the Event.ON_CLOSE event when the connection is closed. This is the default setting.
+            Lynxy will trigger the Event.ON_DISCONNECT event when the connection is closed. This is the default setting.
 
         ConnectionType.ERROR
             Lynxy will raise the error that occurs on connection closing (graceful or not).

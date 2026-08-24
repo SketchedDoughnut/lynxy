@@ -2,7 +2,7 @@ from src import lynxy
 
 host = ('', 56774)
 target = ('192.168.86.53', 56775)
-cl = lynxy.Lynxy(host=host)
+cl = lynxy.Client(host=host)
 
 
 @cl.event(lynxy.Event.ON_MESSAGE)

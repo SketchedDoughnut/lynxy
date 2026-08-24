@@ -7,30 +7,30 @@ These are helpful to know in case you want to catch any errors when doing a vari
 # which contains all other classes of errors
 class Exceptions:
 
-    class ClientNotConnectedError(Exception):
+    class ClientNotConnectedError(BaseException):
         def __init__(self, message='The client is not connected.'):
             self.message = message
             super().__init__(message)
 
-    class NoExteralPublicKeyError(Exception):
+    class NoExteralPublicKeyError(BaseException):
         def __init__(self, message='External public key has not been loaded.'):
             self.message = message
             super().__init__(message)
 
     
-    class EmptyDataError(Exception):
+    class EmptyDataError(BaseException):
         def __init__(self, message='The data you attempted to send is empty.'):
             self.message = message
             super().__init__(message)
 
 
-    class SendingTimeoutError(Exception):
+    class SendingTimeoutError(BaseException):
         def __init__(self, message='The client timed out waiting to send data (send lock).'):
             self.message = message
             super().__init__(message)
 
 
-    class ConnectionFailedError(Exception):
+    class ConnectionFailedError(BaseException):
         def __init__(self, message=None):
             self.message = message
             super().__init__(message)

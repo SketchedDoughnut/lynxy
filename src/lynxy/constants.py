@@ -12,7 +12,7 @@ class Event(Enum):
     This class contains all constants pertaining to events.
     '''
     ON_MESSAGE = 'on message'
-    ON_CLOSE = 'on close'
+    ON_DISCONNECT = 'on disconnect'
     ON_CONNECT = 'on connect'
 
 
